@@ -37,6 +37,14 @@ Do **not** blind-replace bare `kimi` — it also appears in non-UI contexts.
 
 Add a `<link rel="stylesheet" href="./custom.css">` in `index.html` **after** the bundle CSS and override freely — the UI uses ordinary DOM/Tailwind classes. The liquid-glass refraction filter is the inline `<svg><filter id="lg-refraction">` block in `index.html`; tweak `baseFrequency`/`scale` there to change the glass distortion.
 
+## Finding any component: `code-path` attributes
+
+The build instruments every DOM node with a `code-path` attribute pointing at its original source location (e.g. `code-path="src/main.tsx:5:53"`, `src/apps/Music/...`). Workflow: right-click → Inspect any UI element in the browser → read its `code-path` → grep the bundle for that exact string to land on the component that renders it. This makes targeted edits in the minified bundle practical.
+
+## Hosting-path note
+
+All media references were rewritten from root-absolute (`"/wallpaper-…"`) to `"/macos27/…"` to work under GitHub Pages subpath hosting. If you ever move this to a domain root (custom domain or a `wilsonwu-ai.github.io` root repo), reverse that: `sed -i '' 's|"/macos27/|"/|g' assets/index-Bfk0NWYJ.js`.
+
 ## Other knobs spotted in the bundle
 
 - `skipBoot:!1` — flip `!1`→`!0` to skip the boot animation.

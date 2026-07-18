@@ -36,4 +36,4 @@ The bundle is minified build output (no source map), so customization is: swap m
 
 ## Run locally
 
-Any static server, e.g.: `python3 -m http.server 8000` → http://localhost:8000
+Media paths are prefixed `/macos27/` for GitHub Pages subpath hosting, so serve the **parent** directory and open the subpath: from `~/Desktop`, run `python3 -m http.server 8000` → http://localhost:8000/macos27/
