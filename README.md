@@ -16,11 +16,11 @@ My resume, running as a full macOS desktop simulation in the browser. Log in and
 
 Operator of three ventures, deliberately building toward AI engineering:
 
-| Venture | Role |
-|---|---|
-| **Dubbs Capital** | Founder & CEO — acquire/build highly predictable B2B technology companies |
-| **Snappy** | CRO & minority investor — presentation studio serving restaurants; own revenue + GTM |
-| **Union Made Apparel** | Owner-operator — physical product, e-commerce |
+| Venture | Role | Since |
+|---|---|---|
+| **Dubbs Capital** | Founder & CEO — acquire/build highly predictable B2B technology companies | 2020 |
+| **Snappy** | CRO & minority investor — presentation studio serving restaurants; own revenue + GTM | 2016 |
+| **Union Made Apparel** | Owner-operator — physical product, e-commerce | 2022 |
 
 M.S. Computer Science — Georgia Tech (OMSCS), in progress. Focus: agents, RAG, evaluation, GTM for B2B, restaurant tech.
 
@@ -32,7 +32,7 @@ M.S. Computer Science — Georgia Tech (OMSCS), in progress. Focus: agents, RAG,
 
 ## Contact
 
-**wilson1.wu@gmail.com · (416) 412-1927 · [github.com/wilsonwu-ai](https://github.com/wilsonwu-ai)**
+**wilson1.wu@gmail.com · (416) 412-1927 · [LinkedIn](https://www.linkedin.com/in/wilson1wu/) · [github.com/wilsonwu-ai](https://github.com/wilsonwu-ai)**
 
 ---
 
