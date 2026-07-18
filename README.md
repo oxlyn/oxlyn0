@@ -1,39 +1,43 @@
-# macOS 27 — in-browser desktop
+# Wilson Wu — Interactive Resume
 
-A pixel-faithful "Liquid Glass" macOS desktop simulation that runs entirely in the browser. React + Zustand SPA (Vite build), Tailwind CSS, no backend.
+**Live: https://wilsonwu-ai.github.io/macos27/**
 
-Cloned 2026-07-17 from the public demo `macos27.kimi.page` (an AI-generated Kimi share page) as a base for personal customization. Recovered via the Wayback Machine snapshot of 2026-07-16/17 because the origin was unreachable at clone time. The Kimi analytics tag (`sdk-seed.js`) has been removed.
+My resume, running as a full macOS desktop simulation in the browser. Log in and explore — every app works:
 
-## What's inside the simulation
+- **Notes** — who I am, how I think about AI engineering and GTM strategy
+- **Mail** — project stories (real engineering war stories, my training system, how Snappy sells)
+- **Documents** — AI engineering field notes, reading list, 2026 focus
+- **Desktop → Ventures** — Dubbs Capital thesis, Snappy GTM
+- **Downloads → Resume — Wilson Wu.pdf** — opens in Preview
+- **Contacts** — my card (real contact info)
+- **Photos** — Skylar 🐾
 
-Boot sequence → desktop with menu bar, Dock, Control Center, Spotlight, Mission Control, and working app windows: Finder, Safari, Music, Photos, Maps (live OpenStreetMap), Weather (live Open-Meteo), Terminal, Notes, Calculator, Calendar, Mail, Messages, FaceTime, Podcasts, TV, News, App Store, System Settings, TextEdit, Preview, Photo Booth, Trash.
+## Who
 
-## File map
+Operator of three ventures, deliberately building toward AI engineering:
 
-| Path | What it is |
+| Venture | Role |
 |---|---|
-| `index.html` | Shell: fonts, liquid-glass SVG filter, mounts `#root` |
-| `assets/index-Bfk0NWYJ.js` | The entire app — minified React bundle (~2.3 MB) |
-| `assets/index-BqrKPhU7.css` | Tailwind CSS build (~82 KB) |
-| `wallpaper-*.jpg` (×5) | Desktop wallpapers (`tahoe-day` is the default) |
-| `photo-*.jpg` (×8) | Photos app library |
-| `cover-*.jpg`, `podcast-cover.jpg` | Music/Podcasts artwork |
-| `track-*.mp3` (×4) | Music app tracks |
-| `import.jpg` | Photos import sample |
+| **Dubbs Capital** | Founder & CEO — acquire/build highly predictable B2B technology companies |
+| **Snappy** | CRO & minority investor — presentation studio serving restaurants; own revenue + GTM |
+| **Union Made Apparel** | Owner-operator — physical product, e-commerce |
 
-**Provenance:** `index.html`, both `assets/` files, `wallpaper-tahoe-day.jpg`, `wallpaper-bigsur.jpg`, and `cover-1.jpg` are original (Wayback-recovered). All other media are locally generated placeholders — the archive never captured them. Replace them with your own content (same filenames = zero code changes).
+M.S. Computer Science — Georgia Tech (OMSCS), in progress. Focus: agents, RAG, evaluation, GTM for B2B, restaurant tech.
 
-## External runtime dependencies (all keyless/public — fine on GitHub Pages)
+## Public work
 
-- Google Fonts (Inter)
-- Open-Meteo API (Weather app)
-- OpenStreetMap tiles + Nominatim + OSRM (Maps app)
-- Sample videos from Google's public bucket and MDN (TV app)
+- [macos27](https://github.com/wilsonwu-ai/macos27) — this site
+- [basenotes](https://github.com/wilsonwu-ai/basenotes) — Shopify storefront engineering (Cloudflare Workers, HMAC-signed App Proxy, metafields)
+- [allfish](https://github.com/wilsonwu-ai/allfish) — "AllTrails for anglers," React + MapLibre
 
-## Customizing (see CUSTOMIZE.md)
+## Contact
 
-The bundle is minified build output (no source map), so customization is: swap media files, override CSS, or edit quoted strings in the bundle. `CUSTOMIZE.md` documents the exact anchors.
+**wilson1.wu@gmail.com · (416) 412-1927 · [github.com/wilsonwu-ai](https://github.com/wilsonwu-ai)**
 
-## Run locally
+---
 
-Media paths are prefixed `/macos27/` for GitHub Pages subpath hosting, so serve the **parent** directory and open the subpath: from `~/Desktop`, run `python3 -m http.server 8000` → http://localhost:8000/macos27/
+### Provenance & tech
+
+Built on the open "macOS 27" Liquid Glass browser simulation (an AI-generated Kimi share demo, recovered via the Wayback Machine when the origin was network-blocked), then customized end-to-end: identity, all content surfaces, media, and GitHub Pages deployment. React + Zustand SPA, Tailwind CSS, no backend. Weather (Open-Meteo) and Maps (OpenStreetMap) are live keyless APIs. See `CUSTOMIZE.md` for the full customization map.
+
+Run locally: media paths are prefixed `/macos27/`, so serve the parent directory — from `~/Desktop`: `python3 -m http.server 8000` → http://localhost:8000/macos27/
