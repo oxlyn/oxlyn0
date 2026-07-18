@@ -12,6 +12,8 @@ Drop in your own files under the **same filenames**:
 
 ## 2. Rebrand the user identity (string edits in the bundle)
 
+> **✅ Applied 2026-07-18:** kimi→wilson executed across all 64+ surfaces — login/lock screen ("wilson", W avatar), `/Users/wilson`, Apple ID `wilson1.wu@gmail.com`, "Wilson's MacBook Pro", Terminal prompt `wilson@macbook`, Activity Monitor process owners, sudoers easter egg, Mail bodies ("Dear Wilson,"), HomeKit "Wilson's Home", fake GitHub `owner:"wilsonwu-ai"`. Contacts card uses a fictional (416) 555-0100 — deliberately NOT the real cell (public repo). The table below remains as the map of identity surfaces.
+
 All identity strings live as quoted literals in `assets/index-Bfk0NWYJ.js` (~64 hits for `kimi`). Key anchors, greppable verbatim:
 
 | Anchor | Controls |
