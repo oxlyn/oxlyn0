@@ -19,10 +19,10 @@ Operator of three ventures, deliberately building toward AI engineering:
 | Venture | Role | Since |
 |---|---|---|
 | **Dubbs Capital** | Founder & CEO — acquire/build highly predictable B2B technology companies | 2020 |
-| **Snappy** | CRO & minority investor — presentation studio serving restaurants; own revenue + GTM | 2016 |
+| **Snappy** | CRO & minority investor — presentation studio serving restaurants (founded 2016); own revenue + GTM | 2022 |
 | **Union Made Apparel** | Owner-operator — physical product, e-commerce | 2022 |
 
-M.S. Computer Science — Georgia Tech (OMSCS), in progress. Focus: agents, RAG, evaluation, GTM for B2B, restaurant tech.
+M.S. Computer Science — Georgia Tech (OMSCS), in progress · M.B.A. — Duke University, 2019. Focus: agents, RAG, evaluation, GTM for B2B, restaurant tech.
 
 ## Public work
 
