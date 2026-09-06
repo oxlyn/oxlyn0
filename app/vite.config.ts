@@ -10,9 +10,10 @@ import type { Plugin } from 'rolldown-vite'
 // serving them at /macos27/*. In dev, serve those from root under the base path.
 const REPO_ROOT = resolve(import.meta.dirname, '..')
 const MEDIA_RE = /\.(jpg|jpeg|png|gif|webp|svg|mp3|mp4|zip|pdf|woff2?)$/
-// Cloudflare Pages builds with CF_PAGES=1 and serves the site at the domain
-// root; GitHub Pages serves the repo under /macos27/.
-const BASE = process.env.CF_PAGES ? '/' : '/macos27/'
+// Cloudflare build CI serves the site at the domain root (CF_PAGES=1 on
+// Pages, WORKERS_CI=1 on Workers Builds); GitHub Pages serves the repo under
+// /macos27/. Local builds keep the /macos27/ default.
+const BASE = process.env.CF_PAGES || process.env.WORKERS_CI ? '/' : '/macos27/'
 // Bundled static sites served verbatim from the repo root.
 const STATIC_SITES = ['/macos27/study/', '/macos27/wakfu/']
 function rootStatic(): Plugin {

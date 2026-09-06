@@ -61,9 +61,10 @@ serves it locally.
 
 **Cloudflare Pages** (auto-deploy from the GitHub mirror): connect the repo in
 the Pages dashboard — build command `npm run build`, output dir `dist`, env
-`NODE_VERSION=22`. Builds run with `CF_PAGES=1`, which flips `base` to `/`;
-`copyRootStatic` mirrors repo-root media + `study/` + `wakfu/` into `dist` so
-every runtime path resolves without the GitHub-root layout.
+`NODE_VERSION=22`. Cloudflare's build CI (`CF_PAGES` on Pages, `WORKERS_CI` on
+Workers Builds) flips `base` to `/`; `copyRootStatic` mirrors repo-root media +
+`study/` + `wakfu/` into `dist` so every runtime path resolves without the
+GitHub-root layout. `wrangler.jsonc` points the deploy step at `dist`.
 
 ## Who
 
