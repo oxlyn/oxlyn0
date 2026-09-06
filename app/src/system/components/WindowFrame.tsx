@@ -92,7 +92,7 @@ export function WindowFrame({ win }: { win: Win }) {
       {/* title bar (hidden in standalone single-app tabs) */}
       {showTitleBar && (
         <div
-          className="glass relative flex h-9 shrink-0 items-center px-3 select-none"
+          className="relative flex h-9 shrink-0 items-center px-3 select-none bg-transparent"
           onPointerDown={startDrag}
           onPointerMove={onDragMove}
           onPointerUp={endDrag}
