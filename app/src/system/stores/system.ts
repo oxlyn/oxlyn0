@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 const B = (f: string) => `${import.meta.env.BASE_URL}${f}`
 
@@ -28,18 +29,28 @@ interface SystemState {
   setTitlebarTransparency: (t: number) => void
 }
 
-export const useSystem = create<SystemState>((set, get) => ({
-  booted: false,
-  theme: 'dark',
-  wallpaper: 'graphite',
-  titlebarTransparency: 0,
-  standalone: false,
-  login: () => set({ booted: true }),
-  lock: () => set({ booted: false }),
-  setTheme: (t) => set({ theme: t }),
-  setWallpaper: (id) => set({ wallpaper: id }),
-  setTitlebarTransparency: (t) => set({ titlebarTransparency: Math.min(1, Math.max(0, t)) }),
-}))
+export const useSystem = create<SystemState>()(
+  persist(
+    (set) => ({
+      booted: false,
+      theme: 'dark',
+      wallpaper: 'graphite',
+      titlebarTransparency: 0,
+      standalone: false,
+      login: () => set({ booted: true }),
+      lock: () => set({ booted: false }),
+      setTheme: (t) => set({ theme: t }),
+      setWallpaper: (id) => set({ wallpaper: id }),
+      setTitlebarTransparency: (t) => set({ titlebarTransparency: Math.min(1, Math.max(0, t)) }),
+    }),
+    {
+      name: 'macos27.system',
+      // Only System Settings choices survive a reload; booted/standalone stay
+      // session-only (every load starts at the login screen).
+      partialize: (s) => ({ theme: s.theme, wallpaper: s.wallpaper, titlebarTransparency: s.titlebarTransparency }),
+    },
+  ),
+)
 
 /** Current wallpaper spec. */
 export const currentWallpaper = () => {
