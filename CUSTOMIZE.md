@@ -74,9 +74,12 @@ Launchpad, Spotlight. Full contract + available stores: [src/apps/README.md](src
 
 ## Hosting-path note
 
-Media is referenced as `/macos27/…` (GitHub Pages subpath). Vite's `base` is set
-to match in `vite.config.ts`. For root-hosting, change `base` to `'/'` and the
-`/macos27` prefixes in `src/system/stores/system.ts` + app data files.
+`vite.config.ts` picks the base by host: Cloudflare Pages builds (set via
+`CF_PAGES=1` in its env) serve at `/`, GitHub Pages at `/macos27/`. App code
+should reference media through `import.meta.env.BASE_URL`; the music/podcast/
+photo data files predate that and hardcode `/macos27/…`, so the build mirrors
+the repo-root media into `dist/macos27/` (`copyRootStatic` plugin) to cover
+them. New code should stick to `BASE_URL`.
 
 ## Re-fetching the original media (if you ever want them)
 

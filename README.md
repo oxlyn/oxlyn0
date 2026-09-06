@@ -49,14 +49,21 @@ npm run dev        # http://localhost:5173/macos27/
 
 ## Deploy
 
+**GitHub Pages** (deploy-from-root, current):
+
 ```bash
-npm run build      # → dist/
-# copy dist/index.html + dist/assets/ into the repo root (media stays at root)
+scripts/deploy-root.sh   # build → copy dist/index.html + dist/assets/ into the repo root
 ```
 
 Media (wallpapers/photos/tracks) lives at the repo root so GitHub Pages serves it
 at `/macos27/*`; `vite.config.ts` sets the matching `base` and a dev middleware
 serves it locally.
+
+**Cloudflare Pages** (auto-deploy from the GitHub mirror): connect the repo in
+the Pages dashboard — build command `npm run build`, output dir `dist`, env
+`NODE_VERSION=22`. Builds run with `CF_PAGES=1`, which flips `base` to `/`;
+`copyRootStatic` mirrors repo-root media + `study/` + `wakfu/` into `dist` so
+every runtime path resolves without the GitHub-root layout.
 
 ## Who
 
