@@ -1,4 +1,4 @@
-# Wilson Wu — Interactive Resume
+# Oxlyn — Interactive Resume
 
 **Live: https://wilsonwu-ai.github.io/macos27/**
 
@@ -8,9 +8,55 @@ My resume, running as a full macOS desktop simulation in the browser. Log in and
 - **Mail** — project stories (real engineering war stories, my training system, how Snappy sells)
 - **Documents** — AI engineering field notes, reading list, 2026 focus
 - **Desktop → Ventures** — Dubbs Capital thesis, Snappy GTM
-- **Downloads → Resume — Wilson Wu.pdf** — opens in Preview
+- **Downloads → Resume — Oxlyn.pdf** — opens in Preview
 - **Contacts** — my card (real contact info)
 - **Photos** — Skylar 🐾
+
+## Architecture (v2 rebuild)
+
+TypeScript + JSX + [rolldown-vite] (the Rolldown app bundler — same core as tsdown,
+with the dev server/HTML entry an SPA needs) + Tailwind 4 + zustand.
+The Vite project lives in `app/` (source entry `app/index.html`); the repo root
+keeps static media + the deployed artifact so GitHub Pages serves `/macos27/*` directly.
+
+```
+app/
+  index.html         ← Vite source entry (deploy never touches it)
+  src/
+    system/          ← the "OS": window manager, menu bar, Dock, desktop,
+      stores/          login, Launchpad, Spotlight, virtual file system
+      components/
+      registry.ts    ← AUTO-DISCOVERS all apps (import.meta.glob)
+    apps/            ← every app, one directory each, fully self-contained
+      <id>/
+        app.tsx      ← exports AppDefinition { id, name, icon, component, size }
+        data.ts      ← app content (extracted from the original bundle)
+study/index.html     ← 乐学二年级 practice app, embedded verbatim by the Study app
+wakfu/               ← Wakfu 攻略站「万象之扉」, embedded verbatim by the Wakfu Guide app
+```
+
+**Adding an app = creating one directory.** Drop `app/src/apps/<id>/app.tsx` that
+default-exports an `AppDefinition` (see [app/src/apps/README.md](app/src/apps/README.md))
+and the system shows it on the Dock, Launchpad, Spotlight automatically at load
+time — nothing else to wire. The Study app was added this way in minutes.
+
+## Develop
+
+```bash
+npm install
+npm run dev        # http://localhost:5173/macos27/
+```
+
+## Deploy
+
+```bash
+npm run build      # → dist/
+# copy dist/index.html + dist/assets/ into the repo root (media stays at root)
+```
+
+Media (wallpapers/photos/tracks) lives at the repo root so GitHub Pages serves it
+at `/macos27/*`; `vite.config.ts` sets the matching `base` and a dev middleware
+serves it locally.
 
 ## Who
 
@@ -38,6 +84,4 @@ M.S. Computer Science — Georgia Tech (OMSCS), in progress · M.B.A. — Duke U
 
 ### Provenance & tech
 
-Built on the open "macOS 27" Liquid Glass browser simulation (an AI-generated Kimi share demo, recovered via the Wayback Machine when the origin was network-blocked), then customized end-to-end: identity, all content surfaces, media, and GitHub Pages deployment. React + Zustand SPA, Tailwind CSS, no backend. Weather (Open-Meteo) and Maps (OpenStreetMap) are live keyless APIs. See `CUSTOMIZE.md` for the full customization map.
-
-Run locally: media paths are prefixed `/macos27/`, so serve the parent directory — from `~/Desktop`: `python3 -m http.server 8000` → http://localhost:8000/macos27/
+Built on the open "macOS 27" Liquid Glass browser simulation (an AI-generated Kimi share demo, recovered via the Wayback Machine when the origin was network-blocked), then customized end-to-end. v2 rebuilt the shipped bundle into a typed source tree: the system shell in `src/system`, all 37 apps as self-registering modules in `src/apps`, content extracted from the original bundle into per-app data files (`scripts/sync-extracted.mjs`). Weather (Open-Meteo) and Maps (OpenStreetMap) are live keyless APIs. Fonts are system-stack only — the Google Fonts link was removed after it was measured blocking first paint for seconds where Google is unreachable.

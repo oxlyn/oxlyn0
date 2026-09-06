@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Segoe UI", "Helvetica Neue", sans-serif;
+  --menubar-h: 28px;
+  --dock-h: 78px;
+}
+.dark { color-scheme: dark; }
+
+html, body, #root { height: 100%; margin: 0; overflow: hidden; background: #000; }
+body {
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  user-select: none;
+}
+
+/* ---- Liquid Glass surfaces ---- */
+.glass {
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(22px) saturate(1.7);
+  -webkit-backdrop-filter: blur(22px) saturate(1.7);
+}
+.dark .glass {
+  background: rgba(28, 28, 30, 0.58);
+}
+.glass-thin {
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+}
+.dark .glass-thin { background: rgba(36, 36, 38, 0.46); }
+/* Chromium gets real refraction on system surfaces via the SVG filter in index.html */
+@supports (backdrop-filter: url(#lg-refraction) blur(6px)) {
+  .glass-refract {
+    backdrop-filter: url(#lg-refraction) blur(7px) saturate(1.6);
+    -webkit-backdrop-filter: url(#lg-refraction) blur(7px) saturate(1.6);
+  }
+}
+
+/* ---- Scrollbars ---- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.22); border-radius: 4px; }
+.dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.22); }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ---- Window open/close animation ---- */
+@keyframes win-in {
+  from { opacity: 0; transform: scale(0.92) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.win-in { animation: win-in 0.22s cubic-bezier(0.2, 0.9, 0.3, 1); }
+@keyframes focus-in {
+  from { opacity: 0; transform: scale(0.965); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.focus-in { animation: focus-in 0.24s cubic-bezier(0.2, 0.9, 0.3, 1); }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.fade-in { animation: fade-in 0.35s ease-out; }
+
+/* ---- Rich text (Notes/Mail/Preview content) ---- */
+.rich h1 { font-size: 1.35rem; font-weight: 700; margin: 0.4em 0 0.35em; }
+.rich h2 { font-size: 1.15rem; font-weight: 700; margin: 0.5em 0 0.3em; }
+.rich h3 { font-size: 1rem; font-weight: 650; margin: 0.5em 0 0.25em; }
+.rich p { margin: 0.45em 0; line-height: 1.55; }
+.rich ul, .rich ol { margin: 0.45em 0; padding-left: 1.4em; }
+.rich li { margin: 0.22em 0; line-height: 1.5; }
+.rich pre { background: rgba(0,0,0,0.06); border-radius: 8px; padding: 0.7em 0.9em; font-size: 0.85rem; overflow-x: auto; margin: 0.5em 0; }
+.dark .rich pre { background: rgba(255,255,255,0.08); }
+.rich code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.88em; }
+.rich blockquote { border-left: 3px solid rgba(0,0,0,0.15); padding-left: 0.8em; margin: 0.5em 0; color: rgba(0,0,0,0.6); }
+.dark .rich blockquote { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); }
+.rich a { color: #0a6ce0; text-decoration: underline; }
+.rich hr { border: none; border-top: 1px solid rgba(0,0,0,0.1); margin: 0.8em 0; }
+.dark .rich hr { border-color: rgba(255,255,255,0.12); }
+.rich b, .rich strong { font-weight: 650; }
+.rich table { border-collapse: collapse; margin: 0.5em 0; }
+.rich td, .rich th { border: 1px solid rgba(0,0,0,0.12); padding: 0.3em 0.6em; }
