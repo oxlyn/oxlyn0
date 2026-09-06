@@ -18,9 +18,9 @@ export const appById: Map<string, AppDefinition> = new Map(apps.map((a) => [a.id
 
 /** Dock layout, mirroring the original system (unlisted apps live in Launchpad only). */
 const DOCK_ORDER = [
-  'finder', 'launchpad', 'safari', 'messages', 'mail', 'maps', 'photos', 'facetime', 'phone',
-  'calendar', 'contacts', 'reminders', 'notes', 'freeform', 'music', 'podcasts', 'tv', 'news',
-  'games', 'appstore', 'settings',
+  'finder', 'launchpad', 'safari', 'messages', 'mail', 'maps',
+  'reminders', 'notes', 'freeform', 'music', 'tv', 'news',
+  'games', 'settings',
 ]
 
 export const dockApps: AppDefinition[] = DOCK_ORDER.map((id) => appById.get(id))
