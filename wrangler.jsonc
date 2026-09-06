@@ -1,0 +1,12 @@
+// Cloudflare Workers (static assets) deploy config — the dashboard build runs
+// `npx wrangler deploy`, which reads this file instead of walking the whole
+// repo root (node_modules trips the 25 MiB per-file asset limit).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "home",
+  "compatibility_date": "2026-09-03",
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": "dist"
+  }
+}
