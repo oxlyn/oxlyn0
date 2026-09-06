@@ -33,6 +33,16 @@ body {
   -webkit-backdrop-filter: blur(16px) saturate(1.5);
 }
 .dark .glass-thin { background: rgba(36, 36, 38, 0.46); }
+/* Window title bar — alpha is driven by System Settings (titlebarTransparency):
+   1 = opaque default, 0 = fully clear (traffic lights stay visible). */
+.titlebar {
+  background: rgb(255 255 255 / var(--titlebar-alpha, 1));
+  backdrop-filter: blur(22px) saturate(1.7);
+  -webkit-backdrop-filter: blur(22px) saturate(1.7);
+}
+.dark .titlebar {
+  background: rgb(28 28 30 / var(--titlebar-alpha, 1));
+}
 /* Chromium gets real refraction on system surfaces via the SVG filter in index.html */
 @supports (backdrop-filter: url(#lg-refraction) blur(6px)) {
   .glass-refract {

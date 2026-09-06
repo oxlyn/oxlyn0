@@ -31,6 +31,7 @@ export function WindowFrame({ win }: { win: Win }) {
 
   const inFocus = useWindows((s) => s.focusId) === win.id
   const standalone = useSystem((s) => s.standalone)
+  const titlebarTransparency = useSystem((s) => s.titlebarTransparency)
   // Standalone single-app tabs (?app=) show pure app content — no title bar.
   const showTitleBar = !inFocus || !standalone
 
@@ -92,7 +93,8 @@ export function WindowFrame({ win }: { win: Win }) {
       {/* title bar (hidden in standalone single-app tabs) */}
       {showTitleBar && (
         <div
-          className="relative flex h-9 shrink-0 items-center px-3 select-none bg-transparent"
+          className="titlebar relative flex h-9 shrink-0 items-center px-3 select-none"
+          style={{ '--titlebar-alpha': 1 - titlebarTransparency } as React.CSSProperties}
           onPointerDown={startDrag}
           onPointerMove={onDragMove}
           onPointerUp={endDrag}

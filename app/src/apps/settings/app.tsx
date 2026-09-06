@@ -51,6 +51,8 @@ function Settings({ payload }: AppWindowProps) {
 function AppearancePane() {
   const theme = useSystem((s) => s.theme)
   const setTheme = useSystem((s) => s.setTheme)
+  const titlebarTransparency = useSystem((s) => s.titlebarTransparency)
+  const setTitlebarTransparency = useSystem((s) => s.setTitlebarTransparency)
   return (
     <div>
       <h2 className="mb-4 text-lg font-bold">Appearance</h2>
@@ -72,6 +74,24 @@ function AppearancePane() {
             <div className="mt-1.5 font-medium capitalize">{t}</div>
           </button>
         ))}
+      </div>
+      <div className="mt-6 max-w-md">
+        <div className="mb-1.5 flex items-center justify-between">
+          <span className="font-medium">窗口标题栏透明度</span>
+          <span className="tabular-nums text-black/50 dark:text-white/50">{Math.round(titlebarTransparency * 100)}%</span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={100}
+          step={1}
+          value={Math.round(titlebarTransparency * 100)}
+          onChange={(e) => setTitlebarTransparency(Number(e.target.value) / 100)}
+          className="w-full accent-blue-500"
+        />
+        <p className="mt-1.5 text-black/50 dark:text-white/50">
+          0% 不透明（默认）→ 100% 全透明，只保留红黄绿按钮。对所有应用窗口即时生效。
+        </p>
       </div>
       <p className="mt-4 max-w-md text-black/50 dark:text-white/50">
         Liquid Glass adapts to the appearance. System surfaces pick up the tint automatically.

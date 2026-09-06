@@ -17,23 +17,28 @@ interface SystemState {
   booted: boolean
   theme: 'light' | 'dark'
   wallpaper: string
+  /** Window title-bar strip transparency: 0 = opaque (default) … 1 = fully clear. */
+  titlebarTransparency: number
   /** Booted via ?app=<id> into a standalone single-app tab (no window chrome at all). */
   standalone: boolean
   login: () => void
   lock: () => void
   setTheme: (t: 'light' | 'dark') => void
   setWallpaper: (id: string) => void
+  setTitlebarTransparency: (t: number) => void
 }
 
 export const useSystem = create<SystemState>((set, get) => ({
   booted: false,
   theme: 'dark',
   wallpaper: 'graphite',
+  titlebarTransparency: 0,
   standalone: false,
   login: () => set({ booted: true }),
   lock: () => set({ booted: false }),
   setTheme: (t) => set({ theme: t }),
   setWallpaper: (id) => set({ wallpaper: id }),
+  setTitlebarTransparency: (t) => set({ titlebarTransparency: Math.min(1, Math.max(0, t)) }),
 }))
 
 /** Current wallpaper spec. */
