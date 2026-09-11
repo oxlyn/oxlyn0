@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { currentWallpaper, useSystem } from '../stores/system'
 
-const AVATAR_URL = `${import.meta.env.BASE_URL}avatar-lotus.jpg`
+const AVATAR_URL = `${import.meta.env.BASE_URL}avatar.svg`
 
 export function LoginScreen() {
   const login = useSystem((s) => s.login)

@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-256 -256 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0b1120"/>
+    </radialGradient>
+    <linearGradient id="pg" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#ff4d6d"/>
+      <stop offset="100%" stop-color="#ffe4e9"/>
+    </linearGradient>
+    <linearGradient id="lg" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+    <path id="p" d="M0,0C-35,-45-70,-105-30,-155C-15,-170-5,-160 0,-150C5,-160 15,-170 30,-155C70,-105 35,-45 0,0Z"/>
+    <path id="l" d="M0,0C20,-30 30,-80 0,-120C-30,-80-20,-30 0,0Z"/>
+    <g id="s">
+      <path d="M0,0Q10,-30 5,-60" fill="none" stroke="#ff4d6d" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="5" cy="-60" r="4" fill="#ffd700"/>
+    </g>
+    <clipPath id="c"><circle r="256"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#c)">
+    <rect x="-256" y="-256" width="512" height="512" fill="url(#bg)"/>
+    <circle r="180" fill="#60a5fa" opacity="0.12"/>
+
+    <!-- 叶子 -->
+    <use href="#l" fill="url(#lg)" transform="translate(-110,80) scale(1.2) rotate(-45)"/>
+    <use href="#l" fill="url(#lg)" transform="translate(120,70) scale(1) rotate(30)"/>
+
+    <!-- 花萼 -->
+    <path d="M0,0L-20,20L-8,15L0,35L8,15L20,20Z" fill="#22c55e" transform="translate(0,15)"/>
+
+    <!-- 外层花瓣 -->
+    <g fill="url(#pg)">
+      <use href="#p" transform="rotate(0)"/>
+      <use href="#p" transform="rotate(72)"/>
+      <use href="#p" transform="rotate(144)"/>
+      <use href="#p" transform="rotate(216)"/>
+      <use href="#p" transform="rotate(288)"/>
+    </g>
+
+    <!-- 内层花瓣 -->
+    <g fill="url(#pg)" transform="scale(0.7) rotate(36)">
+      <use href="#p"/>
+      <use href="#p" transform="rotate(72)"/>
+      <use href="#p" transform="rotate(144)"/>
+      <use href="#p" transform="rotate(216)"/>
+      <use href="#p" transform="rotate(288)"/>
+    </g>
+
+    <!-- 花蕊 -->
+    <use href="#s"/>
+    <use href="#s" transform="rotate(45)"/>
+    <use href="#s" transform="rotate(90)"/>
+    <use href="#s" transform="rotate(135)"/>
+    <use href="#s" transform="rotate(180)"/>
+    <use href="#s" transform="rotate(225)"/>
+    <use href="#s" transform="rotate(270)"/>
+    <use href="#s" transform="rotate(315)"/>
+
+    <!-- 漂浮花瓣 -->
+    <use href="#p" fill="#ff6b8a" opacity="0.7" transform="translate(120,110) scale(0.3) rotate(45)"/>
+    <use href="#p" fill="#ff6b8a" opacity="0.5" transform="translate(-140,90) scale(0.25) rotate(-30)"/>
+    <use href="#p" fill="#ff6b8a" opacity="0.6" transform="translate(100,-130) scale(0.2) rotate(120)"/>
+    <use href="#p" fill="#ff6b8a" opacity="0.4" transform="translate(-90,-140) scale(0.35) rotate(200)"/>
+
+    <!-- 光点 -->
+    <g fill="#ffd700">
+      <circle cx="-120" cy="-80" r="3" opacity="0.8"/>
+      <circle cx="140" cy="-60" r="2" opacity="0.6"/>
+      <circle cx="-140" cy="120" r="2.5" opacity="0.7"/>
+      <circle cx="110" cy="140" r="3" opacity="0.5"/>
+    </g>
+  </g>
+</svg>
