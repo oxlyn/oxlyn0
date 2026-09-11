@@ -15,7 +15,7 @@ const MEDIA_RE = /\.(jpg|jpeg|png|gif|webp|svg|mp3|mp4|zip|pdf|woff2?)$/
 // /macos27/. Local builds keep the /macos27/ default.
 const BASE = process.env.CF_PAGES || process.env.WORKERS_CI ? '/' : '/macos27/'
 // Bundled static sites served verbatim from the repo root.
-const STATIC_SITES = ['/macos27/study/', '/macos27/wakfu/']
+const STATIC_SITES = ['/macos27/study/', '/macos27/wakfu/', '/macos27/devkit/']
 function rootStatic(): Plugin {
   return {
     name: 'root-static-media',
@@ -57,7 +57,7 @@ function copyRootStatic(): Plugin {
         cpSync(file, at(name))
         cpSync(file, at('macos27', name))
       }
-      for (const site of ['study', 'wakfu']) {
+      for (const site of ['study', 'wakfu', 'devkit']) {
         cpSync(resolve(REPO_ROOT, site), at(site), { recursive: true })
       }
     },

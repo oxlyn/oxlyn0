@@ -16,7 +16,7 @@ Spotlight 和桌面上——**不需要在任何地方手动注册**。
 | 形态 | 现有例子 | 说明 |
 |---|---|---|
 | A. 标准 React 应用 | finder、notes、settings 等约 37 个 | 纯 React 组件，是默认方式 |
-| B. 静态站点 + iframe 壳 | study（乐学二年级）、wakfu（攻略站） | 独立 HTML 站点放仓库根，React 壳只负责嵌入 |
+| B. 静态站点 + iframe 壳 | study（乐学二年级）、wakfu（攻略站）、devkit（开发者工具箱） | 独立 HTML 站点放仓库根，React 壳只负责嵌入 |
 
 ---
 
@@ -137,7 +137,7 @@ export default {
 
 1. `STATIC_SITES` 数组（第 18 行）加入 `'/macos27/<site>/'` —— dev 服务器的
    `rootStatic` 中间件会按原样服务这个路径
-2. `copyRootStatic` 插件的 `for (const site of ['study', 'wakfu'])` 循环
+2. `copyRootStatic` 插件的 `for (const site of ['study', 'wakfu', 'devkit'])` 循环
    （第 56 行）加入 `'<site>'` —— build 后整目录拷贝进 `dist/<site>/`
 
 ### 第 3 步：写 React 壳

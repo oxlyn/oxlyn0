@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DevKit · 开发者工具箱</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="icon-btn menu-btn" id="menuBtn">☰</button>
+  <a class="brand" href="#/"><span class="brand-mark">DK</span><span class="brand-text">DevKit</span></a>
+  <div class="search-wrap">
+    <input id="globalSearch" class="search" type="search" placeholder="搜索工具…  Ctrl / ⌘ + K" autocomplete="off">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+  <button class="icon-btn" id="themeBtn" title="切换主题">🌙</button>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar"><nav id="nav"></nav></aside>
+  <div class="scrim" id="scrim"></div>
+  <main class="main" id="view"></main>
+</div>
+
+<div id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
