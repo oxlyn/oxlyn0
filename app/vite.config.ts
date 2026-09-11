@@ -26,8 +26,12 @@ function rootStatic(): Plugin {
         const file = resolve(REPO_ROOT, url.slice('/macos27/'.length))
         if (!existsSync(file) || !statSync(file).isFile()) return next()
         const ext = file.split('.').pop()!
-        const types: Record<string, string> = { jpg: 'image/jpeg', png: 'image/png', svg: 'image/svg+xml', mp3: 'audio/mpeg', mp4: 'video/mp4', zip: 'application/zip', pdf: 'application/pdf', webp: 'image/webp', gif: 'image/gif', html: 'text/html; charset=utf-8', woff: 'font/woff', woff2: 'font/woff2' }
+        const types: Record<string, string> = { jpg: 'image/jpeg', png: 'image/png', svg: 'image/svg+xml', mp3: 'audio/mpeg', mp4: 'video/mp4', zip: 'application/zip', pdf: 'application/pdf', webp: 'image/webp', gif: 'image/gif', html: 'text/html; charset=utf-8', woff: 'font/woff', woff2: 'font/woff2', js: 'text/javascript', css: 'text/css' }
         res.setHeader('Content-Type', types[ext] ?? 'application/octet-stream')
+        // Bundled sites are immutable-ish assets in dev too: without validators
+        // browsers would re-read them on every iframe load.
+        res.setHeader('Cache-Control', 'no-cache')
+        res.setHeader('Last-Modified', statSync(file).mtime.toUTCString())
         res.end(readFileSync(file))
       })
     },
