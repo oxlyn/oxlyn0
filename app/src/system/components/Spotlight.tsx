@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Search } from 'lucide-react'
-import { apps } from '../registry'
+import { apps, useAppsReady } from '../registry'
 import { useWindows } from '../stores/windows'
 import { useNotes, noteTitle } from '../stores/notes'
 import { AppIcon } from '../AppIcon'
@@ -15,20 +15,23 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const open = useWindows((s) => s.open)
   const notes = useNotes((s) => s.notes)
+  const ready = useAppsReady((s) => s.ready)
 
   const results = useMemo<Result[]>(() => {
     const needle = q.trim().toLowerCase()
     if (!needle) return []
-    const appHits: Result[] = apps
-      .filter((a) => a.name.toLowerCase().includes(needle) || a.keywords?.some((k) => k.startsWith(needle)))
-      .slice(0, 6)
-      .map((a) => ({ kind: 'app', id: `a-${a.id}`, name: a.name, sub: a.category ?? 'Application', appId: a.id }))
+    const appHits: Result[] = ready
+      ? apps
+          .filter((a) => a.name.toLowerCase().includes(needle) || a.keywords?.some((k) => k.startsWith(needle)))
+          .slice(0, 6)
+          .map((a) => ({ kind: 'app', id: `a-${a.id}`, name: a.name, sub: a.category ?? 'Application', appId: a.id }))
+      : []
     const noteHits: Result[] = notes
       .filter((n) => !n.deleted && (noteTitle(n).toLowerCase().includes(needle) || n.html.toLowerCase().includes(needle)))
       .slice(0, 4)
       .map((n) => ({ kind: 'note', id: `n-${n.id}`, name: noteTitle(n), sub: 'Notes' }))
     return [...appHits, ...noteHits]
-  }, [q, notes])
+  }, [q, notes, ready])
 
   useEffect(() => { inputRef.current?.focus() }, [])
   useEffect(() => { setSel(0) }, [q])

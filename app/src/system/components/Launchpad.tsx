@@ -1,19 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
-import { launchpadApps } from '../registry'
+import { launchpadApps, useAppsReady } from '../registry'
 import { useWindows } from '../stores/windows'
 import { AppIcon } from '../AppIcon'
 
 export function Launchpad({ onClose }: { onClose: () => void }) {
   const [q, setQ] = useState('')
   const open = useWindows((s) => s.open)
+  const ready = useAppsReady((s) => s.ready)
   const results = useMemo(() => {
     const needle = q.trim().toLowerCase()
-    if (!needle) return launchpadApps
+    if (!ready || !needle) return ready ? launchpadApps : []
     return launchpadApps.filter(
       (a) => a.name.toLowerCase().includes(needle) || a.keywords?.some((k) => k.includes(needle)) || a.category?.toLowerCase().includes(needle),
     )
-  }, [q])
+  }, [q, ready])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }

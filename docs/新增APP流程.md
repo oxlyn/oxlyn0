@@ -72,6 +72,8 @@ export default {
 | `keywords` | | Spotlight 匹配关键词 |
 | `singleton` | | 只允许一个窗口实例（如 Settings） |
 | `inDock` | | **不在** `DOCK_ORDER` 里的应用要显示到 Dock 必须设 `true` |
+| `keepAlive` | | 关闭后窗口原地隐藏而非卸载，重开秒恢复且保留运行状态。给 iframe 站点用（移动/卸载 iframe 会强制重载）；全局上限 2 个休眠窗口，按关闭顺序淘汰 |
+| `popOutUrl` | | 标题栏“新标签页打开”按钮直接打开该 URL，而不是重启桌面（`?app=<id>`）。自包含站点（study/wakfu）用它做到弹出即开 |
 
 ### 第 4 步：窗口行为与 payload
 
@@ -159,6 +161,19 @@ function StudyApp({ winId }: AppWindowProps) {
 Study 壳演示了联动方式：监听 `useSystem` 的主题变化，写入 iframe 文档的
 `documentElement.dataset.lx`（`study/app.tsx:36-50`）；用户手动选择的主题存
 localStorage，手动选择后不再跟随桌面。
+
+### 嵌入站点的性能约定
+
+- iframe 的 src 用**固定 URL**，不要拼 per-window 参数（如 `?w=${winId}`）——
+  URL 一变 HTTP 缓存就完全失效，每次开窗都重新下载整个站点
+- 站点的大块 CSS/JS 拆成外链文件（study 已拆为 `study/app.css`、
+  `study/app.js`），浏览器才能跨次打开复用编译产物；全内联的单文件每次都要
+  重新解析执行
+- 需要“关窗再开还是原来那个页面”的话设 `keepAlive: true`：系统会把窗口原地
+  隐藏而不卸载（iframe 一旦离开 DOM 或重新挂载就会重载），重开时直接恢复
+- 弹出新标签页用 `popOutUrl` 指到站点本身，跳过桌面启动
+- Service Worker / manifest 等路径一律用相对路径，站点在 `/macos27/wakfu/`
+  这类子路径下，绝对路径会指向站点根（wakfu 已修）
 
 ---
 

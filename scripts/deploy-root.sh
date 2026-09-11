@@ -9,8 +9,11 @@ npm run build
 
 # Deployed artifact overwrites the root entry page; the Vite SOURCE entry lives
 # at app/index.html and is never touched by this script.
+rm -rf assets
+mkdir assets
 cp dist/index.html index.html
-rm -f assets/index-*.js assets/index-*.css
-cp dist/assets/index-*.js dist/assets/index-*.css assets/
+# App modules are code-split into one chunk each, so copy every hashed asset
+# (index-* is no longer the only pattern) instead of just the entry bundle.
+cp dist/assets/* assets/
 
 echo "✓ Synced dist → repo root. Commit + push to publish to GitHub Pages."
