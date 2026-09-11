@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { GraduationCap, Palette } from 'lucide-react'
 import { useSystem } from '@/system/stores/system'
-import type { AppDefinition, AppWindowProps } from '@/system/types'
+import type { AppDefinition } from '@/system/types'
 
 const STUDY_URL = `${import.meta.env.BASE_URL}study/index.html`
 
@@ -24,9 +24,11 @@ const LX_BG: Record<string, string> = {
  * persists. Until the visitor picks manually, the theme follows the desktop
  * appearance (dark → 深色, light → 春).
  */
-function StudyApp({ winId }: AppWindowProps) {
+function StudyApp() {
   const iframeRef = useRef<HTMLIFrameElement>(null)
-  const src = useMemo(() => `${STUDY_URL}?w=${winId}`, [])
+  // No per-window cache-buster: a stable URL lets the browser serve the
+  // (large) document from HTTP cache on every reopen.
+  const src = STUDY_URL
   const [lx, setLx] = useState<string>(() => localStorage.getItem('lx-theme') ?? (useSystem.getState().theme === 'dark' ? 'dark' : 'spring'))
   const manual = useRef(localStorage.getItem('lx-theme-manual') === '1')
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -113,4 +115,8 @@ export default {
   category: 'Education',
   keywords: ['learn', 'study', 'math', 'chinese', '练习', '学习', '语文', '数学', '乐学'],
   inDock: true,
+  // Self-contained site: closing parks the iframe (dormant) instead of
+  // destroying it, and the title-bar pop-out opens the site directly.
+  keepAlive: true,
+  popOutUrl: () => STUDY_URL,
 } satisfies AppDefinition

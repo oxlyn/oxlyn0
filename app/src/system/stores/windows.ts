@@ -14,6 +14,13 @@ export interface Win {
   minimized: boolean
   maximized: boolean
   payload?: Record<string, unknown>
+  /**
+   * Closed keep-alive window parked hidden in place (never unmounted —
+   * moving/unmounting an iframe reloads it). Revived by the next open().
+   */
+  dormant?: boolean
+  /** Park order, used to evict the oldest dormant window. */
+  dormantSeq?: number
 }
 
 interface WindowsState {
@@ -36,6 +43,10 @@ interface WindowsState {
 let seq = 0
 const uid = () => `win-${Date.now().toString(36)}-${++seq}`
 
+let parkSeq = 0
+/** Dormant (parked keep-alive) windows kept mounted, oldest evicted first. */
+const DORMANT_CAP = 2
+
 export const useWindows = create<WindowsState>((set, get) => ({
   wins: [],
   focusedId: null,
@@ -47,6 +58,22 @@ export const useWindows = create<WindowsState>((set, get) => ({
     const app = appById.get(appId)
     if (!app) return
     const existing = get().wins.filter((w) => w.appId === appId)
+
+    // Keep-alive apps: reviving a dormant window reuses its live iframe —
+    // no reload, app state intact.
+    const dormantWin = existing.find((w) => w.dormant)
+    if (dormantWin) {
+      set((s) => ({
+        topZ: s.topZ + 1,
+        focusedId: dormantWin.id,
+        wins: s.wins.map((v) =>
+          v.id === dormantWin.id
+            ? { ...v, z: s.topZ + 1, dormant: false, minimized: false, payload: payload ?? v.payload }
+            : v,
+        ),
+      }))
+      return
+    }
 
     const focusExisting = (w: Win) =>
       set((s) => ({
@@ -99,8 +126,26 @@ export const useWindows = create<WindowsState>((set, get) => ({
 
   close: (id) =>
     set((s) => {
-      const rest = s.wins.filter((w) => w.id !== id)
-      const nextFocus = rest.filter((w) => !w.minimized).sort((a, b) => b.z - a.z)[0]
+      const win = s.wins.find((w) => w.id === id)
+      if (!win) return {}
+      const keepAlive = appById.get(win.appId)?.keepAlive
+
+      let rest: Win[]
+      if (keepAlive) {
+        // Park the window dormant (stays mounted, hidden in place). Cap the
+        // pool by park order — the oldest dormant window is destroyed.
+        const dormant = s.wins.filter((w) => w.dormant && w.id !== id)
+        const evict =
+          dormant.length >= DORMANT_CAP ? dormant.reduce((a, b) => (a.dormantSeq! <= b.dormantSeq! ? a : b)).id : null
+        parkSeq++
+        rest = s.wins
+          .map((w) => (w.id === id ? { ...w, dormant: true, dormantSeq: parkSeq } : w))
+          .filter((w) => w.id !== evict)
+      } else {
+        rest = s.wins.filter((w) => w.id !== id)
+      }
+
+      const nextFocus = rest.filter((w) => !w.dormant && !w.minimized).sort((a, b) => b.z - a.z)[0]
       return { wins: rest, focusedId: nextFocus?.id ?? null, focusId: s.focusId === id ? null : s.focusId }
     }),
 

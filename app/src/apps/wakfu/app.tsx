@@ -1,7 +1,7 @@
-import { useMemo, useRef } from 'react'
+import { useRef } from 'react'
 import { Swords } from 'lucide-react'
 import { useIframeDark } from '@/system/useIframeDark'
-import type { AppDefinition, AppWindowProps } from '@/system/types'
+import type { AppDefinition } from '@/system/types'
 
 const WAKFU_URL = `${import.meta.env.BASE_URL}wakfu/index.html`
 
@@ -11,9 +11,11 @@ const WAKFU_URL = `${import.meta.env.BASE_URL}wakfu/index.html`
  * Same-origin iframe; internal navigation stays inside the window. Follows the
  * desktop appearance via the site's own theme engine (0=暗夜, 1-4=四季).
  */
-function WakfuApp({ winId }: AppWindowProps) {
+function WakfuApp() {
   const iframeRef = useRef<HTMLIFrameElement>(null)
-  const src = useMemo(() => `${WAKFU_URL}?w=${winId}`, [])
+  // No per-window cache-buster: a stable URL lets the browser serve the site
+  // from HTTP cache (and its own service worker) on every reopen.
+  const src = WAKFU_URL
   useIframeDark(iframeRef, (f, dark) => {
     const w = f.contentWindow as (Window & { setTheme?: (i: number) => void }) | null
     if (!w?.setTheme) return
@@ -47,4 +49,8 @@ export default {
   category: 'Games',
   keywords: ['wakfu', '沃土', '攻略', '副本', '职业', '日志分析', 'dungeon', 'guide'],
   inDock: true,
+  // Self-contained site: closing parks the iframe (dormant) instead of
+  // destroying it, and the title-bar pop-out opens the site directly.
+  keepAlive: true,
+  popOutUrl: () => WAKFU_URL,
 } satisfies AppDefinition

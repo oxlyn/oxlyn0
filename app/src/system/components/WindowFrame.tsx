@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { memo, useRef } from 'react'
 import { AppWindow } from 'lucide-react'
 import type { Win } from '../stores/windows'
 import { useWindows } from '../stores/windows'
@@ -18,18 +18,25 @@ const HANDLES: { edge: Edge; className: string }[] = [
   { edge: 'w', className: 'left-0 top-2 bottom-2 w-1 cursor-ew-resize' },
   { edge: 'ne', className: 'top-0 right-0 w-3 h-3 cursor-nesw-resize' },
   { edge: 'nw', className: 'top-0 left-0 w-3 h-3 cursor-nwse-resize' },
-  { edge: 'se', className: 'bottom-0 right-0 w-3.5 h-3.5 cursor-nwse-resize' },
-  { edge: 'sw', className: 'bottom-0 left-0 w-3 h-3 cursor-nesw-resize' },
+  { edge: 'se', className: 'bottom-0 right-0 w-3.5 h-3 cursor-nwse-resize' },
+  { edge: 'sw', className: 'bottom-0 left-0 w-3 h-3 cursor-nwse-resize' },
 ]
 
-export function WindowFrame({ win }: { win: Win }) {
+/**
+ * One window. memo'd: the window layer re-renders on every store change, but
+ * each frame only needs to re-render when ITS Win object changed (the one
+ * being dragged/resized). Actions come from getState() — subscribing to the
+ * whole store for them would re-render every window on every pointermove.
+ */
+export const WindowFrame = memo(function WindowFrame({ win }: { win: Win }) {
   const app = appById.get(win.appId)
-  const { focus, close, minimize, toggleMaximize, toggleFocusMode, setRect } = useWindows()
-  const drag = useRef<{ dx: number; dy: number } | null>(null)
-  const resize = useRef<{ edge: Edge; sx: number; sy: number; r: Win } | null>(null)
+  const { focus, close, minimize, toggleMaximize, toggleFocusMode, setRect } = useWindows.getState()
+  const drag = useRef<{ ox: number; oy: number; sx: number; sy: number; cx: number; cy: number; raf: number } | null>(null)
+  const resize = useRef<{ edge: Edge; sx: number; sy: number; r: Win; cx: number; cy: number; raf: number } | null>(null)
   if (!app) return null
 
   const inFocus = useWindows((s) => s.focusId) === win.id
+  const suppressed = useWindows((s) => !!s.focusId && s.focusId !== win.id)
   const standalone = useSystem((s) => s.standalone)
   const titlebarTransparency = useSystem((s) => s.titlebarTransparency)
   // Standalone single-app tabs (?app=) show pure app content — no title bar.
@@ -39,37 +46,73 @@ export function WindowFrame({ win }: { win: Win }) {
     if ((e.target as HTMLElement).closest('[data-nodrag]')) return
     if (win.maximized || inFocus) return
     focus(win.id)
-    drag.current = { dx: e.clientX - win.x, dy: e.clientY - win.y }
+    drag.current = { ox: win.x, oy: win.y, sx: e.clientX, sy: e.clientY, cx: e.clientX, cy: e.clientY, raf: 0 }
     ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
   }
-  const onDragMove = (e: React.PointerEvent) => {
-    if (!drag.current) return
+  const applyDrag = () => {
+    const d = drag.current
+    if (!d) return
+    d.raf = 0
     setRect(win.id, {
-      x: Math.min(Math.max(e.clientX - drag.current.dx, -win.w + 90), window.innerWidth - 90),
-      y: Math.min(Math.max(e.clientY - drag.current.dy, MENUBAR), window.innerHeight - 40),
+      x: Math.min(Math.max(d.ox + d.cx - d.sx, -win.w + 90), window.innerWidth - 90),
+      y: Math.min(Math.max(d.oy + d.cy - d.sy, MENUBAR), window.innerHeight - 40),
     })
   }
-  const endDrag = () => (drag.current = null)
+  const onDragMove = (e: React.PointerEvent) => {
+    const d = drag.current
+    if (!d) return
+    d.cx = e.clientX
+    d.cy = e.clientY
+    if (!d.raf) d.raf = requestAnimationFrame(applyDrag)
+  }
+  const endDrag = () => {
+    const d = drag.current
+    if (!d) return
+    if (d.raf) {
+      cancelAnimationFrame(d.raf)
+      d.raf = 0
+      applyDrag() // flush the final position
+    }
+    drag.current = null
+  }
 
   const startResize = (e: React.PointerEvent, edge: Edge) => {
     e.stopPropagation()
     focus(win.id)
-    resize.current = { edge, sx: e.clientX, sy: e.clientY, r: { ...win } }
+    resize.current = { edge, sx: e.clientX, sy: e.clientY, r: { ...win }, cx: e.clientX, cy: e.clientY, raf: 0 }
     ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
   }
-  const onResizeMove = (e: React.PointerEvent) => {
+  const applyResize = () => {
     const r = resize.current
     if (!r) return
+    r.raf = 0
     const minW = app.minSize?.w ?? 420
     const minH = app.minSize?.h ?? 300
-    const dx = e.clientX - r.sx
-    const dy = e.clientY - r.sy
+    const dx = r.cx - r.sx
+    const dy = r.cy - r.sy
     let { x, y, w, h } = r.r
     if (r.edge.includes('e')) w = Math.max(minW, r.r.w + dx)
     if (r.edge.includes('s')) h = Math.max(minH, r.r.h + dy)
     if (r.edge.includes('w')) { w = Math.max(minW, r.r.w - dx); x = r.r.x + (r.r.w - w) }
     if (r.edge.includes('n')) { h = Math.max(minH, r.r.h - dy); y = Math.max(MENUBAR, r.r.y + (r.r.h - h)) }
     setRect(win.id, { x, y, w, h })
+  }
+  const onResizeMove = (e: React.PointerEvent) => {
+    const r = resize.current
+    if (!r) return
+    r.cx = e.clientX
+    r.cy = e.clientY
+    if (!r.raf) r.raf = requestAnimationFrame(applyResize)
+  }
+  const endResize = () => {
+    const r = resize.current
+    if (!r) return
+    if (r.raf) {
+      cancelAnimationFrame(r.raf)
+      r.raf = 0
+      applyResize() // flush the final rect
+    }
+    resize.current = null
   }
 
   const style: React.CSSProperties = inFocus
@@ -86,7 +129,11 @@ export function WindowFrame({ win }: { win: Win }) {
         inFocus
           ? '' // full-bleed: no rounding, ring or shadow in focus mode
           : `rounded-xl ring-1 shadow-2xl ${focused ? 'ring-black/25 dark:ring-white/20' : 'ring-black/15 dark:ring-white/10'}`
-      } ${win.minimized ? 'hidden' : ''}`}
+      } ${
+        // Hidden in place — minimized, dormant (parked keep-alive) or behind a
+        // focus-mode window. Never unmounted: unmounting an iframe reloads it.
+        win.minimized || win.dormant || suppressed ? 'hidden' : ''
+      }`}
       style={{ ...style, boxShadow: !inFocus && focused ? '0 24px 60px rgba(0,0,0,0.34)' : !inFocus ? '0 12px 34px rgba(0,0,0,0.22)' : undefined }}
       onPointerDown={() => focus(win.id)}
     >
@@ -132,12 +179,12 @@ export function WindowFrame({ win }: { win: Win }) {
             className={`absolute ${className}`}
             onPointerDown={(e) => startResize(e, edge)}
             onPointerMove={onResizeMove}
-            onPointerUp={() => (resize.current = null)}
+            onPointerUp={endResize}
           />
         ))}
     </div>
   )
-}
+})
 
 function TrafficLight({ color, border, onClick, glyph, active, title }: { color: string; border: string; onClick: () => void; glyph: string; active: boolean; title?: string }) {
   return (

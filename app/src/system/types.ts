@@ -34,4 +34,16 @@ export interface AppDefinition {
   singleton?: boolean
   /** Show in the Dock (default: true). */
   inDock?: boolean
+  /**
+   * Keep the window alive after close — it stays mounted (hidden in place)
+   * and reopening restores it instantly, iframe state included. Intended for
+   * embedded sites; the store parks at most a couple of dormant windows.
+   */
+  keepAlive?: boolean
+  /**
+   * Direct URL for the title-bar pop-out button: opens it in a new browser
+   * tab instead of re-booting the desktop with ?app=<id>. Used by embedded
+   * sites that also work standalone (study, wakfu).
+   */
+  popOutUrl?: () => string
 }

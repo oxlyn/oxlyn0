@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSystem } from './system/stores/system'
 import { useWindows } from './system/stores/windows'
-import { appById } from './system/registry'
+import { appById, appsReady } from './system/registry'
 import { LoginScreen } from './system/components/LoginScreen'
 import { Desktop } from './system/components/Desktop'
 import { MenuBar } from './system/components/MenuBar'
@@ -32,7 +32,11 @@ export default function App() {
   const [launchpad, setLaunchpad] = useState(false)
   const [spotlight, setSpotlight] = useState(false)
 
-  useEffect(bootIntoApp, [])
+  // App modules load async (one chunk each); wait for the registry so ?app=
+  // can resolve before opening the window.
+  useEffect(() => {
+    appsReady().then(bootIntoApp)
+  }, [])
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
@@ -59,15 +63,18 @@ export default function App() {
 
   if (!booted) return <LoginScreen />
 
-  // Focus mode: only the focused window, no menu bar / dock / desktop icons.
-  const visible = focusId ? wins.filter((w) => w.id === focusId) : wins
-
   return (
     <div className="h-full">
       <Desktop />
-      {/* window layer — own stacking context so win.z never collides with chrome */}
+      {/*
+        Window layer — own stacking context so win.z never collides with chrome.
+        Every window stays in this one keyed list, including dormant (parked
+        keep-alive) ones and the ones hidden behind a focus-mode window:
+        unmounting or moving an iframe reloads it, so closed/hidden windows
+        just get CSS-hidden in place by WindowFrame.
+      */}
       <div className="pointer-events-none fixed inset-0 z-10">
-        {visible.map((w) => (
+        {wins.map((w) => (
           <WindowFrame key={w.id} win={w} />
         ))}
       </div>

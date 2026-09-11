@@ -1,17 +1,23 @@
 import { Trash2 } from 'lucide-react'
-import { dockApps } from '../registry'
+import { dockApps, useAppsReady } from '../registry'
 import { useWindows } from '../stores/windows'
 import { AppIcon } from '../AppIcon'
 
 export function Dock() {
+  const ready = useAppsReady((s) => s.ready)
   const wins = useWindows((s) => s.wins)
   const open = useWindows((s) => s.open)
+  // The registry fills asynchronously; render once complete so the dock
+  // list isn't baked empty by an early mount.
+  if (!ready) return null
   const running = new Map<string, number>()
-  for (const w of wins) running.set(w.appId, (running.get(w.appId) ?? 0) + 1)
+  for (const w of wins) if (!w.dormant) running.set(w.appId, (running.get(w.appId) ?? 0) + 1)
 
   const click = (id: string) => {
-    const { focusedId, focus, minimize } = useWindows.getState()
-    const appWins = wins.filter((w) => w.appId === id)
+    const { focusedId, focus, minimize, open } = useWindows.getState()
+    // Dormant (keep-alive) windows are still in `wins` but are not "open" —
+    // route to open() so it revives them instead of focusing a hidden window.
+    const appWins = wins.filter((w) => w.appId === id && !w.dormant)
     if (appWins.length === 0) return open(id)
     const top = appWins.slice().sort((a, b) => b.z - a.z)[0]
     // Frontmost & visible → minimize the whole app; background or minimized → restore + bring to front.
