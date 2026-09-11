@@ -700,11 +700,13 @@
       (function () {
         var m = document.createElement('link');
         m.rel = 'manifest';
-        m.href = '/manifest.webmanifest';
+        m.href = 'manifest.webmanifest';
         document.head.appendChild(m);
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', function () {
-            navigator.serviceWorker.register('/sw.js').catch(function () { });
+            // Relative paths: the site is embedded at a sub-path (/macos27/wakfu/
+            // in the desktop), so an absolute /sw.js would 404 at the origin root.
+            navigator.serviceWorker.register('sw.js').catch(function () { });
           });
         }
       })();

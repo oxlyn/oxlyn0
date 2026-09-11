@@ -8,29 +8,33 @@
 // ============================================================
 'use strict';
 
-var CACHE = 'wakfu-static-v2';
+var CACHE = 'wakfu-static-v3';
+
+// The site can live in a sub-path (/macos27/wakfu/ when embedded in the
+// desktop, /wakfu/ on Cloudflare), so derive the base from the worker's own
+// location — absolute cache keys like '/theme.css' would hit the origin root.
+var BASE = self.location.pathname.replace(/sw\.js$/, '');
 
 var CORE = [
-  '/',
-  '/index.html',
-  '/func.html',
-  '/funcs/manifest.js',
-  '/funcs/devtools.html',
-  '/funcs/devtools.js',
-  '/funcs/devtools-qr.js',
-  '/funcs/devtools-enc.js',
-  '/funcs/devtools-data.js',
-  '/funcs/devtools-gen.js',
-  '/funcs/editor.html',
-  '/funcs/editor-core.js',
-  '/funcs/editor-md.js',
-  '/funcs/math.html',
-  '/theme.css',
-  '/theme.js',
-  '/favicon.ico',
-  '/logo.webp',
-  '/manifest.webmanifest'
-];
+  'index.html',
+  'func.html',
+  'funcs/manifest.js',
+  'funcs/devtools.html',
+  'funcs/devtools.js',
+  'funcs/devtools-qr.js',
+  'funcs/devtools-enc.js',
+  'funcs/devtools-data.js',
+  'funcs/devtools-gen.js',
+  'funcs/editor.html',
+  'funcs/editor-core.js',
+  'funcs/editor-md.js',
+  'funcs/math.html',
+  'theme.css',
+  'theme.js',
+  'favicon.ico',
+  'logo.webp',
+  'manifest.webmanifest'
+].map(function (p) { return BASE + p; });
 
 self.addEventListener('install', function (e) {
   e.waitUntil(
@@ -69,7 +73,7 @@ self.addEventListener('fetch', function (e) {
         return res;
       }).catch(function () {
         return caches.match(req).then(function (hit) {
-          return hit || caches.match('/index.html');
+          return hit || caches.match(BASE + 'index.html');
         });
       })
     );
