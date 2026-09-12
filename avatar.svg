@@ -1,102 +1,105 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-256 -256 512 512" width="512" height="512">
-    <defs>
-        <!-- 深水背景渐变 -->
-        <radialGradient id="bgGrad" cx="0" cy="0" r="256" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#1e3a8a"/>
-            <stop offset="100%" stop-color="#0f172a"/>
-        </radialGradient>
-        
-        <!-- 睡莲叶渐变 -->
-        <radialGradient id="leafGrad1" cx="0" cy="0" r="256" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#2d6a4f"/>
-            <stop offset="100%" stop-color="#1b4332"/>
-        </radialGradient>
-        <radialGradient id="leafGrad2" cx="0" cy="0" r="256" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#40916c"/>
-            <stop offset="100%" stop-color="#2d6a4f"/>
-        </radialGradient>
-        
-        <!-- 花瓣形状 -->
-        <path id="petal" d="M 0 0 C -40 -60 -60 -120 0 -180 C 60 -120 40 -60 0 0 Z" />
-        
-        <!-- 睡莲叶形状（带 V 形缺口的圆形） -->
-        <path id="leaf" d="M 0 0 L -36 -156 A 180 180 0 1 0 36 -156 Z" />
-        
-        <!-- 头像圆形裁剪框 -->
-        <clipPath id="avatarClip">
-            <circle cx="0" cy="0" r="256"/>
-        </clipPath>
-    </defs>
-    
-    <g clip-path="url(#avatarClip)">
-        <!-- 背景水面 -->
-        <rect x="-256" y="-256" width="512" height="512" fill="url(#bgGrad)"/>
-        
-        <!-- 水面涟漪 -->
-        <circle cx="0" cy="0" r="180" fill="none" stroke="#3b82f6" stroke-width="2" opacity="0.2"/>
-        <circle cx="0" cy="0" r="220" fill="none" stroke="#3b82f6" stroke-width="1.5" opacity="0.15"/>
-        <circle cx="0" cy="0" r="250" fill="none" stroke="#3b82f6" stroke-width="1" opacity="0.1"/>
-        
-        <!-- 背景层的睡莲叶 -->
-        <use href="#leaf" fill="url(#leafGrad1)" transform="rotate(-45) scale(1.1)"/>
-        <use href="#leaf" fill="url(#leafGrad2)" transform="rotate(45) scale(1.2)"/>
-        <use href="#leaf" fill="url(#leafGrad2)" transform="rotate(-135) scale(0.9)"/>
-        <use href="#leaf" fill="url(#leafGrad1)" transform="rotate(135) scale(1.1)"/>
-        
-        <!-- 前景层的睡莲叶 -->
-        <use href="#leaf" fill="#1b4332" transform="rotate(0) scale(1.3)"/>
-        <use href="#leaf" fill="#2d6a4f" transform="rotate(180) scale(1.0)"/>
-        
-        <!-- 睡莲花朵 - 外层花瓣 -->
-        <g fill="#ff4d6d">
-            <use href="#petal" transform="rotate(0)"/>
-            <use href="#petal" transform="rotate(45)"/>
-            <use href="#petal" transform="rotate(90)"/>
-            <use href="#petal" transform="rotate(135)"/>
-            <use href="#petal" transform="rotate(180)"/>
-            <use href="#petal" transform="rotate(225)"/>
-            <use href="#petal" transform="rotate(270)"/>
-            <use href="#petal" transform="rotate(315)"/>
-        </g>
-        
-        <!-- 睡莲花朵 - 中层花瓣 -->
-        <g fill="#ff8fa3" transform="scale(0.8)">
-            <use href="#petal" transform="rotate(22.5)"/>
-            <use href="#petal" transform="rotate(67.5)"/>
-            <use href="#petal" transform="rotate(112.5)"/>
-            <use href="#petal" transform="rotate(157.5)"/>
-            <use href="#petal" transform="rotate(202.5)"/>
-            <use href="#petal" transform="rotate(247.5)"/>
-            <use href="#petal" transform="rotate(292.5)"/>
-            <use href="#petal" transform="rotate(337.5)"/>
-        </g>
-        
-        <!-- 睡莲花朵 - 内层花瓣 -->
-        <g fill="#ffb3c6" transform="scale(0.6)">
-            <use href="#petal" transform="rotate(0)"/>
-            <use href="#petal" transform="rotate(60)"/>
-            <use href="#petal" transform="rotate(120)"/>
-            <use href="#petal" transform="rotate(180)"/>
-            <use href="#petal" transform="rotate(240)"/>
-            <use href="#petal" transform="rotate(300)"/>
-        </g>
-        
-        <!-- 花蕊（金色圆点） -->
-        <circle cx="0" cy="0" r="20" fill="#ffd700"/>
-        <circle cx="0" cy="0" r="16" fill="none" stroke="#ff9e00" stroke-width="4" stroke-dasharray="2 6"/>
-        <circle cx="0" cy="0" r="8" fill="none" stroke="#ff9e00" stroke-width="3" stroke-dasharray="2 4"/>
-        
-        <!-- 漂浮在水面上的花瓣 -->
-        <use href="#petal" fill="#ff8fa3" transform="translate(120 120) scale(0.4) rotate(45)"/>
-        <use href="#petal" fill="#ffb3c6" transform="translate(-140 80) scale(0.3) rotate(-60)"/>
-        <use href="#petal" fill="#ff4d6d" transform="translate(150 -100) scale(0.35) rotate(120)"/>
-        
-        <!-- 水面发光点 / 萤火虫特效 -->
-        <circle cx="-120" cy="-120" r="4" fill="#fde047" opacity="0.8"/>
-        <circle cx="140" cy="-100" r="6" fill="#fde047" opacity="0.6"/>
-        <circle cx="-150" cy="120" r="3" fill="#fde047" opacity="0.7"/>
-        <circle cx="120" cy="140" r="5" fill="#fde047" opacity="0.5"/>
-        <circle cx="40" cy="-160" r="2" fill="#fde047" opacity="0.9"/>
-        <circle cx="-160" cy="40" r="5" fill="#fde047" opacity="0.4"/>
+  <defs>
+    <!-- 花瓣渐变：外层 -->
+    <linearGradient id="petalOuter" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff6b8a"/>
+      <stop offset="100%" stop-color="#c9184a"/>
+    </linearGradient>
+
+    <!-- 花瓣渐变：中层 -->
+    <linearGradient id="petalMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffb3c6"/>
+      <stop offset="100%" stop-color="#ff6b8a"/>
+    </linearGradient>
+
+    <!-- 花瓣渐变：内层 -->
+    <linearGradient id="petalInner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#ffb3c6"/>
+    </linearGradient>
+
+    <!-- 花瓣形状 -->
+    <path id="petal" d="M0,0 C-35,-45,-60,-110,-12,-175 Q0,-188,12,-175 C60,-110,35,-45,0,0 Z"/>
+
+    <!-- 圆形头像裁剪（保留圆形轮廓，防止花瓣超出边界） -->
+    <clipPath id="avatarClip">
+      <circle cx="0" cy="0" r="256"/>
+    </clipPath>
+  </defs>
+
+  <!-- 使用圆形裁剪，背景完全透明 -->
+  <g clip-path="url(#avatarClip)">
+    <!-- 睡莲花朵主体：整体放大，占更多空间 -->
+    <g transform="scale(1.25)">
+      <!-- 外层花瓣（12 片） -->
+      <g>
+        <use href="#petal" fill="url(#petalOuter)" transform="rotate(0)"/>
+        <use href="#petal" fill="url(#petalOuter)" transform="rotate(30)"/>
+        <use href="#petal" fill="url(#petalOuter)" transform="rotate(60)"/>
+        <use href="#petal" fill="url(#petalOuter)" transform="rotate(90)"/>
+        <use href="#petal" fill="url(#petalOuter)" transform="rotate(120)"/>
+        <use href="#petal" fill="url(#petalOuter)" transform="rotate(150)"/>
+        <use href="#petal" fill="url(#petalOuter)" transform="rotate(180)"/>
+        <use href="#petal" fill="url(#petalOuter)" transform="rotate(210)"/>
+        <use href="#petal" fill="url(#petalOuter)" transform="rotate(240)"/>
+        <use href="#petal" fill="url(#petalOuter)" transform="rotate(270)"/>
+        <use href="#petal" fill="url(#petalOuter)" transform="rotate(300)"/>
+        <use href="#petal" fill="url(#petalOuter)" transform="rotate(330)"/>
+      </g>
+
+      <!-- 中层花瓣（10 片） -->
+      <g transform="scale(0.78) rotate(15)">
+        <use href="#petal" fill="url(#petalMid)" transform="rotate(0)"/>
+        <use href="#petal" fill="url(#petalMid)" transform="rotate(36)"/>
+        <use href="#petal" fill="url(#petalMid)" transform="rotate(72)"/>
+        <use href="#petal" fill="url(#petalMid)" transform="rotate(108)"/>
+        <use href="#petal" fill="url(#petalMid)" transform="rotate(144)"/>
+        <use href="#petal" fill="url(#petalMid)" transform="rotate(180)"/>
+        <use href="#petal" fill="url(#petalMid)" transform="rotate(216)"/>
+        <use href="#petal" fill="url(#petalMid)" transform="rotate(252)"/>
+        <use href="#petal" fill="url(#petalMid)" transform="rotate(288)"/>
+        <use href="#petal" fill="url(#petalMid)" transform="rotate(324)"/>
+      </g>
+
+      <!-- 内层花瓣（8 片） -->
+      <g transform="scale(0.55) rotate(30)">
+        <use href="#petal" fill="url(#petalInner)" transform="rotate(0)"/>
+        <use href="#petal" fill="url(#petalInner)" transform="rotate(45)"/>
+        <use href="#petal" fill="url(#petalInner)" transform="rotate(90)"/>
+        <use href="#petal" fill="url(#petalInner)" transform="rotate(135)"/>
+        <use href="#petal" fill="url(#petalInner)" transform="rotate(180)"/>
+        <use href="#petal" fill="url(#petalInner)" transform="rotate(225)"/>
+        <use href="#petal" fill="url(#petalInner)" transform="rotate(270)"/>
+        <use href="#petal" fill="url(#petalInner)" transform="rotate(315)"/>
+      </g>
+
+      <!-- 花蕊 -->
+      <circle cx="0" cy="0" r="22" fill="#ffd60a"/>
+      <circle cx="0" cy="0" r="17" fill="none" stroke="#ff9e00" stroke-width="5" stroke-dasharray="3 5"/>
+      <circle cx="0" cy="0" r="10" fill="none" stroke="#ff6d00" stroke-width="3" stroke-dasharray="2 3"/>
+      <circle cx="0" cy="0" r="4" fill="#ff9e00"/>
+
+      <!-- 花蕊小点 -->
+      <g fill="#ffd60a">
+        <circle cx="0" cy="-18" r="2.5"/>
+        <circle cx="12.7" cy="-12.7" r="2.5"/>
+        <circle cx="18" cy="0" r="2.5"/>
+        <circle cx="12.7" cy="12.7" r="2.5"/>
+        <circle cx="0" cy="18" r="2.5"/>
+        <circle cx="-12.7" cy="12.7" r="2.5"/>
+        <circle cx="-18" cy="0" r="2.5"/>
+        <circle cx="-12.7" cy="-12.7" r="2.5"/>
+      </g>
     </g>
+
+    <!-- 发光点 / 萤火虫 -->
+    <circle cx="-100" cy="-100" r="3" fill="#fef08a" opacity="0.9"/>
+    <circle cx="120" cy="-80" r="4" fill="#fef08a" opacity="0.7"/>
+    <circle cx="-140" cy="110" r="2.5" fill="#fef08a" opacity="0.8"/>
+    <circle cx="110" cy="130" r="3.5" fill="#fef08a" opacity="0.6"/>
+    <circle cx="40" cy="-150" r="2" fill="#fef08a" opacity="0.8"/>
+    <circle cx="-150" cy="30" r="3" fill="#fef08a" opacity="0.5"/>
+    <circle cx="160" cy="40" r="2" fill="#fef08a" opacity="0.7"/>
+    <circle cx="-60" cy="150" r="2.5" fill="#fef08a" opacity="0.6"/>
+  </g>
 </svg>
