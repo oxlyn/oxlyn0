@@ -22,7 +22,7 @@ function rootStatic(): Plugin {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const url = (req.url ?? '').split('?')[0]
-        if (!url.startsWith('/macos27/') || !(MEDIA_RE.test(url) || STATIC_SITES.some((p) => url.startsWith(p)))) return next()
+        if (!url.startsWith('/macos27/') || !(MEDIA_RE.test(url) || url.endsWith('/sw.js') || STATIC_SITES.some((p) => url.startsWith(p)))) return next()
         const file = resolve(REPO_ROOT, url.slice('/macos27/'.length))
         if (!existsSync(file) || !statSync(file).isFile()) return next()
         const ext = file.split('.').pop()!
@@ -53,7 +53,7 @@ function copyRootStatic(): Plugin {
       mkdirSync(at('macos27'), { recursive: true })
       for (const name of readdirSync(REPO_ROOT)) {
         const file = resolve(REPO_ROOT, name)
-        if (!statSync(file).isFile() || !MEDIA_RE.test(name)) continue
+        if (!statSync(file).isFile() || !(MEDIA_RE.test(name) || name === 'sw.js')) continue
         cpSync(file, at(name))
         cpSync(file, at('macos27', name))
       }

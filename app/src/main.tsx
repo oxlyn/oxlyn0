@@ -8,3 +8,14 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 )
+
+// Shell service worker (sw.js at the repo root): runtime-caches hashed
+// bundles cache-first and everything else stale-while-revalidate, so repeat
+// visits start without waiting on the network. Production only — in dev the
+// worker would cache un-hashed HMR modules and serve stale code. Registered
+// on window load so it never competes with the initial payload.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => {})
+  })
+}
