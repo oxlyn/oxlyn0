@@ -442,7 +442,7 @@ function mdRender(src){
 }
 
 /* =========================================================
-   5. 工具集（15 个 MVP）
+   5. 工具集（21 个）
    ========================================================= */
 const tools = [
 
@@ -1646,6 +1646,548 @@ console.log(result);
     };
     $('#img-copydata').onclick = () => copyText($('#img-out').value);
   }
+},
+
+/* ---------- 16. URL 解析 ---------- */
+{
+  id:'urlparser', name:'URL 解析', icon:'🧩', cat:'编码解码',
+  desc:'拆解 URL 的协议 / 域名 / 路径 / 参数，参数表可编辑并重组回完整 URL',
+  render(){
+    return `<div class="io">
+        ${pane('输入 URL（也可以只粘贴 ?a=1&b=2 这样的查询串）', 'up-in', 'https://example.com/api?name=oxlyn&tag=a%20b&page=2')}
+      </div>
+      <div class="panel"><div class="panel-head">组成部分</div><div class="panel-body" id="up-parts"></div></div>
+      <div class="panel">
+        <div class="panel-head">Query 参数 <button class="mini" id="up-add" style="margin-left:8px">＋ 添加参数</button></div>
+        <div class="panel-body" id="up-params"></div>
+      </div>
+      <div class="io" style="margin-top:16px">
+        ${paneOut('重组 URL（编辑上方参数后自动更新）', 'up-out')}
+      </div>`;
+  },
+  init(){
+    let base = '', hash = '', params = [];
+    const enc = encodeURIComponent;
+
+    function safeDecode(s){
+      try { return decodeURIComponent(s.replace(/\+/g, ' ')); }
+      catch { return s; }
+    }
+    function parseInput(){
+      const v = $('#up-in').value.trim();
+      base = ''; hash = ''; params = [];
+      if (!v){ renderAll(''); return; }
+      try {
+        if (v.startsWith('?')){
+          parseQuery(v.slice(1));
+        } else {
+          const u = new URL(v);
+          base = u.origin + u.pathname;
+          hash = u.hash;
+          parseQuery(u.search ? u.search.slice(1) : '');
+        }
+      } catch(e){ renderAll(e.message); return; }
+      renderAll('');
+    }
+    function parseQuery(qs){
+      params = [];
+      if (!qs) return;
+      for (const seg of qs.split('&')){
+        if (!seg) continue;
+        const i = seg.indexOf('=');
+        params.push({
+          k: safeDecode(i === -1 ? seg : seg.slice(0, i)),
+          v: safeDecode(i === -1 ? '' : seg.slice(i + 1)),
+        });
+      }
+    }
+    function renderParts(){
+      const rows = [];
+      if (base){
+        try {
+          const u = new URL(base);
+          for (const [k, v] of [['协议', u.protocol.replace(':', '')], ['域名', u.hostname], ['端口', u.port || '(默认)'], ['路径', u.pathname]])
+            rows.push(`<div class="kv"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>`);
+        } catch { /* 忽略 */ }
+      } else {
+        rows.push('<div class="kv"><span class="k">模式</span><span class="v">仅查询串（重组时只输出参数部分）</span></div>');
+      }
+      $('#up-parts').innerHTML = rows.join('');
+    }
+    function renderParams(){
+      if (!params.length){
+        $('#up-params').innerHTML = '<div class="hint">没有 query 参数。粘贴带参数的 URL，或点「＋ 添加参数」。</div>';
+        return;
+      }
+      $('#up-params').innerHTML = params.map((p, i) => `
+        <div class="row" style="margin-bottom:8px">
+          <input class="inp" data-i="${i}" data-f="k" value="${esc(p.k)}" placeholder="参数名" style="max-width:220px">
+          <input class="inp" data-i="${i}" data-f="v" value="${esc(p.v)}" placeholder="参数值" style="flex:1">
+          <button class="mini" data-del="${i}">✕</button>
+        </div>`).join('');
+    }
+    function rebuild(){
+      const qs = params.filter(p => p.k !== '').map(p => `${enc(p.k)}=${enc(p.v)}`).join('&');
+      $('#up-out').value = base === ''
+        ? (qs ? '?' + qs : '')
+        : base + (qs ? '?' + qs : '') + hash;
+    }
+    function renderAll(err){
+      renderParts();
+      renderParams();
+      setMsg('up-msg', err || '', !!err);
+      rebuild();
+    }
+    $('#up-in').addEventListener('input', parseInput);
+    $('#up-add').onclick = () => { params.push({ k:'', v:'' }); renderParams(); rebuild(); };
+    $('#up-params').addEventListener('input', e => {
+      const i = Number(e.target.dataset.i), f = e.target.dataset.f;
+      if (e.target.tagName !== 'INPUT' || Number.isNaN(i)) return;
+      params[i][f] = e.target.value;
+      rebuild();
+    });
+    $('#up-params').addEventListener('click', e => {
+      if (e.target.dataset.del === undefined) return;
+      params.splice(Number(e.target.dataset.del), 1);
+      renderParams();
+      rebuild();
+    });
+    parseInput();
+  }
+},
+
+/* ---------- 17. 文本 / JSON Diff ---------- */
+{
+  id:'diff', name:'文本 / JSON Diff', icon:'⚖️', cat:'文本',
+  desc:'逐行比较两段文本；JSON 可忽略键序与空白做语义比较',
+  render(){
+    return `<div class="io">
+        ${pane('文本 A（原）', 'diff-a', '第一段内容…', 'lg')}
+        ${pane('文本 B（新）', 'diff-b', '第二段内容…', 'lg')}
+      </div>
+      <div class="bar">
+        <button class="btn primary" id="diff-run">比较</button>
+        <label class="chk"><input type="checkbox" id="diff-json"> JSON 语义比较（忽略键序与空白）</label>
+        <span class="sp"></span><span id="diff-msg" class="msg"></span>
+      </div>
+      <div class="panel">
+        <div class="panel-head" id="diff-stat">差异</div>
+        <div class="panel-body" id="diff-view" style="max-height:460px;overflow:auto"></div>
+      </div>`;
+  },
+  init(){
+    const MAX_CELLS = 4000000; // LCS 表上限，超出则退化为整块对比
+    function diffLines(a, b){
+      const A = a.split('\n'), B = b.split('\n');
+      const n = A.length, m = B.length;
+      if (n * m > MAX_CELLS)
+        return A.map(s => ({ t:'del', s })).concat(B.map(s => ({ t:'add', s })));
+      const W = m + 1;
+      const dp = new Int32Array((n + 1) * W);
+      for (let i = n - 1; i >= 0; i--)
+        for (let j = m - 1; j >= 0; j--)
+          dp[i * W + j] = A[i] === B[j] ? dp[(i + 1) * W + j + 1] + 1 : Math.max(dp[(i + 1) * W + j], dp[i * W + j + 1]);
+      const ops = [];
+      let i = 0, j = 0;
+      while (i < n && j < m){
+        if (A[i] === B[j]){ ops.push({ t:'ctx', s:A[i] }); i++; j++; }
+        else if (dp[(i + 1) * W + j] >= dp[i * W + j + 1]){ ops.push({ t:'del', s:A[i] }); i++; }
+        else { ops.push({ t:'add', s:B[j] }); j++; }
+      }
+      while (i < n) ops.push({ t:'del', s:A[i++] });
+      while (j < m) ops.push({ t:'add', s:B[j++] });
+      return ops;
+    }
+    $('#diff-run').onclick = () => {
+      let a = $('#diff-a').value, b = $('#diff-b').value;
+      if ($('#diff-json').checked){
+        try {
+          a = JSON.stringify(sortKeys(JSON.parse(a)), null, 2);
+          b = JSON.stringify(sortKeys(JSON.parse(b)), null, 2);
+        } catch(e){ return setMsg('diff-msg', '✗ ' + e.message, true); }
+      }
+      if (!a && !b) return setMsg('diff-msg', '请先粘贴内容', true);
+      const ops = diffLines(a, b);
+      const add = ops.filter(o => o.t === 'add').length;
+      const del = ops.filter(o => o.t === 'del').length;
+      $('#diff-stat').textContent = `差异（+${add} 行 / -${del} 行${add + del === 0 ? ' · 完全一致' : ''}）`;
+      $('#diff-view').innerHTML = ops.map(o => `<div class="diff-line ${o.t}">${esc(o.s) || ' '}</div>`).join('');
+      setMsg('diff-msg', '');
+    };
+  }
+},
+
+/* ---------- 18. CSV ↔ JSON ---------- */
+{
+  id:'csvjson', name:'CSV ↔ JSON', icon:'📊', cat:'转换',
+  desc:'CSV 与 JSON 数组互转：自动识别表头与分隔符（Tab / 逗号 / 分号），附表格预览',
+  render(){
+    return `<div class="io">
+        ${pane('输入（CSV / 制表符表格 / JSON 数组）', 'cv-in', 'name,age,city\noxlyn,30,Toronto\nsky,5,Boston', 'lg')}
+      </div>
+      <div class="bar">
+        <button class="btn primary" id="cv-to-json">CSV → JSON</button>
+        <button class="btn primary" id="cv-to-csv">JSON → CSV</button>
+        <label class="chk"><input type="checkbox" id="cv-infer" checked> 数字 / 布尔自动转型</label>
+        <span class="sp"></span><span id="cv-msg" class="msg"></span>
+      </div>
+      <div class="io">
+        ${paneOut('输出', 'cv-out', '结果…', 'lg')}
+      </div>
+      <div class="panel">
+        <div class="panel-head">表格预览</div>
+        <div class="panel-body" id="cv-prev"></div>
+      </div>`;
+  },
+  init(){
+    const infer = s => {
+      if (!$('#cv-infer').checked) return s;
+      const t = s.trim();
+      if (t === 'true') return true;
+      if (t === 'false') return false;
+      if (/^-?\d+(\.\d+)?$/.test(t)) return Number(t);
+      return s;
+    };
+    function preview(rows){
+      if (!rows.length) return $('#cv-prev').innerHTML = '<div class="hint">暂无数据</div>';
+      const body = rows.slice(1, 51);
+      $('#cv-prev').innerHTML =
+        '<table class="tbl"><thead><tr>' + rows[0].map(c => `<th>${esc(c)}</th>`).join('') + '</tr></thead><tbody>' +
+        body.map(r => '<tr>' + r.map(c => `<td>${esc(c)}</td>`).join('') + '</tr>').join('') +
+        `</tbody></table>` +
+        (rows.length > 51 ? `<div class="hint" style="margin-top:8px">仅显示前 50 行（共 ${rows.length - 1} 行数据）</div>` : '');
+    }
+    $('#cv-to-json').onclick = () => {
+      const v = $('#cv-in').value.trim();
+      if (!v) return setMsg('cv-msg', '请输入 CSV', true);
+      try {
+        const rows = parseCells(v, detectDelim(v));
+        if (rows.length < 1) throw new Error('没有数据行');
+        const head = rows[0];
+        const arr = rows.slice(1).map(r => {
+          const o = {};
+          head.forEach((h, i) => { o[h || `col${i + 1}`] = infer(r[i] ?? ''); });
+          return o;
+        });
+        $('#cv-out').value = JSON.stringify(arr, null, 2);
+        preview(rows);
+        setMsg('cv-msg', `✓ ${arr.length} 条记录`);
+      } catch(e){ setMsg('cv-msg', '✗ ' + e.message, true); }
+    };
+    $('#cv-to-csv').onclick = () => {
+      const v = $('#cv-in').value.trim();
+      if (!v) return setMsg('cv-msg', '请输入 JSON', true);
+      try {
+        let o = JSON.parse(v);
+        if (!Array.isArray(o)) o = [o];
+        const head = [];
+        for (const item of o)
+          if (item && typeof item === 'object')
+            for (const k of Object.keys(item)) if (!head.includes(k)) head.push(k);
+        const cell = c => c === null || c === undefined ? '' :
+          typeof c === 'object' ? JSON.stringify(c) : String(c);
+        const escCell = s => /["\n\r,;\t]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+        const lines = [head.map(h => escCell(h)).join(',')];
+        for (const item of o) lines.push(head.map(k => escCell(cell(item?.[k]))).join(','));
+        $('#cv-out').value = lines.join('\n');
+        preview([head, ...o.map(item => head.map(k => cell(item?.[k])))]);
+        setMsg('cv-msg', `✓ ${o.length} 条记录`);
+      } catch(e){ setMsg('cv-msg', '✗ ' + e.message, true); }
+    };
+  }
+},
+
+/* ---------- 19. 表格转 Markdown ---------- */
+{
+  id:'mdtable', name:'表格转 Markdown', icon:'📋', cat:'转换',
+  desc:'粘贴 Excel / 飞书 / CSV 表格，一键生成 Markdown 表格（自动转义竖线）',
+  render(){
+    return `<div class="io">
+        ${pane('粘贴表格（从 Excel / 飞书直接复制，或 CSV 文本）', 'mdt-in', 'name\tage\tcity', 'lg')}
+      </div>
+      <div class="bar">
+        <label class="chk"><input type="checkbox" id="mdt-head" checked> 首行是表头</label>
+        <label class="chk"><input type="checkbox" id="mdt-auto" checked> 自动识别分隔符（Tab / 逗号 / 分号）</label>
+        <span class="sp"></span><span id="mdt-msg" class="msg"></span>
+      </div>
+      <div class="io">${paneOut('Markdown 输出', 'mdt-out', '结果…', 'lg')}</div>`;
+  },
+  init(){
+    const run = () => {
+      const v = $('#mdt-in').value.replace(/\r\n?/g, '\n');
+      if (!v.trim()){ $('#mdt-out').value = ''; return setMsg('mdt-msg', ''); }
+      const delim = $('#mdt-auto').checked ? detectDelim(v) : '\t';
+      const rows = parseCells(v, delim);
+      if (!rows.length) return setMsg('mdt-msg', '没有数据', true);
+      const hasHead = $('#mdt-head').checked;
+      const head = hasHead ? rows[0] : rows[0].map((_, i) => `列${i + 1}`);
+      const body = hasHead ? rows.slice(1) : rows;
+      const cell = s => String(s).replace(/\|/g, '\\|');
+      const out = [
+        '| ' + head.map(c => cell(c)).join(' | ') + ' |',
+        '| ' + head.map(() => '---').join(' | ') + ' |',
+        ...body.map(r => '| ' + head.map((_, i) => cell(r[i] ?? '')).join(' | ') + ' |'),
+      ].join('\n');
+      $('#mdt-out').value = out;
+      setMsg('mdt-msg', `✓ ${body.length} 行 × ${head.length} 列`);
+    };
+    $('#mdt-in').addEventListener('input', run);
+    $('#mdt-head').addEventListener('change', run);
+    $('#mdt-auto').addEventListener('change', run);
+    run();
+  }
+},
+
+/* ---------- 20. Cron 表达式 ---------- */
+{
+  id:'cron', name:'Cron 表达式', icon:'⏰', cat:'转换',
+  desc:'解析 5 位 Cron：中文含义 + 未来 5 次执行时间（本地时区）',
+  render(){
+    return `<div class="panel"><div class="panel-body">
+        <div class="row">
+          <div class="field"><label>Cron 表达式（分 时 日 月 周，支持 * , - / 与 @daily 等）</label>
+            <input class="inp" id="cron-in" placeholder="*/5 * * * *　·　30 9 * * 1-5　·　0 0 1 * *"></div>
+          <div class="field noflex"><label>&nbsp;</label>
+            <button class="btn primary" id="cron-run">解析</button></div>
+        </div>
+        <div style="margin-top:8px"><span id="cron-msg" class="msg"></span></div>
+      </div></div>
+      <div class="panel"><div class="panel-head">含义</div>
+        <div class="panel-body"><div class="kv"><span class="k">描述</span><span class="v" id="cron-desc">–</span></div></div>
+      </div>
+      <div class="panel"><div class="panel-head">未来 5 次执行（本地时区）</div>
+        <div class="panel-body" id="cron-next"></div>
+      </div>`;
+  },
+  init(){
+    const WD = ['日', '一', '二', '三', '四', '五', '六'];
+    const ALIAS = {
+      '@hourly':'0 * * * *', '@daily':'0 0 * * *', '@weekly':'0 0 * * 0',
+      '@monthly':'0 0 1 * *', '@yearly':'0 0 1 1 *', '@annually':'0 0 1 1 *',
+    };
+    // 字段 → 匹配函数（支持 * , - / 与步长）
+    const field = (spec, min, max) => {
+      if (spec === undefined || spec === '') throw new Error('字段数量不足（需要 5 位）');
+      return v => {
+        for (const part of spec.split(',')){
+          const [rng, stepS] = part.split('/');
+          const step = stepS === undefined ? 1 : Number(stepS);
+          if (!step || step < 1) throw new Error(`字段 "${spec}" 的步长无效`);
+          let lo = min, hi = max;
+          if (rng !== '*'){
+            const nums = rng.split('-').map(Number);
+            lo = nums[0]; hi = nums.length > 1 ? nums[1] : nums[0];
+          }
+          if (Number.isNaN(lo) || Number.isNaN(hi)) throw new Error(`字段 "${spec}" 无效`);
+          for (let x = lo; x <= hi; x += step) if (x === v) return true;
+        }
+        return false;
+      };
+    };
+    const numsOf = (spec, min, max) => {
+      const out = [];
+      for (let v = min; v <= max; v++) if (field(spec, min, max)(v)) out.push(v);
+      return out;
+    };
+    const everyN = (spec, unit) => {
+      const m = /^\*\/(\d+)$/.exec(spec);
+      return m ? `每 ${m[1]} ${unit}` : null;
+    };
+    function describe(f){
+      const [mi, h, dom, mo, dow] = f;
+      // 时间部分
+      let time;
+      if (mi === '*' && h === '*') time = '每分钟';
+      else if (everyN(mi, '分钟')) time = everyN(mi, '分钟');
+      else if (mi !== '*' && h === '*') time = `每小时的第 ${numsOf(mi, 0, 59).join('、')} 分`;
+      else if (everyN(h, '小时') && (mi === '0' || mi === '*')) time = everyN(h, '小时');
+      else if (numsOf(mi, 0, 59).length === 1 && numsOf(h, 0, 23).length === 1)
+        time = `${String(numsOf(h, 0, 23)[0]).padStart(2, '0')}:${String(numsOf(mi, 0, 59)[0]).padStart(2, '0')}`;
+      else
+        time = `第 ${numsOf(h, 0, 23).join('、')} 时 的第 ${numsOf(mi, 0, 59).join('、')} 分`;
+      // 日部分
+      let day;
+      const wdDesc = dow === '*' ? null : numsOf(dow === '7' ? '0' : dow, 0, 6).map(x => '周' + WD[x]).join('、');
+      if (dom === '*' && dow === '*') day = '每天';
+      else if (dom !== '*' && dow === '*'){
+        const ev = everyN(dom, '天');
+        day = ev ? ev : `每月 ${numsOf(dom, 1, 31).join('、')} 号`;
+      }
+      else if (dom === '*' && dow !== '*') day = `每${wdDesc}`;
+      else day = `每月 ${numsOf(dom, 1, 31).join('、')} 号（以及 ${wdDesc}）`;
+      const month = mo === '*' ? '' : ` ${mo === '*/2' ? '每隔一个月' : `的 ${numsOf(mo, 1, 12).join('、')} 月`} 中，`;
+      return `${month}${day}的 ${time} 执行`;
+    }
+    function nextRuns(matchers, count){
+      const [mi, h, dom, mo, dow] = matchers;
+      const d = new Date();
+      d.setSeconds(0, 0);
+      d.setMinutes(d.getMinutes() + 1);
+      const out = [];
+      let guard = 2100000; // 约 4 年的分钟步进
+      while (out.length < count && guard-- > 0){
+        const wd = d.getDay() === 0 ? 7 : d.getDay();
+        if (mi(d.getMinutes()) && h(d.getHours()) && dom(d.getDate()) && mo(d.getMonth() + 1) && dow(wd))
+          out.push(new Date(d));
+        d.setMinutes(d.getMinutes() + 1);
+      }
+      return out;
+    }
+    const run = () => {
+      try {
+        let expr = $('#cron-in').value.trim();
+        if (!expr) return setMsg('cron-msg', '');
+        if (ALIAS[expr.toLowerCase()]) expr = ALIAS[expr.toLowerCase()];
+        const f = expr.trim().split(/\s+/);
+        if (f.length !== 5) throw new Error('需要 5 个字段（分 时 日 月 周）');
+        const m = [
+          field(f[0], 0, 59), field(f[1], 0, 23), field(f[2], 1, 31),
+          field(f[3], 1, 12), field(f[4], 0, 7),
+        ];
+        $('#cron-desc').textContent = describe(f);
+        const runs = nextRuns(m, 5);
+        $('#cron-next').innerHTML = runs.length
+          ? runs.map((d, i) => `<div class="kv"><span class="k">#${i + 1}</span><span class="v">${esc(d.toLocaleString('zh-CN', { hour12: false }))}</span></div>`).join('')
+          : '<div class="hint">在未来的搜索范围内没有匹配（比如 2 月 30 日这类永不满足的组合）</div>';
+        setMsg('cron-msg', '');
+      } catch(e){ setMsg('cron-msg', '✗ ' + e.message, true); }
+    };
+    $('#cron-run').onclick = run;
+    $('#cron-in').addEventListener('keydown', e => { if (e.key === 'Enter') run(); });
+  }
+},
+
+/* ---------- 21. cURL 命令 ---------- */
+{
+  id:'curl', name:'cURL 命令', icon:'🌐', cat:'编码解码',
+  desc:'cURL 命令与结构化请求互转，纯本地解析、不发出任何请求',
+  render(){
+    return `<div class="io">
+        ${pane('粘贴 cURL 命令', 'cu-in', "curl -X POST 'https://api.example.com/v1/users' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"name\":\"oxlyn\"}'", 'lg')}
+      </div>
+      <div class="bar">
+        <button class="btn primary" id="cu-parse">解析 → 表单</button>
+        <span id="cu-msg" class="msg"></span>
+      </div>
+      <div class="panel"><div class="panel-body">
+        <div class="row">
+          <div class="field noflex"><label>Method</label>
+            <select class="inp" id="cu-method"></select></div>
+          <div class="field"><label>URL</label>
+            <input class="inp" id="cu-url" placeholder="https://…"></div>
+        </div>
+        <div class="field" style="margin-top:12px"><label>请求头</label>
+          <div id="cu-headers"></div>
+          <button class="btn sm" id="cu-add-h">＋ 请求头</button>
+        </div>
+        <div class="field" style="margin-top:12px"><label>Body</label>
+          <textarea class="ta" id="cu-body" style="min-height:110px" placeholder='{"name":"oxlyn"}' spellcheck="false"></textarea>
+        </div>
+      </div></div>
+      <div class="bar" style="margin-top:12px">
+        <button class="btn primary" id="cu-gen">表单 → cURL</button>
+        <span id="cu-msg2" class="msg"></span>
+      </div>
+      <div class="io">${paneOut('cURL 命令', 'cu-out', '结果…', 'lg')}</div>`;
+  },
+  init(){
+    const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
+    $('#cu-method').innerHTML = METHODS.map(m => `<option>${m}</option>`).join('');
+    const headerRow = (k = '', v = '') => `
+      <div class="row" style="margin-bottom:8px">
+        <input class="inp" data-f="k" value="${esc(k)}" placeholder="Header" style="max-width:260px">
+        <input class="inp" data-f="v" value="${esc(v)}" placeholder="值" style="flex:1">
+        <button class="mini" data-del>✕</button>
+      </div>`;
+    const readHeaders = () => $$('#cu-headers .row')
+      .map(r => $$('.inp', r).map(i => i.value.trim()))
+      .map(([k, v]) => ({ k, v }))
+      .filter(h => h.k);
+    // 简易 shell 分词：处理单 / 双引号与行尾续行
+    function tokenizeShell(s){
+      const toks = []; let cur = ''; let q = null;
+      for (let i = 0; i < s.length; i++){
+        const c = s[i];
+        if (q === "'"){ if (c === "'") q = null; else cur += c; }
+        else if (q === '"'){
+          if (c === '"') q = null;
+          else if (c === '\\'){ const d = s[++i]; cur += (d === '"' || d === '\\' || d === '$' || d === '`') ? d : c + d; }
+          else cur += c;
+        }
+        else if (c === "'" || c === '"') q = c;
+        else if (c === '\\'){ const d = s[++i]; if (d !== undefined) cur += d; }
+        else if (/\s/.test(c)){ if (cur){ toks.push(cur); cur = ''; } }
+        else cur += c;
+      }
+      if (cur) toks.push(cur);
+      return toks;
+    }
+    const q = s => "'" + String(s).replace(/'/g, "'\\''") + "'";
+    $('#cu-parse').onclick = () => {
+      const raw = $('#cu-in').value.trim();
+      if (!raw) return setMsg('cu-msg', '请粘贴 cURL 命令', true);
+      try {
+        const toks = tokenizeShell(raw.replace(/\\\n/g, ' '));
+        if (!toks.length || !/^curl(\.exe)?$/.test(toks[0])) throw new Error('不是以 curl 开头的命令');
+        let method = '', url = '', user = '';
+        const bodies = [], ignored = [];
+        const hs = [];
+        for (let i = 1; i < toks.length; i++){
+          const t = toks[i];
+          const next = () => toks[++i] ?? '';
+          switch (t){
+            case '-X': case '--request': method = next(); break;
+            case '-H': case '--header': {
+              const hv = next();
+              const c = hv.indexOf(':');
+              if (c === -1) throw new Error(`请求头格式错误：${hv}`);
+              hs.push({ k: hv.slice(0, c).trim(), v: hv.slice(c + 1).trim() });
+              break;
+            }
+            case '-d': case '--data': case '--data-raw': case '--data-binary':
+              bodies.push(next()); break;
+            case '--data-urlencode':
+              bodies.push(next()); ignored.push('--data-urlencode（未做 URL 编码转换）'); break;
+            case '-u': case '--user': {
+              user = next();
+              try { hs.push({ k:'Authorization', v:'Basic ' + btoa(user) }); }
+              catch { ignored.push('-u（含非 ASCII，无法本地转 Basic）'); }
+              break;
+            }
+            case '--url': url = next(); break;
+            case '-L': case '--compressed': case '-k': case '-s': case '-S': case '-i':
+            case '--location': case '--insecure': case '--silent': case '--show-error': break;
+            default:
+              if (t.startsWith('-')) ignored.push(t);
+              else if (!url) url = t;
+          }
+        }
+        $('#cu-method').value = (method || 'GET').toUpperCase();
+        $('#cu-url').value = url;
+        $('#cu-headers').innerHTML = (hs.length ? hs : [{ k:'', v:'' }]).map(h => headerRow(h.k, h.v)).join('');
+        $('#cu-body').value = bodies.join('&');
+        setMsg('cu-msg', ignored.length ? '⚠ 已忽略：' + [...new Set(ignored)].join('、') : '✓ 解析完成');
+        gen();
+      } catch(e){ setMsg('cu-msg', '✗ ' + e.message, true); }
+    };
+    function gen(){
+      const method = $('#cu-method').value;
+      const url = $('#cu-url').value.trim();
+      if (!url) return setMsg('cu-msg2', '请填写 URL', true);
+      const lines = [`curl -X ${method} ${q(url)}`];
+      for (const h of readHeaders()) lines.push(`  -H ${q(h.k + ': ' + h.v)}`);
+      const body = $('#cu-body').value;
+      if (body) lines.push(`  -d ${q(body)}`);
+      $('#cu-out').value = lines.join(' \\\n');
+      setMsg('cu-msg2', '✓ 已生成');
+    }
+    $('#cu-gen').onclick = gen;
+    $('#cu-add-h').onclick = () => $('#cu-headers').insertAdjacentHTML('beforeend', headerRow());
+    $('#cu-headers').addEventListener('click', e => {
+      if (e.target.dataset.del === undefined) return;
+      e.target.closest('.row').remove();
+    });
+  }
 }
 
 ]; // end tools
@@ -2050,3 +2592,34 @@ document.addEventListener('keydown', e => {
 window.addEventListener('hashchange', route);
 renderNav();
 route();
+
+/* =========================================================
+   7. 追加工具底层（表格解析）
+   ========================================================= */
+// 自动识别分隔符：取首行中出现最多的 Tab / 逗号 / 分号
+function detectDelim(text){
+  const first = text.split('\n').find(l => l.trim()) || '';
+  const best = [['\t', 0], [',', 0], [';', 0]]
+    .map(([d]) => [d, first.split(d).length - 1])
+    .sort((a, b) => b[1] - a[1])[0];
+  return best[1] > 0 ? best[0] : ',';
+}
+// 带引号支持的表格解析：处理 "" 转义、字段内换行
+function parseCells(text, delim){
+  const rows = []; let row = []; let cur = ''; let inQ = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (inQ){
+      if (c === '"'){
+        if (text[i + 1] === '"'){ cur += '"'; i++; }
+        else inQ = false;
+      } else cur += c;
+    }
+    else if (c === '"') inQ = true;
+    else if (c === delim){ row.push(cur); cur = ''; }
+    else if (c === '\n'){ row.push(cur); rows.push(row); row = []; cur = ''; }
+    else if (c !== '\r') cur += c;
+  }
+  if (cur !== '' || row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}

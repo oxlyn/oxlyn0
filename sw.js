@@ -108,12 +108,14 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Un-hashed same-origin files: serve the hit instantly, refresh in the
-  // background. waitUntil keeps the worker alive for that refresh.
+  // background. waitUntil keeps the worker alive for that refresh. The
+  // refresh revalidates (cache: 'no-cache') so deploys land on the next
+  // visit instead of stalling in heuristic HTTP caches.
   event.respondWith(
     (async () => {
       const cache = await caches.open(PAGES_CACHE)
       const hit = await cache.match(event.request)
-      const refresh = fetch(event.request)
+      const refresh = fetch(event.request, { cache: 'no-cache' })
         .then((res) => {
           if (res.ok) cache.put(event.request, res.clone())
           return res

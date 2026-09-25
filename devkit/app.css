@@ -230,3 +230,14 @@ input[type=range]{accent-color:var(--accent);height:34px}
   .grid3{grid-template-columns:1fr 1fr}
 }
 @media(max-width:560px){.grid2,.grid3{grid-template-columns:1fr}}
+
+/* ===== 追加：表格预览 / Diff 行 ===== */
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th,.tbl td{border:1px solid var(--border);padding:5px 8px;text-align:left;vertical-align:top}
+.tbl th{background:var(--panel2)}
+.diff-line{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.6;white-space:pre-wrap;word-break:break-all;padding:1px 10px;border-radius:4px}
+.diff-line.add{background:rgba(48,209,88,.15)}
+.diff-line.del{background:rgba(255,69,58,.14)}
+.diff-line.add::before{content:'+ ';opacity:.65}
+.diff-line.del::before{content:'- ';opacity:.65}
+.diff-line.ctx::before{content:'  ';opacity:.9}
