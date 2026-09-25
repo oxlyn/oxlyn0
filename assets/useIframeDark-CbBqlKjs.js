@@ -1,1 +1,0 @@
-import{C as e,S as t,x as n}from"./index-01b-jelH.js";var r=e(t(),1);function i(e,t,i){let a=n(e=>e.theme===`dark`);(0,r.useEffect)(()=>{let n=()=>{e.current&&t(e.current,a)};n();let r=e.current;return r?.addEventListener(`load`,n),()=>r?.removeEventListener(`load`,n)},[a,i])}export{i as t};

@@ -40,10 +40,10 @@ export function Desktop() {
   return (
     <div className="fixed inset-0 overflow-hidden" onPointerDown={() => setSelected(null)}>
       <img key={wp.url} src={wp.url} alt="" className="fade-in absolute inset-0 h-full w-full object-cover" draggable={false} />
-      {/* desktop icons — top-right column, macOS style (hidden during focus mode).
-          App shortcuts (`onDesktop: true`) come first, then desktop files. */}
+      {/* desktop icons (hidden during focus mode): app shortcuts (`onDesktop: true`)
+          live in the top-left column, desktop files keep the top-right one. */}
       {!focusId && (
-        <div className="absolute top-10 right-3 flex flex-col items-end gap-2">
+        <div className="absolute top-10 left-3 flex flex-col items-start gap-2">
           {shortcuts.map((app) => (
             <button
               key={app.id}
@@ -61,6 +61,10 @@ export function Desktop() {
               </span>
             </button>
           ))}
+        </div>
+      )}
+      {!focusId && (
+        <div className="absolute top-10 right-3 flex flex-col items-end gap-2">
           {children.map((node) => (
             <button
               key={node.id}
