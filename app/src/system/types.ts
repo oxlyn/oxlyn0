@@ -35,6 +35,11 @@ export interface AppDefinition {
   /** Show in the Dock (default: true). */
   inDock?: boolean
   /**
+   * Show a shortcut on the desktop (default: false). One field is all it
+   * takes — Desktop renders the icon and opens the app on double-click.
+   */
+  onDesktop?: boolean
+  /**
    * Keep the window alive after close — it stays mounted (hidden in place)
    * and reopening restores it instantly, iframe state included. Intended for
    * embedded sites; the store parks at most a couple of dormant windows.

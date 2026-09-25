@@ -50,6 +50,7 @@ export default {
   category: 'Utilities',
   keywords: ['devkit', '工具箱', '工具', '开发者', 'developer', 'tools', 'json', 'base64'],
   inDock: true,
+  onDesktop: true,
   // Self-contained site: closing parks the iframe (dormant) instead of
   // destroying it, and the title-bar pop-out opens the site directly.
   keepAlive: true,

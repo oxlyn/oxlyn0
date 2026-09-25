@@ -46,6 +46,7 @@ That's it — a new directory with this file and the app appears everywhere.
 | `keywords` | | Spotlight matching |
 | `singleton` | | only one window allowed (Settings uses this) |
 | `inDock` | | force into Dock even if not in `DOCK_ORDER` (registry.ts) |
+| `onDesktop` | | show a shortcut on the desktop (top of the icon column, double-click to open) — adding this one field is all a new app needs |
 | `keepAlive` | | park the window hidden (not unmounted) on close, so reopen restores it instantly — for embedded iframes; max 2 parked |
 | `popOutUrl` | | URL opened by the title-bar pop-out button instead of re-booting the desktop with `?app=<id>` |
 

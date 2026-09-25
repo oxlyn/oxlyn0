@@ -118,6 +118,7 @@ export default {
   category: 'Education',
   keywords: ['learn', 'study', 'math', 'chinese', '练习', '学习', '语文', '数学', '乐学'],
   inDock: true,
+  onDesktop: true,
   // Self-contained site: closing parks the iframe (dormant) instead of
   // destroying it, and the title-bar pop-out opens the site directly.
   keepAlive: true,

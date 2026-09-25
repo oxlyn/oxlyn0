@@ -49,6 +49,7 @@ export default {
   category: 'Games',
   keywords: ['wakfu', '沃土', '攻略', '副本', '职业', '日志分析', 'dungeon', 'guide'],
   inDock: true,
+  onDesktop: true,
   // Self-contained site: closing parks the iframe (dormant) instead of
   // destroying it, and the title-bar pop-out opens the site directly.
   keepAlive: true,
