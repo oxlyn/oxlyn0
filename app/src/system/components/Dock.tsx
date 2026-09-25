@@ -1,20 +1,23 @@
 import { Trash2 } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 import { dockApps, useAppsReady } from '../registry'
 import { useWindows } from '../stores/windows'
 import { AppIcon } from '../AppIcon'
 
 export function Dock() {
   const ready = useAppsReady((s) => s.ready)
-  const wins = useWindows((s) => s.wins)
+  // Shallow array of app ids, not the wins array: setRect publishes a new
+  // wins array on every pointermove while dragging, and the dock must not
+  // re-render for that.
+  const runningIds = useWindows(useShallow((s) => s.wins.filter((w) => !w.dormant).map((w) => w.appId)))
   const open = useWindows((s) => s.open)
   // The registry fills asynchronously; render once complete so the dock
   // list isn't baked empty by an early mount.
   if (!ready) return null
-  const running = new Map<string, number>()
-  for (const w of wins) if (!w.dormant) running.set(w.appId, (running.get(w.appId) ?? 0) + 1)
+  const running = new Set(runningIds)
 
   const click = (id: string) => {
-    const { focusedId, focus, minimize, open } = useWindows.getState()
+    const { focusedId, focus, minimize, open, wins } = useWindows.getState()
     // Dormant (keep-alive) windows are still in `wins` but are not "open" —
     // route to open() so it revives them instead of focusing a hidden window.
     const appWins = wins.filter((w) => w.appId === id && !w.dormant)

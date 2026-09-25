@@ -50,8 +50,18 @@ export default function App() {
         setSpotlight((v) => !v)
         setLaunchpad(false)
       }
+      // F4 — the full-screen Launchpad overlay (macOS convention). The Dock's
+      // Apps icon still opens the windowed `launchpad` app, so both exist.
+      if (e.key === 'F4') {
+        e.preventDefault()
+        if (!useWindows.getState().focusId) {
+          setLaunchpad((v) => !v)
+          setSpotlight(false)
+        }
+      }
       if (e.key === 'Escape') {
         setSpotlight(false)
+        setLaunchpad(false)
         const { focusId, toggleFocusMode } = useWindows.getState()
         // standalone tabs stay a pure single-app page — no desktop behind them
         if (focusId && !useSystem.getState().standalone) toggleFocusMode(focusId)

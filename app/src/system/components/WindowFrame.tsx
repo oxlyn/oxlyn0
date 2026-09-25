@@ -1,4 +1,4 @@
-import { memo, useRef } from 'react'
+import { memo, useEffect, useRef } from 'react'
 import { AppWindow } from 'lucide-react'
 import type { Win } from '../stores/windows'
 import { useWindows } from '../stores/windows'
@@ -33,6 +33,15 @@ export const WindowFrame = memo(function WindowFrame({ win }: { win: Win }) {
   const { focus, close, minimize, toggleMaximize, toggleFocusMode, setRect } = useWindows.getState()
   const drag = useRef<{ ox: number; oy: number; sx: number; sy: number; cx: number; cy: number; raf: number } | null>(null)
   const resize = useRef<{ edge: Edge; sx: number; sy: number; r: Win; cx: number; cy: number; raf: number } | null>(null)
+  // A pending drag/resize rAF is normally flushed by endDrag/endResize —
+  // cancel it if the window unmounts mid-gesture instead.
+  useEffect(
+    () => () => {
+      if (drag.current?.raf) cancelAnimationFrame(drag.current.raf)
+      if (resize.current?.raf) cancelAnimationFrame(resize.current.raf)
+    },
+    [],
+  )
   if (!app) return null
 
   const inFocus = useWindows((s) => s.focusId) === win.id

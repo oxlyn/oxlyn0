@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { calendarSeed } from './data'
-import type { AppDefinition, AppWindowProps } from '@/system/types'
+import type { AppDefinition } from '@/system/types'
 import { Calendar as CalendarGlyph } from 'lucide-react'
 
 interface Ev { id: string; calId: string; title: string; location: string; start: number; end: number; allDay: boolean; notes: string }
@@ -10,7 +10,7 @@ interface Cal { id: string; name: string; color: string; visible: boolean }
 const seed = calendarSeed as { calendars: Cal[]; events: Ev[] }
 const DAY = 86_400_000
 
-function CalendarApp({ payload }: AppWindowProps) {
+function CalendarApp() {
   const [cursor, setCursor] = useState(() => new Date())
   const [selected, setSelected] = useState<Date>(() => new Date())
   const [hidden, setHidden] = useState<Set<string>>(new Set())

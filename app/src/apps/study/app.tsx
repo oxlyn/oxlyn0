@@ -30,7 +30,10 @@ function StudyApp() {
   // (large) document from HTTP cache on every reopen.
   const src = STUDY_URL
   const [lx, setLx] = useState<string>(() => localStorage.getItem('lx-theme') ?? (useSystem.getState().theme === 'dark' ? 'dark' : 'spring'))
-  const manual = useRef(localStorage.getItem('lx-theme-manual') === '1')
+  // useRef evaluates its argument every render — read localStorage once via
+  // the null sentinel instead.
+  const manual = useRef<boolean | null>(null)
+  if (manual.current === null) manual.current = localStorage.getItem('lx-theme-manual') === '1'
   const [pickerOpen, setPickerOpen] = useState(false)
   const systemDark = useSystem((s) => s.theme === 'dark')
 

@@ -19,7 +19,7 @@ function QuickTime({ payload }: AppWindowProps) {
           <span className="truncate text-[12.5px] font-medium">{v.name}</span>
           <button className="rounded px-2 py-0.5 text-[12px] text-white/60 hover:bg-white/10" onClick={() => setPlaying(-1)}>Close</button>
         </div>
-        <video key={v.url} src={v.url} controls autoPlay className="min-h-0 w-full flex-1 bg-black object-contain" />
+        <video key={v.url} src={v.url} controls autoPlay muted playsInline className="min-h-0 w-full flex-1 bg-black object-contain" />
       </div>
     )
   }

@@ -5,14 +5,35 @@ bundle. Layers, easiest first:
 
 ## 1. Swap media (zero code)
 
+Every media file currently in the repo is a **generated gradient placeholder**
+(see `scripts/gen-media.mjs`) — that's why they're `.svg` and ~545 bytes each,
+not the original JPGs.
+
 Drop in your own files under the **same filenames** at the repo root:
 
-- **Wallpapers** — `wallpaper-tahoe-day.jpg` (default), `wallpaper-aurora.jpg`,
-  `wallpaper-bigsur.jpg`, `wallpaper-glass-dark.jpg`, `wallpaper-glass-light.jpg`
-  (2560×1600-ish). The list lives in `src/system/stores/system.ts` (`WALLPAPERS`).
-- **Photos app** — `photo-1.jpg` … `photo-8.jpg`, `import.jpg`
-- **Music/Podcasts** — `cover-1.jpg` … `cover-4.jpg`, `podcast-cover.jpg`,
+- **Wallpapers** — `wallpaper-graphite.svg` (default), `wallpaper-glass-dark.svg`,
+  `wallpaper-glass-light.svg`, `wallpaper-aurora.svg`, `wallpaper-sunset.svg`,
+  `wallpaper-mint.svg` (2560×1600-ish). The list lives in
+  `src/system/stores/system.ts` (`WALLPAPERS`).
+- **Photos app** — `photo-1.svg` … `photo-8.svg`
+- **Music/Podcasts** — `cover-1.svg` … `cover-4.svg`, `podcast-cover.svg`,
   `track-1.mp3` … `track-4.mp3`
+- **Login avatar / favicon** — `avatar.svg`
+
+⚠️ **Watch the extension.** The paths are hardcoded, so `photo-1.svg` is
+referenced as `photo-1.svg` in `src/apps/photos/data.ts`. If you supply
+`photo-1.jpg` instead, **nothing changes and nothing errors** — you must also
+update the reference. Either keep the `.svg` extension, or edit the matching
+data file in the same commit:
+
+| Media | Reference to update |
+|---|---|
+| Wallpapers | `src/system/stores/system.ts` (`WALLPAPERS`) |
+| Photos | `src/apps/photos/data.ts` |
+| Music | `src/apps/music/data.ts` |
+| Podcasts | `src/apps/podcasts/data.ts` |
+
+`avatar-lotus.jpg` is an unused leftover — nothing references it.
 
 ## 2. Edit content (per-app data files)
 
@@ -29,10 +50,16 @@ Every app keeps its content in its own directory — usually `src/apps/<id>/data
 | Stocks watchlist | `src/apps/stocks/data.ts` |
 | Dictionary words | `src/apps/dictionary/data.ts` |
 
-`fs-seed.ts` and `notes-seed.ts` were **generated** from the original bundle
-(`scripts/sync-extracted.mjs` + the extraction JSON). They're plain source files
-now — edit them directly. To regenerate from scratch, re-run the extraction
-against `assets/index-Bfk0NWYJ.js` (kept in git history) and re-run the script.
+`fs-seed.ts` and `notes-seed.ts` were **generated once** from the original bundle
+and are now ordinary source files — **edit them directly.**
+
+⚠️ **Do not re-run `scripts/sync-extracted.mjs` casually.** It overwrites all 14
+per-app `data.ts` files plus `fs-seed.ts` and `notes-seed.ts` wholesale, with no
+merge — every hand edit is lost. It's also no longer runnable: it reads
+`/tmp/extracted/*.json`, which no longer exists (the repo's `extracted/` is
+empty and the extraction JSON was never committed). Treat the committed
+`data.ts` files as the source of truth; the file-header banners saying
+"edit `/tmp/extracted/*.json` instead" are stale.
 
 ## 3. Add a whole new app
 
@@ -98,6 +125,6 @@ https://macos27.kimi.page/track-1.mp3 … track-4.mp3
 
 The original site was a minified Vite bundle (an AI-generated "macOS 27" Kimi
 share demo, rebranded + redeployed). v2 reconstructed the full source tree:
-system shell in `src/system`, 37 apps in `src/apps`, all content extracted from
+system shell in `src/system`, 34 apps in `src/apps`, all content extracted from
 the old bundle into per-app data files. The old artifact is preserved as
 `index.legacy.html` + the git history.

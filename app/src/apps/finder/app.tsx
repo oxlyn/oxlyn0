@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, Folder, LayoutGrid, List, FolderPlus } from 'lucide-react'
-import { childrenOf, pathOf, useFs } from '@/system/stores/fs'
+import { ChevronLeft, ChevronRight, Folder, LayoutGrid, List, FolderPlus, Pencil, Trash2 } from 'lucide-react'
+import { childrenOf, pathOf, useFs, TRASH_ID } from '@/system/stores/fs'
 import { useWindows } from '@/system/stores/windows'
 import type { AppDefinition, AppWindowProps } from '@/system/types'
 import { Smile } from 'lucide-react'
@@ -14,23 +14,34 @@ const FAVORITES: { id: string; label: string }[] = [
   { id: 'applications', label: 'Applications' },
 ]
 
-function Finder({ winId, payload }: AppWindowProps) {
+function Finder({ payload }: AppWindowProps) {
   const initial = (payload?.folder as string) ?? 'desktop'
   const [history, setHistory] = useState<string[]>([initial])
   const [cursor, setCursor] = useState(0)
   const [view, setView] = useState<'icons' | 'list'>('icons')
   const [selected, setSelected] = useState<string | null>(null)
+  /** Node being renamed inline; `draft` holds the in-progress name. */
+  const [renaming, setRenaming] = useState<string | null>(null)
+  const [draft, setDraft] = useState('')
   const open = useWindows((s) => s.open)
   const nodes = useFs((s) => s.nodes)
   const create = useFs((s) => s.create)
+  const rename = useFs((s) => s.rename)
+  const trash = useFs((s) => s.trash)
+  const emptyTrash = useFs((s) => s.emptyTrash)
+  /** True once the active rename was committed or cancelled — the blur that
+   *  fires when the input unmounts must not commit it a second time. */
+  const renameDone = useRef(false)
   const children = useMemo(() => childrenOf(nodes, history[cursor]), [nodes, history, cursor])
   const path = useMemo(() => pathOf(nodes, history[cursor]), [nodes, history, cursor])
-  const navSeq = useRef(0)
+  const inTrash = history[cursor] === TRASH_ID
+  const selectedNode = selected ? nodes[selected] : undefined
 
   const navigate = (id: string) => {
     setHistory((h) => [...h.slice(0, cursor + 1), id])
     setCursor((c) => c + 1)
     setSelected(null)
+    setRenaming(null)
   }
 
   const activate = (node: { id: string; kind: 'folder' | 'file' }) => {
@@ -41,12 +52,40 @@ function Finder({ winId, payload }: AppWindowProps) {
   const newFolder = () => {
     const id = create({ parentId: history[cursor], name: 'untitled folder', kind: 'folder' })
     setSelected(id)
-    navSeq.current++
+  }
+
+  const startRename = () => {
+    if (!selectedNode) return
+    setDraft(selectedNode.name)
+    setRenaming(selectedNode.id)
+    renameDone.current = false
+  }
+
+  // Runs both on Enter/click-away and on the blur fired when the input
+  // unmounts — the done-guard makes each path run exactly once, so Escape
+  // (cancelRename) can't be re-committed by the trailing blur.
+  const commitRename = () => {
+    if (renameDone.current) return
+    renameDone.current = true
+    const name = draft.trim()
+    if (renaming && name) rename(renaming, name)
+    setRenaming(null)
+  }
+
+  const cancelRename = () => {
+    if (renameDone.current) return
+    renameDone.current = true
+    setRenaming(null)
+  }
+
+  const moveSelectedToTrash = () => {
+    if (!selected || !selectedNode) return
+    trash(selected)
+    setSelected(null)
+    setRenaming(null)
   }
 
   const title = path[path.length - 1]?.name ?? 'Finder'
-
-  const rows = useMemo(() => children, [children])
 
   return (
     <div className="flex h-full">
@@ -73,6 +112,8 @@ function Finder({ winId, payload }: AppWindowProps) {
             disabled={cursor === 0}
             className="rounded p-1 disabled:opacity-30 hover:bg-black/5 dark:hover:bg-white/10"
             onClick={() => setCursor((c) => Math.max(0, c - 1))}
+            title="Back"
+            aria-label="Back"
           >
             <ChevronLeft size={18} />
           </button>
@@ -80,44 +121,108 @@ function Finder({ winId, payload }: AppWindowProps) {
             disabled={cursor >= history.length - 1}
             className="rounded p-1 disabled:opacity-30 hover:bg-black/5 dark:hover:bg-white/10"
             onClick={() => setCursor((c) => Math.min(history.length - 1, c + 1))}
+            title="Forward"
+            aria-label="Forward"
           >
             <ChevronRight size={18} />
           </button>
           <div className="ml-1 flex-1 truncate text-[13px] font-semibold">{title}</div>
-          <button className="rounded p-1 hover:bg-black/5 dark:hover:bg-white/10" onClick={newFolder} title="New Folder">
-            <FolderPlus size={16} />
+          {!inTrash && (
+            <button className="rounded p-1 hover:bg-black/5 dark:hover:bg-white/10" onClick={newFolder} title="New Folder" aria-label="New Folder">
+              <FolderPlus size={16} />
+            </button>
+          )}
+          <button
+            className="rounded p-1 hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-30"
+            onClick={startRename}
+            disabled={!selectedNode || inTrash}
+            title="Rename"
+            aria-label="Rename"
+          >
+            <Pencil size={16} />
           </button>
+          {inTrash ? (
+            <button
+              className="rounded p-1 hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-30"
+              onClick={emptyTrash}
+              disabled={children.length === 0}
+              title="Empty Trash"
+              aria-label="Empty Trash"
+            >
+              <Trash2 size={16} />
+            </button>
+          ) : (
+            <button
+              className="rounded p-1 hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-30"
+              onClick={moveSelectedToTrash}
+              disabled={!selectedNode}
+              title="Move to Trash"
+              aria-label="Move to Trash"
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
           <button
             className={`rounded p-1 ${view === 'icons' ? 'bg-black/10 dark:bg-white/15' : 'hover:bg-black/5 dark:hover:bg-white/10'}`}
             onClick={() => setView('icons')}
+            title="as Icons"
+            aria-label="as Icons"
           >
             <LayoutGrid size={16} />
           </button>
           <button
             className={`rounded p-1 ${view === 'list' ? 'bg-black/10 dark:bg-white/15' : 'hover:bg-black/5 dark:hover:bg-white/10'}`}
             onClick={() => setView('list')}
+            title="as List"
+            aria-label="as List"
           >
             <List size={16} />
           </button>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto p-3" onPointerDown={() => setSelected(null)}>
-          {rows.length === 0 && <div className="grid h-full place-items-center text-sm text-black/35 dark:text-white/35">Empty folder</div>}
+          {children.length === 0 && (
+            <div className="grid h-full place-items-center text-sm text-black/35 dark:text-white/35">
+              {inTrash ? 'Trash is empty' : 'Empty folder'}
+            </div>
+          )}
           {view === 'icons' ? (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-1">
-              {rows.map((node) => (
-                <button
-                  key={node.id}
-                  className={`flex flex-col items-center gap-1 rounded-lg p-2 ${selected === node.id ? 'bg-blue-500/15 ring-1 ring-blue-400/50' : 'hover:bg-black/5 dark:hover:bg-white/5'}`}
-                  onPointerDown={(e) => { e.stopPropagation(); setSelected(node.id) }}
-                  onDoubleClick={() => activate(node)}
-                >
-                  {node.kind === 'folder' ? (
-                    <Folder size={44} className="fill-sky-400 text-sky-500" strokeWidth={1} />
-                  ) : (
-                    <FileThumb mime={node.mime} name={node.name} />
+              {children.map((node) => (
+                <div key={node.id} className="flex flex-col items-center gap-1">
+                  <button
+                    className={`flex w-full flex-col items-center gap-1 rounded-lg p-2 ${selected === node.id ? 'bg-blue-500/15 ring-1 ring-blue-400/50' : 'hover:bg-black/5 dark:hover:bg-white/5'}`}
+                    onPointerDown={(e) => { e.stopPropagation(); setSelected(node.id) }}
+                    onDoubleClick={() => activate(node)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(node) }
+                    }}
+                    aria-label={`${node.kind === 'folder' ? 'Folder' : 'File'}: ${node.name}`}
+                  >
+                    {node.kind === 'folder' ? (
+                      <Folder size={44} className="fill-sky-400 text-sky-500" strokeWidth={1} />
+                    ) : (
+                      <FileThumb mime={node.mime} name={node.name} />
+                    )}
+                    {renaming !== node.id && (
+                      <span className="line-clamp-2 text-center text-[11.5px] leading-tight">{node.name}</span>
+                    )}
+                  </button>
+                  {renaming === node.id && (
+                    <input
+                      autoFocus
+                      value={draft}
+                      onChange={(e) => setDraft(e.target.value)}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') commitRename()
+                        if (e.key === 'Escape') cancelRename()
+                      }}
+                      onBlur={commitRename}
+                      aria-label="New name"
+                      className="w-full rounded border border-blue-400 bg-white px-1 text-center text-[11.5px] text-black outline-none dark:bg-neutral-800 dark:text-white"
+                    />
                   )}
-                  <span className="line-clamp-2 text-center text-[11.5px] leading-tight">{node.name}</span>
-                </button>
+                </div>
               ))}
             </div>
           ) : (
@@ -130,14 +235,38 @@ function Finder({ winId, payload }: AppWindowProps) {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((node) => (
+                {children.map((node) => (
                   <tr
                     key={node.id}
                     className={`cursor-default ${selected === node.id ? 'bg-blue-500 text-white' : ''}`}
                     onPointerDown={(e) => { e.stopPropagation(); setSelected(node.id) }}
                     onDoubleClick={() => activate(node)}
+                    onKeyDown={(e) => {
+                      if (renaming === node.id) return // the rename input owns the keyboard
+                      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(node) }
+                    }}
+                    tabIndex={0}
+                    aria-label={`${node.kind === 'folder' ? 'Folder' : 'File'}: ${node.name}`}
                   >
-                    <td className="py-0.5">{node.name}</td>
+                    <td className="py-0.5">
+                      {renaming === node.id ? (
+                        <input
+                          autoFocus
+                          value={draft}
+                          onChange={(e) => setDraft(e.target.value)}
+                          onPointerDown={(e) => e.stopPropagation()}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') commitRename()
+                            if (e.key === 'Escape') cancelRename()
+                          }}
+                          onBlur={commitRename}
+                          aria-label="New name"
+                          className="w-full rounded border border-blue-400 bg-white px-1 text-black outline-none dark:bg-neutral-800 dark:text-white"
+                        />
+                      ) : (
+                        node.name
+                      )}
+                    </td>
                     <td className="py-0.5 opacity-60">{node.kind === 'folder' ? 'Folder' : node.mime ?? 'File'}</td>
                     <td className="py-0.5 opacity-60">{node.content ? `${Math.max(1, Math.round(node.content.length / 102.4) / 10)} KB` : '--'}</td>
                   </tr>

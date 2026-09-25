@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import type { AppDefinition } from '@/system/types'
+import type { AppDefinition, AppWindowProps } from '@/system/types'
+import { useWindows } from '@/system/stores/windows'
 import { Calculator as CalcIcon } from 'lucide-react'
 
 type Op = '+' | '−' | '×' | '÷' | null
 
-function Calculator() {
+function Calculator({ winId }: AppWindowProps) {
   const [display, setDisplay] = useState('0')
   const [acc, setAcc] = useState<number | null>(null)
   const [op, setOp] = useState<Op>(null)
@@ -45,6 +46,10 @@ function Calculator() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // Only capture keys while this window is focused — otherwise the
+      // listener eats digits and Enter typed in every other window.
+      if (useWindows.getState().focusedId !== winId) return
+      if (e.metaKey || e.ctrlKey || e.altKey) return
       if (/^[0-9.]$/.test(e.key)) digit(e.key)
       else if (e.key === '+') setOperator('+')
       else if (e.key === '-') setOperator('−')
@@ -55,7 +60,8 @@ function Calculator() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  })
+    // Re-bind on state change so the handlers never see stale closures.
+  }, [display, acc, op, fresh, winId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const Btn = ({ label, onClick, variant = 'num', wide }: { label: string; onClick: () => void; variant?: 'num' | 'fn' | 'op'; wide?: boolean }) => (
     <button

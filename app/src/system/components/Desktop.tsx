@@ -18,7 +18,8 @@ function FileGlyph({ mime, kind }: { mime?: string; kind: 'folder' | 'file' }) {
 }
 
 export function Desktop() {
-  const wallpaper = useSystem((s) => s.wallpaper)
+  // Subscribe so a wallpaper switch re-renders the desktop — currentWallpaper() is not reactive.
+  useSystem((s) => s.wallpaper)
   const wp = currentWallpaper()
   const nodes = useFs((s) => s.nodes)
   const children = useMemo(() => childrenOf(nodes, 'desktop'), [nodes])
@@ -43,6 +44,10 @@ export function Desktop() {
               className={`group flex w-24 flex-col items-center gap-0.5 rounded-lg p-1.5 ${selected === node.id ? 'bg-white/20 ring-1 ring-white/40' : ''}`}
               onPointerDown={(e) => { e.stopPropagation(); setSelected(node.id) }}
               onDoubleClick={() => activate(node.id, node.kind)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(node.id, node.kind) }
+              }}
+              aria-label={`${node.kind === 'folder' ? 'Folder' : 'File'}: ${node.name}`}
             >
               <FileGlyph mime={node.mime} kind={node.kind} />
               <span className="max-w-full truncate rounded px-1 text-[12px] font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">

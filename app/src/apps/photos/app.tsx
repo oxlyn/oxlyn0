@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight, Heart, Grid2x2, Info, Minus, Plus, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Heart, Grid2x2, Info, Minus, Plus } from 'lucide-react'
 import { photosSeed } from './data'
 import type { AppDefinition } from '@/system/types'
 import { Flower2 } from 'lucide-react'
@@ -10,15 +10,22 @@ const seed = photosSeed as Photo[]
 function Photos() {
   const [photos, setPhotos] = useState<Photo[]>(() => seed.map((p) => ({ ...p }) as Photo))
   const [album, setAlbum] = useState<'library' | 'favorites'>('library')
-  const [openIdx, setOpenIdx] = useState<number | null>(null)
+  // Track the open photo by id, not list index — the filtered list shrinks
+  // when a favorite is toggled, and an index would silently point elsewhere.
+  const [openId, setOpenId] = useState<string | null>(null)
   const [zoom, setZoom] = useState(3)
 
   const list = useMemo(
     () => (album === 'favorites' ? photos.filter((p) => p.favorite) : photos),
     [photos, album],
   )
-  const open = openIdx !== null ? list[openIdx] : null
+  const open = openId !== null ? (list.find((p) => p.id === openId) ?? null) : null
   const toggleFav = (id: string) => setPhotos((all) => all.map((p) => (p.id === id ? { ...p, favorite: !p.favorite } : p)))
+  const step = (dir: 1 | -1) => {
+    const i = list.findIndex((p) => p.id === openId)
+    if (i === -1) return
+    setOpenId(list[(i + dir + list.length) % list.length].id)
+  }
 
   const cols = ['grid-cols-2', 'grid-cols-3', 'grid-cols-4', 'grid-cols-5'][zoom]
 
@@ -34,7 +41,7 @@ function Photos() {
         ).map(([id, label, n]) => (
           <button
             key={id}
-            onClick={() => { setAlbum(id); setOpenIdx(null) }}
+            onClick={() => { setAlbum(id); setOpenId(null) }}
             className={`flex w-full items-center justify-between rounded-md px-2 py-1 ${album === id ? 'bg-blue-500 text-white' : 'hover:bg-black/5 dark:hover:bg-white/10'}`}
           >
             <span className="flex items-center gap-2">
@@ -48,7 +55,7 @@ function Photos() {
         {open ? (
           <>
             <div className="flex h-11 shrink-0 items-center gap-2 border-b border-black/10 px-3 dark:border-white/10">
-              <button className="rounded p-1 hover:bg-black/5 dark:hover:bg-white/10" onClick={() => setOpenIdx(null)}><ChevronLeft size={18} /></button>
+              <button className="rounded p-1 hover:bg-black/5 dark:hover:bg-white/10" onClick={() => setOpenId(null)}><ChevronLeft size={18} /></button>
               <span className="truncate font-medium">{open.name}</span>
               <span className="text-black/40 dark:text-white/40">
                 {new Date(open.takenAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
@@ -63,14 +70,14 @@ function Photos() {
             <div className="relative flex min-h-0 flex-1 items-center justify-center bg-black/85 p-4">
               <button
                 className="absolute left-2 flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/30"
-                onClick={() => setOpenIdx((i) => ((i ?? 0) - 1 + list.length) % list.length)}
+                onClick={() => step(-1)}
               >
                 <ChevronLeft size={18} />
               </button>
               <img src={open.url} alt={open.name} className="max-h-full max-w-full rounded shadow-2xl select-text" />
               <button
                 className="absolute right-2 flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/30"
-                onClick={() => setOpenIdx((i) => ((i ?? 0) + 1) % list.length)}
+                onClick={() => step(1)}
               >
                 <ChevronRight size={18} />
               </button>
@@ -87,8 +94,8 @@ function Photos() {
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto p-2">
               <div className={`grid ${cols} gap-1.5`}>
-                {list.map((p, i) => (
-                  <button key={p.id} onClick={() => setOpenIdx(i)} className="group relative overflow-hidden rounded-md">
+                {list.map((p) => (
+                  <button key={p.id} onClick={() => setOpenId(p.id)} className="group relative overflow-hidden rounded-md">
                     <img src={p.url} alt={p.name} className="aspect-[4/3] w-full object-cover transition-transform group-hover:scale-[1.02]" loading="lazy" />
                     {p.favorite && <Heart size={13} className="absolute right-1.5 top-1.5 fill-red-500 text-red-500 drop-shadow" />}
                   </button>

@@ -42,6 +42,10 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
     onClose()
   }
 
+  // `sel` can transiently exceed the list when results shrink (the reset to 0
+  // lands a render later) — clamp once here instead of at every use.
+  const selIdx = Math.min(sel, results.length - 1)
+
   return (
     <div className="fixed inset-0 z-70" onPointerDown={onClose}>
       <div
@@ -56,8 +60,8 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Escape') onClose()
-              if (e.key === 'Enter' && results[sel]) activate(results[sel])
-              if (e.key === 'ArrowDown') { e.preventDefault(); setSel((s) => Math.min(s + 1, results.length - 1)) }
+              if (e.key === 'Enter' && results[selIdx]) activate(results[selIdx])
+              if (e.key === 'ArrowDown') { e.preventDefault(); setSel((s) => Math.min(s + 1, Math.max(0, results.length - 1))) }
               if (e.key === 'ArrowUp') { e.preventDefault(); setSel((s) => Math.max(s - 1, 0)) }
             }}
             placeholder="Spotlight Search"
@@ -69,7 +73,7 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
             {results.map((r, i) => (
               <button
                 key={r.id}
-                className={`flex w-full items-center gap-3 rounded-lg px-2.5 py-1.5 text-left ${i === sel ? 'bg-blue-500 text-white' : 'hover:bg-black/5 dark:hover:bg-white/10'}`}
+                className={`flex w-full items-center gap-3 rounded-lg px-2.5 py-1.5 text-left ${i === selIdx ? 'bg-blue-500 text-white' : 'hover:bg-black/5 dark:hover:bg-white/10'}`}
                 onMouseEnter={() => setSel(i)}
                 onClick={() => activate(r)}
               >
@@ -79,7 +83,7 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
                   <div className="h-[26px] w-[26px]" />
                 )}
                 <span className="flex-1 truncate text-sm font-medium">{r.name}</span>
-                <span className={`text-xs ${i === sel ? 'text-white/80' : 'text-black/40 dark:text-white/40'}`}>{r.sub}</span>
+                <span className={`text-xs ${i === selIdx ? 'text-white/80' : 'text-black/40 dark:text-white/40'}`}>{r.sub}</span>
               </button>
             ))}
           </div>

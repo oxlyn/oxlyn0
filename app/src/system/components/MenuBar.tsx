@@ -66,13 +66,14 @@ const AppleLogo = () => (
 )
 
 export function MenuBar({ onSpotlight }: { onSpotlight: () => void }) {
-  const wins = useWindows((s) => s.wins)
-  const focusedId = useWindows((s) => s.focusedId)
   const open = useWindows((s) => s.open)
   const lock = useSystem((s) => s.lock)
   const now = useClock()
-  const focusedWin = wins.find((w) => w.id === focusedId && !w.minimized)
-  const activeApp = focusedWin ? appById.get(focusedWin.appId) : null
+  // Select the derived primitive, not the wins array: setRect publishes a new
+  // array on every pointermove while dragging, and the menu bar must not
+  // re-render for that.
+  const activeAppId = useWindows((s) => s.wins.find((w) => w.id === s.focusedId && !w.minimized)?.appId ?? null)
+  const activeApp = activeAppId ? appById.get(activeAppId) : null
 
   return (
     <div className="glass glass-refract fixed inset-x-0 top-0 z-40 flex h-7 items-center justify-between px-3 text-black/85 dark:text-white/90">
@@ -95,7 +96,11 @@ export function MenuBar({ onSpotlight }: { onSpotlight: () => void }) {
             items={[
               { label: `About ${activeApp.name}`, disabled: true },
               { sep: true, label: '' },
-              { label: `Quit ${activeApp.name}`, action: () => useWindows.getState().close(focusedWin!.id) },
+              { label: `Quit ${activeApp.name}`, action: () => {
+                const s = useWindows.getState()
+                const win = s.wins.find((w) => w.id === s.focusedId && !w.minimized)
+                if (win && win.appId === activeAppId) s.close(win.id)
+              } },
             ]}
           />
         )}

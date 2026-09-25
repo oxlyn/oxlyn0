@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useWindows } from '@/system/stores/windows'
-import { AppIcon } from '@/system/AppIcon'
-import type { AppDefinition } from '@/system/types'
+import type { AppDefinition, AppWindowProps } from '@/system/types'
 import { Gamepad2 } from 'lucide-react'
 
-function Snake({ onBack }: { onBack: () => void }) {
+function Snake({ onBack, winId }: { onBack: () => void; winId: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [score, setScore] = useState(0)
   const [best, setBest] = useState(0)
@@ -15,6 +14,9 @@ function Snake({ onBack }: { onBack: () => void }) {
     nextDir: [1, 0] as [number, number],
     food: [12, 8] as [number, number],
     alive: true,
+    // Mirror of the `score` state — the game loop's interval closure would
+    // otherwise read a stale 0 when recording the best score.
+    score: 0,
   })
 
   useEffect(() => {
@@ -23,10 +25,12 @@ function Snake({ onBack }: { onBack: () => void }) {
     s.dir = [1, 0]
     s.nextDir = [1, 0]
     s.alive = true
+    s.score = 0
     setScore(0)
     setOver(false)
 
     const onKey = (e: KeyboardEvent) => {
+      if (useWindows.getState().focusedId !== winId) return
       const map: Record<string, [number, number]> = {
         ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0],
       }
@@ -47,12 +51,13 @@ function Snake({ onBack }: { onBack: () => void }) {
       if (head[0] < 0 || head[1] < 0 || head[0] >= N || head[1] >= N || s.snake.some(([x, y]) => x === head[0] && y === head[1])) {
         s.alive = false
         setOver(true)
-        setBest((b) => Math.max(b, score))
+        setBest((b) => Math.max(b, s.score))
         return
       }
       s.snake.unshift(head)
       if (head[0] === s.food[0] && head[1] === s.food[1]) {
-        setScore((v) => v + 1)
+        s.score += 1
+        setScore(s.score)
         do {
           s.food = [Math.floor(Math.random() * N), Math.floor(Math.random() * N)] as [number, number]
         } while (s.snake.some(([x, y]) => x === s.food[0] && y === s.food[1]))
@@ -87,7 +92,7 @@ function Snake({ onBack }: { onBack: () => void }) {
             <div className="text-[13px] text-white/70">Score {score}</div>
             <button
               className="mt-1 rounded-md bg-emerald-500 px-4 py-1.5 text-[13px] font-semibold hover:bg-emerald-400"
-              onClick={() => { const s = state.current; s.snake = [[8, 8]]; s.dir = [1, 0]; s.nextDir = [1, 0]; s.alive = true; setScore(0); setOver(false) }}
+              onClick={() => { const s = state.current; s.snake = [[8, 8]]; s.dir = [1, 0]; s.nextDir = [1, 0]; s.alive = true; s.score = 0; setScore(0); setOver(false) }}
             >
               Play Again
             </button>
@@ -99,10 +104,10 @@ function Snake({ onBack }: { onBack: () => void }) {
   )
 }
 
-function Games() {
+function Games({ winId }: AppWindowProps) {
   const [view, setView] = useState<'hub' | 'snake'>('hub')
   const open = useWindows((s) => s.open)
-  if (view === 'snake') return <Snake onBack={() => setView('hub')} />
+  if (view === 'snake') return <Snake onBack={() => setView('hub')} winId={winId} />
 
   const cards = [
     { title: 'Snake', desc: 'The classic — arrow keys, neon green.', playable: true, play: () => setView('snake'), gradient: 'linear-gradient(140deg,#30D158,#0a5c2e)', glyph: '🐍' },

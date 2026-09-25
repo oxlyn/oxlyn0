@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { childrenOf, pathOf, useFs, type FsNode } from '@/system/stores/fs'
+import { childrenOf, pathOf, useFs } from '@/system/stores/fs'
 import { apps } from '@/system/registry'
 import { useWindows } from '@/system/stores/windows'
 import { wordsSeed } from '@/apps/dictionary/data'
@@ -36,7 +36,8 @@ export function Terminal() {
   const prompt = `oxlyn@macos27 ${CWD_MAP[cwd] ?? cwd} %`
 
   const run = (raw: string) => {
-    const out: string[] = [`${prompt} ${raw}`]
+    // Output only — submit() already echoed the command line.
+    const out: string[] = []
     const [cmd, ...args] = raw.trim().split(/\s+/)
     const push = (...s: string[]) => out.push(...s)
 

@@ -23,6 +23,9 @@ function TextEdit({ payload }: AppWindowProps) {
     }
   }, [text]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Don't let a pending autosave fire after the window is gone.
+  useEffect(() => () => window.clearTimeout(timer.current), [])
+
   const saveNew = () => {
     useFs.getState().create({
       parentId: 'documents',

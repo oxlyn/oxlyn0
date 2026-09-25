@@ -172,9 +172,18 @@ function Music({ payload }: AppWindowProps) {
     }
   }
 
+  // Playback context: when an album or playlist is open, prev/next (and
+  // track-end advance) stay inside it instead of jumping across the library.
+  const playlist = PLAYLISTS.find((p) => p.id === nav.slice(3))
+  const playlistTracks = playlist
+    ? playlist.trackIds.map((id) => tracksSeed.find((t) => t.id === id)).filter((t): t is Track => Boolean(t))
+    : []
+  const album = albums.find((a) => a.name === openAlbum)
+  const queue = album ? album.tracks : playlist ? playlistTracks : tracksSeed
+
   const step = (dir: 1 | -1) => {
-    const idx = tracksSeed.findIndex((t) => t.id === currentId)
-    const next = tracksSeed[(idx + dir + tracksSeed.length) % tracksSeed.length]
+    const idx = queue.findIndex((t) => t.id === currentId)
+    const next = queue[(idx + dir + queue.length) % queue.length]
     setCurrentId(next.id)
     setElapsed(0)
     setPlaying(true)
@@ -184,12 +193,6 @@ function Music({ payload }: AppWindowProps) {
     setElapsed(v)
     if (audioRef.current) audioRef.current.currentTime = v
   }
-
-  const playlist = PLAYLISTS.find((p) => p.id === nav.slice(3))
-  const playlistTracks = playlist
-    ? playlist.trackIds.map((id) => tracksSeed.find((t) => t.id === id)).filter((t): t is Track => Boolean(t))
-    : []
-  const album = albums.find((a) => a.name === openAlbum)
 
   const title = album ? album.name : playlist ? playlist.name : nav === 'albums' ? 'Albums' : nav === 'songs' ? 'Songs' : 'Listen Now'
 

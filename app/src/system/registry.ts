@@ -23,11 +23,17 @@ export const useAppsReady = create<{ ready: boolean }>(() => ({ ready: false }))
 
 let load: Promise<void> | null = null
 export function appsReady(): Promise<void> {
-  load ??= Promise.all(Object.values(loaders).map((loadApp) => loadApp())).then((mods) => {
-    for (const mod of mods) {
-      const app = mod.default
-      apps.push(app)
-      appById.set(app.id, app)
+  // allSettled, not all: one broken app module must not blank the whole
+  // desktop — it just stays missing from Dock/Launchpad/Spotlight.
+  load ??= Promise.allSettled(Object.values(loaders).map((loadApp) => loadApp())).then((results) => {
+    for (const result of results) {
+      if (result.status === 'fulfilled') {
+        const app = result.value.default
+        apps.push(app)
+        appById.set(app.id, app)
+      } else {
+        console.error('[registry] app module failed to load:', result.reason)
+      }
     }
     apps.sort((a, b) => a.name.localeCompare(b.name))
     rebuildDock()
@@ -38,8 +44,8 @@ export function appsReady(): Promise<void> {
 
 /** Dock layout, mirroring the original system (unlisted apps live in Launchpad only). */
 const DOCK_ORDER = [
-  'finder', 'launchpad', 'safari', 'messages', 'mail', 'maps',
-  'reminders', 'notes', 'freeform', 'music', 'tv', 'news',
+  'finder', 'launchpad', 'safari', 'messages', 'mail',
+  'reminders', 'notes', 'music', 'tv', 'news',
   'games', 'settings',
 ]
 

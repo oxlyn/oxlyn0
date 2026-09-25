@@ -4,7 +4,9 @@ import { Crown, RotateCcw } from 'lucide-react'
 
 // Piece codes: uppercase = white. '' = empty.
 type Board = string[]
-const START = 'RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr'
+// White at the bottom (renders last), black on top — otherwise every pawn
+// starts facing its own back rank and can never move.
+const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR'
 const GLYPH: Record<string, string> = {
   K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙',
   k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟',
@@ -118,24 +120,27 @@ function Chess() {
         </button>
       </div>
       <div className="flex min-h-0 flex-1 items-center justify-center gap-3">
-        <div className="grid aspect-square h-full max-h-[calc(100%-0px)] grid-cols-8 overflow-hidden rounded-md ring-1 ring-black/40" style={{ maxWidth: '100%' }}>
-          {board.map((p, i) => {
-            const dark = (Math.floor(i / 8) + (i % 8)) % 2 === 1
-            const isLegal = legal.includes(i)
-            const isSel = selected === i
-            return (
-              <button
-                key={i}
-                onClick={() => click(i)}
-                className={`flex items-center justify-center text-[min(4.5vh,4.5vw)] leading-none ${dark ? 'bg-[#7d5238]' : 'bg-[#e8cba0]'} ${isSel ? 'outline outline-2 -outline-offset-2 outline-amber-300' : ''}`}
-              >
-                <span className={p && !isWhite(p) ? 'drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]' : ''} style={{ color: p && !isWhite(p) ? '#1c1c1e' : '#fff' }}>
-                  {GLYPH[p] ?? ''}
-                </span>
-                {isLegal && <span className="absolute h-3 w-3 rounded-full bg-emerald-400/60" />}
-              </button>
-            )
-          })}
+        {/* size container so the board can take min(width, height) via cq units */}
+        <div className="grid h-full min-w-0 flex-1 place-items-center [container-type:size]">
+          <div className="grid aspect-square w-[min(100cqw,100cqh)] grid-cols-8 grid-rows-8 overflow-hidden rounded-md ring-1 ring-black/40">
+            {board.map((p, i) => {
+              const dark = (Math.floor(i / 8) + (i % 8)) % 2 === 1
+              const isLegal = legal.includes(i)
+              const isSel = selected === i
+              return (
+                <button
+                  key={i}
+                  onClick={() => click(i)}
+                  className={`relative flex items-center justify-center text-[min(7cqw,7cqh)] leading-none ${dark ? 'bg-[#7d5238]' : 'bg-[#e8cba0]'} ${isSel ? 'outline outline-2 -outline-offset-2 outline-amber-300' : ''}`}
+                >
+                  <span className={p && !isWhite(p) ? 'drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]' : ''} style={{ color: p && !isWhite(p) ? '#1c1c1e' : '#fff' }}>
+                    {GLYPH[p] ?? ''}
+                  </span>
+                  {isLegal && <span className="absolute h-3 w-3 rounded-full bg-emerald-400/60" />}
+                </button>
+              )
+            })}
+          </div>
         </div>
         <div className="hidden w-32 shrink-0 flex-col gap-2 md:flex">
           <div className="rounded-lg bg-black/30 p-2 text-[12px]">

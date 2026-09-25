@@ -41,7 +41,7 @@ function MailApp({ payload }: AppWindowProps) {
   const [draft, setDraft] = useState({ to: '', subject: '', body: '' })
 
   const visible = useMemo(() => {
-    const list = messages.filter((m) => (mailbox === 'inbox' ? m.mailbox === 'inbox' : m.mailbox === mailbox))
+    const list = messages.filter((m) => m.mailbox === mailbox)
     return [...list].sort((a, b) => b.at - a.at)
   }, [messages, mailbox])
 
@@ -65,7 +65,7 @@ function MailApp({ payload }: AppWindowProps) {
       {
         id, account: 'icloud', to: [{ name: draft.to, email: draft.to }], flagged: false, mailbox: 'sent',
         read: true, from: { name: 'wilson', email: 'wilson1.wu@gmail.com' }, subject: draft.subject || '(no subject)',
-        at: Date.now() - Date.now(), body: draft.body,
+        at: 0, body: draft.body,
       },
       ...all,
     ])

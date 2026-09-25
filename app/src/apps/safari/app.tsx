@@ -14,7 +14,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { bookmarksSeed } from './data'
-import type { AppDefinition, AppWindowProps } from '@/system/types'
+import type { AppDefinition } from '@/system/types'
 import { useWindows } from '@/system/stores/windows'
 
 interface Page {
@@ -81,7 +81,7 @@ function ToolButton({
   )
 }
 
-function Safari({ payload }: AppWindowProps) {
+function Safari() {
   const openApp = useWindows((s) => s.open)
   const [stack, setStack] = useState<Page[]>([])
   const [idx, setIdx] = useState(-1)
@@ -92,6 +92,8 @@ function Safari({ payload }: AppWindowProps) {
   const [shared, setShared] = useState(false)
   const histSeq = useRef(0)
   const timerRef = useRef<number | undefined>(undefined)
+  const sharedTimer = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(sharedTimer.current), [])
 
   const page: Page | null = stack[idx] ?? null
   const isReader = !!page && page.url.startsWith('reader:')
@@ -152,7 +154,8 @@ function Safari({ payload }: AppWindowProps) {
       /* clipboard unavailable */
     }
     setShared(true)
-    window.setTimeout(() => setShared(false), 1200)
+    window.clearTimeout(sharedTimer.current)
+    sharedTimer.current = window.setTimeout(() => setShared(false), 1200)
   }
 
   const favorites = bookmarksSeed.filter((b) => b.folder === 'favorites')

@@ -12,6 +12,18 @@ My resume, running as a full macOS desktop simulation in the browser. Log in and
 - **Contacts** — my card (real contact info)
 - **Photos** — Skylar 🐾
 
+## Keyboard
+
+| Key | Action |
+|---|---|
+| `F4` | Full-screen Launchpad (the Dock's **Apps** icon opens the windowed one) |
+| `⌘K` / `Ctrl+Space` | Spotlight |
+| `Esc` | Close Spotlight/Launchpad, or leave focus mode |
+
+In Finder: select a file, then **Move to Trash** / **Rename** from the toolbar
+(Enter commits a rename, Esc cancels). Inside the Trash the button becomes
+**Empty Trash**.
+
 ## Architecture (v2 rebuild)
 
 TypeScript + JSX + [rolldown-vite] (the Rolldown app bundler — same core as tsdown,
@@ -92,4 +104,4 @@ M.S. Computer Science — Georgia Tech (OMSCS), in progress · M.B.A. — Duke U
 
 ### Provenance & tech
 
-Built on the open "macOS 27" Liquid Glass browser simulation (an AI-generated Kimi share demo, recovered via the Wayback Machine when the origin was network-blocked), then customized end-to-end. v2 rebuilt the shipped bundle into a typed source tree: the system shell in `src/system`, all 37 apps as self-registering modules in `src/apps`, content extracted from the original bundle into per-app data files (`scripts/sync-extracted.mjs`). Weather (Open-Meteo) and Maps (OpenStreetMap) are live keyless APIs. Fonts are system-stack only — the Google Fonts link was removed after it was measured blocking first paint for seconds where Google is unreachable.
+Built on the open "macOS 27" Liquid Glass browser simulation (an AI-generated Kimi share demo, recovered via the Wayback Machine when the origin was network-blocked), then customized end-to-end. v2 rebuilt the shipped bundle into a typed source tree: the system shell in `src/system`, all 34 apps as self-registering modules in `src/apps`, content extracted from the original bundle into per-app data files (`scripts/sync-extracted.mjs`). Weather (Open-Meteo) and Dictionary (dictionaryapi.dev) are live keyless APIs. Fonts are system-stack only — the Google Fonts link was removed after it was measured blocking first paint for seconds where Google is unreachable.

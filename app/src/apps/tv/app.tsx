@@ -21,7 +21,7 @@ function TV({ payload }: AppWindowProps) {
           </button>
           <span className="ml-2 truncate text-[13px] font-medium">{v.name}</span>
         </div>
-        <video key={v.url} src={v.url} controls autoPlay className="min-h-0 w-full flex-1 bg-black object-contain" />
+        <video key={v.url} src={v.url} controls autoPlay muted playsInline className="min-h-0 w-full flex-1 bg-black object-contain" />
         <div className="shrink-0 p-3 text-[12px] text-white/50 select-text">{v.desc}</div>
       </div>
     )

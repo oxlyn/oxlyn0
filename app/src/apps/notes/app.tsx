@@ -20,10 +20,13 @@ function Notes({ payload }: AppWindowProps) {
 
   const visible = useMemo(() => {
     const list = notes.filter((n) => !n.deleted && (folder === 'all' || n.folder === folder) && (!tag || n.tags.includes(tag)))
-    return [...list.filter((n) => n.pinned), ...list.filter((n) => !n.pinned)].sort((a, b) => b.modified - a.modified)
+    const sorted = [...list.filter((n) => n.pinned), ...list.filter((n) => !n.pinned)].sort((a, b) => b.modified - a.modified)
+    // Parse titles/previews once per list change, not per row per render —
+    // both helpers run the note HTML through a detached DOM node.
+    return sorted.map((n) => ({ n, title: noteTitle(n), preview: notePreview(n) }))
   }, [notes, folder, tag])
 
-  const active = notes.find((n) => n.id === activeId && !n.deleted) ?? visible[0] ?? null
+  const active = notes.find((n) => n.id === activeId && !n.deleted) ?? visible[0]?.n ?? null
 
   useEffect(() => {
     if (active && editorRef.current && editorRef.current.innerHTML !== active.html) {
@@ -32,6 +35,7 @@ function Notes({ payload }: AppWindowProps) {
   }, [active?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const saveTimer = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(saveTimer.current), [])
   const onInput = () => {
     if (!active || !editorRef.current) return
     const html = editorRef.current.innerHTML
@@ -87,7 +91,7 @@ function Notes({ payload }: AppWindowProps) {
           </button>
         </div>
         <div className="h-[calc(100%-2.75rem)] overflow-y-auto">
-          {visible.map((n) => (
+          {visible.map(({ n, title, preview }) => (
             <button
               key={n.id}
               onClick={() => setActiveId(n.id)}
@@ -97,11 +101,11 @@ function Notes({ payload }: AppWindowProps) {
             >
               <div className="flex items-center gap-1 font-semibold">
                 {n.pinned && <Pin size={11} className="shrink-0 fill-current" />}
-                <span className="truncate">{noteTitle(n)}</span>
+                <span className="truncate">{title}</span>
               </div>
               <div className="mt-0.5 flex gap-2 text-[11px] text-black/45 dark:text-white/45">
                 <span className="truncate">
-                  {new Date(n.modified).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · {notePreview(n) || 'No additional text'}
+                  {new Date(n.modified).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · {preview || 'No additional text'}
                 </span>
               </div>
             </button>

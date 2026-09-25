@@ -161,7 +161,10 @@ export const useWindows = create<WindowsState>((set, get) => ({
 
   minimize: (id) =>
     set((s) => {
-      const rest = s.wins.filter((w) => w.id !== id && !w.minimized).sort((a, b) => b.z - a.z)[0]
+      // Dormant (parked keep-alive) windows are hidden in place, so they must
+      // never receive focus — otherwise the menu bar would report an app whose
+      // window isn't on screen. Mirrors the filter in close().
+      const rest = s.wins.filter((w) => w.id !== id && !w.minimized && !w.dormant).sort((a, b) => b.z - a.z)[0]
       return {
         wins: s.wins.map((w) => (w.id === id ? { ...w, minimized: true } : w)),
         focusedId: rest?.id ?? null,
