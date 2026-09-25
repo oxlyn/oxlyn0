@@ -81,7 +81,7 @@ export const useNotes = create<NotesState>()(
       // Bump this whenever the seed content changes in notes-seed.ts: a version
       // mismatch discards the stored state, so returning visitors pick up the
       // new seed instead of keeping a stale copy forever.
-      version: 1,
+      version: 2,
     },
   ),
 )

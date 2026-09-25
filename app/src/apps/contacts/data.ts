@@ -183,21 +183,6 @@ export const contactsSeed = [
     "favorite": false,
     "gradient": 11,
     "myCard": false
-  },
-  {
-    "id": "ct-mtp61cz5-13",
-    "first": "Oxlyn",
-    "last": "",
-    "company": "Dubbs Capital",
-    "phone": "(416) 412-1927",
-    "email": "wilson1.wu@gmail.com",
-    "address": "Toronto, ON",
-    "birthday": "",
-    "url": "linkedin.com/in/wilson1wu",
-    "note": "Operator → AI engineer. Dubbs Capital · Snappy · Union Made Apparel.",
-    "favorite": false,
-    "gradient": 4,
-    "myCard": true
   }
 ]
 

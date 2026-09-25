@@ -85,7 +85,7 @@ function Phone() {
         <div className="h-full overflow-y-auto p-3">
           {[
             ['Dentist', 'Reminder about your Friday cleaning…', 'Yesterday'],
-            ['Union Made — warehouse', 'Your order shipped. Tracking in the…', 'Monday'],
+            
             ['Unknown', '(no voicemail)', 'Aug 28'],
           ].map(([from, preview, when], i) => (
             <div key={i} className="flex items-center gap-3 border-b border-black/5 py-2.5 dark:border-white/5">

@@ -10,7 +10,7 @@ export const mailSeed = [
     "to": [
       {
         "name": "oxlyn",
-        "email": "wilson1.wu@gmail.com"
+        "email": "oxlyn@icloud.com"
       }
     ],
     "flagged": false,
@@ -22,50 +22,8 @@ export const mailSeed = [
     },
     "subject": "Your receipt from the App Store",
     "at": -1200000,
-    "body": "Dear Oxlyn,\n\nThank you for your purchase. This is your receipt for Procreate ($12.99), purchased on July 16, 2026.\n\nOrder ID: MGD82K41\nBilled to: Visa ••4242\nApple ID: wilson1.wu@gmail.com\n\nIf you didn't authorize this purchase, visit Report a Problem at reportaproblem.apple.com within 90 days.\n\nApple\nOne Apple Park Way, Cupertino, CA 95014",
+    "body": "Dear Oxlyn,\n\nThank you for your purchase. This is your receipt for Procreate ($12.99), purchased on July 16, 2026.\n\nOrder ID: MGD82K41\nBilled to: Visa ••4242\nApple ID: oxlyn@icloud.com\n\nIf you didn't authorize this purchase, visit Report a Problem at reportaproblem.apple.com within 90 days.\n\nApple\nOne Apple Park Way, Cupertino, CA 95014",
     "atMinutesAgo": 20
-  },
-  {
-    "id": "mail-0-2",
-    "account": "icloud",
-    "to": [
-      {
-        "name": "oxlyn",
-        "email": "wilson1.wu@gmail.com"
-      }
-    ],
-    "flagged": false,
-    "mailbox": "inbox",
-    "read": false,
-    "from": {
-      "name": "Oxlyn",
-      "email": "oxlyn@dubbscapital.com"
-    },
-    "subject": "Start here — about this inbox",
-    "at": -480000,
-    "body": "Hi — Oxlyn here. This inbox is part of the resume.\n\nWorth opening:\n• “[basenotes] Cross-device queue shipped” — a real engineering story\n• “AI Engineer Track — this week” — how I train\n• “GTM memo — how Snappy sells” — how I think about revenue\n\nThe short version: I operate three ventures (Dubbs Capital, Snappy, Union Made Apparel) and I’m building toward AI engineering — agents, RAG, evaluation, shipped for real customers.\n\nReal contact: wilson1.wu@gmail.com · (416) 412-1927 · github.com/wilsonwu-ai · linkedin.com/in/wilson1wu\n\n— Oxlyn",
-    "atMinutesAgo": 8
-  },
-  {
-    "id": "mail-0-3",
-    "account": "icloud",
-    "to": [
-      {
-        "name": "oxlyn",
-        "email": "wilson1.wu@gmail.com"
-      }
-    ],
-    "flagged": false,
-    "mailbox": "inbox",
-    "read": false,
-    "from": {
-      "name": "GitHub",
-      "email": "notifications@github.com"
-    },
-    "subject": "[basenotes] Cross-device queue shipped — the debugging story",
-    "at": -7200000,
-    "body": "Shipped: cross-device queue, end to end.\n\nShopify App Proxy (HMAC-signed) → Cloudflare Worker → customer metafield → theme JS sync. A storefront-only feature got cross-device persistence without a full app build.\n\nThe debugging story is the resume-worthy part: the original “OAuth is structurally broken” conclusion was wrong. Root cause was clipboard %20 corruption inserting URL-encoded spaces into the client_id, then browser autofill polluting retries. Reading the error string literally — “api_key 92 5294…” with the space — was the giveaway.\n\nPattern banked. Auth reasoning across systems is half of real integration work.",
-    "atMinutesAgo": 120
   },
   {
     "id": "mail-0-4",
@@ -73,7 +31,7 @@ export const mailSeed = [
     "to": [
       {
         "name": "oxlyn",
-        "email": "wilson1.wu@gmail.com"
+        "email": "oxlyn@icloud.com"
       }
     ],
     "flagged": true,
@@ -94,7 +52,7 @@ export const mailSeed = [
     "to": [
       {
         "name": "oxlyn",
-        "email": "wilson1.wu@gmail.com"
+        "email": "oxlyn@icloud.com"
       }
     ],
     "flagged": false,
@@ -110,54 +68,12 @@ export const mailSeed = [
     "atMinutesAgo": 1440
   },
   {
-    "id": "mail-0-6",
-    "account": "icloud",
-    "to": [
-      {
-        "name": "oxlyn",
-        "email": "wilson1.wu@gmail.com"
-      }
-    ],
-    "flagged": false,
-    "mailbox": "inbox",
-    "read": false,
-    "from": {
-      "name": "Linear",
-      "email": "notifications@linear.app"
-    },
-    "subject": "AI Engineer Track — this week",
-    "at": -86400000,
-    "body": "WW-26 · AI Engineer Track — weekly focus\nPriority: High · Recurring\nProject: Operator → AI Engineer\n\n• One LeetCode problem a day — log the pattern\n• OMSCS Fall prep: Artificial Intelligence (CS 6601) + Software Development Process (CS 6300)\n• GCP Associate Cloud Engineer → Professional ML Engineer\n• Chip Huyen re-read with teach-backs — depth over velocity\n\nSlow is fast. Attempted and logged beats perfect and skipped.",
-    "atMinutesAgo": 1440
-  },
-  {
-    "id": "mail-0-7",
-    "account": "icloud",
-    "to": [
-      {
-        "name": "oxlyn",
-        "email": "wilson1.wu@gmail.com"
-      }
-    ],
-    "flagged": false,
-    "mailbox": "inbox",
-    "read": true,
-    "from": {
-      "name": "Oxlyn (Snappy)",
-      "email": "oxlyn@gosnappy.io"
-    },
-    "subject": "GTM memo — how Snappy sells",
-    "at": -86400000,
-    "body": "How Snappy sells — the memo.\n\nThe buyer: an independent restaurant owner. Low attention, allergic to platform pitches, and rightly skeptical of anything that asks them to change how they operate.\n\nThe chain:\n1. WEDGE — lead with a single-visit yes. A gift-card program. A waitlist QR poster. Small, concrete, obviously useful — no operational change required.\n2. TRUST — deliver it fast and store-specific. The wedge earns two things a cold platform pitch never gets: the relationship, and the store-level context (their menu, their brand, their guests).\n3. EXPAND — the presentation-studio sell rides on that earned context. By then it is not a vendor pitch; it is the next obvious step.\n\nThe operating layer underneath: follow-up staged by deal stage in the CRM — every open deal carries a next-step date or it surfaces as an exception. And AI collapses production time: proposals and store-specific creative ship the same day they are promised, which changes deal velocity more than any script does.\n\n— Oxlyn",
-    "atMinutesAgo": 1440
-  },
-  {
     "id": "mail-0-8",
     "account": "icloud",
     "to": [
       {
         "name": "oxlyn",
-        "email": "wilson1.wu@gmail.com"
+        "email": "oxlyn@icloud.com"
       }
     ],
     "flagged": true,
@@ -178,7 +94,7 @@ export const mailSeed = [
     "to": [
       {
         "name": "oxlyn",
-        "email": "wilson1.wu@gmail.com"
+        "email": "oxlyn@icloud.com"
       }
     ],
     "flagged": false,
@@ -199,7 +115,7 @@ export const mailSeed = [
     "to": [
       {
         "name": "oxlyn",
-        "email": "wilson1.wu@gmail.com"
+        "email": "oxlyn@icloud.com"
       }
     ],
     "flagged": false,
@@ -228,7 +144,7 @@ export const mailSeed = [
     "read": true,
     "from": {
       "name": "oxlyn",
-      "email": "wilson1.wu@gmail.com"
+      "email": "oxlyn@icloud.com"
     },
     "subject": "Re: Q3 brand refresh — review Friday?",
     "at": -120000,
@@ -249,7 +165,7 @@ export const mailSeed = [
     "read": true,
     "from": {
       "name": "oxlyn",
-      "email": "wilson1.wu@gmail.com"
+      "email": "oxlyn@icloud.com"
     },
     "subject": "Itinerary for Tahoe",
     "at": -93600000,
@@ -265,7 +181,7 @@ export const mailSeed = [
     "read": true,
     "from": {
       "name": "oxlyn",
-      "email": "wilson1.wu@gmail.com"
+      "email": "oxlyn@icloud.com"
     },
     "subject": "Ideas for the launch post —",
     "at": -21600000,
@@ -278,7 +194,7 @@ export const mailSeed = [
     "to": [
       {
         "name": "oxlyn",
-        "email": "wilson1.wu@gmail.com"
+        "email": "oxlyn@icloud.com"
       }
     ],
     "flagged": false,
@@ -299,7 +215,7 @@ export const mailSeed = [
     "to": [
       {
         "name": "oxlyn",
-        "email": "wilson1.wu@gmail.com"
+        "email": "oxlyn@icloud.com"
       }
     ],
     "flagged": false,
@@ -315,4 +231,3 @@ export const mailSeed = [
     "atMinutesAgo": 8640
   }
 ]
-

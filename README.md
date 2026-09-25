@@ -1,16 +1,14 @@
-# Oxlyn — Interactive Resume
+# Oxlyn — a macOS 27 desktop simulation in your browser
 
-**Live: https://wilsonwu-ai.github.io/macos27/**
+A full macOS desktop simulation running in the browser — window manager, Dock,
+Spotlight, Launchpad, a virtual file system, and 30+ working apps. Log in and
+explore: every app works.
 
-My resume, running as a full macOS desktop simulation in the browser. Log in and explore — every app works:
-
-- **Notes** — who I am, how I think about AI engineering and GTM strategy
-- **Mail** — project stories (real engineering war stories, my training system, how Snappy sells)
-- **Documents** — AI engineering field notes, reading list, 2026 focus
-- **Desktop → Ventures** — Dubbs Capital thesis, Snappy GTM
-- **Downloads → Resume — Oxlyn.pdf** — opens in Preview
-- **Contacts** — my card (real contact info)
-- **Photos** — Skylar 🐾
+- **Finder** — a real virtual file system: create/rename/move to Trash, persists
+- **Notes / Mail / Contacts / Calendar / Reminders** — self-contained demo data
+- **DevKit** — a 21-tool developer toolbox (all local, nothing uploaded)
+- **Terminal** — a small working shell over the same virtual file system
+- **Study / Wakfu Guide** — embedded external sites (kept alive across window close)
 
 ## Keyboard
 
@@ -42,15 +40,15 @@ app/
     apps/            ← every app, one directory each, fully self-contained
       <id>/
         app.tsx      ← exports AppDefinition { id, name, icon, component, size }
-        data.ts      ← app content (extracted from the original bundle)
+        data.ts      ← app content
 study/index.html     ← 乐学二年级 practice app, embedded verbatim by the Study app
 wakfu/               ← Wakfu 攻略站「万象之扉」, embedded verbatim by the Wakfu Guide app
 ```
 
 **Adding an app = creating one directory.** Drop `app/src/apps/<id>/app.tsx` that
 default-exports an `AppDefinition` (see [app/src/apps/README.md](app/src/apps/README.md))
-and the system shows it on the Dock, Launchpad, Spotlight automatically at load
-time — nothing else to wire. The Study app was added this way in minutes.
+and the system shows it on the Dock, Launchpad, Spotlight and desktop automatically
+at load time — nothing else to wire.
 
 ## Develop
 
@@ -64,12 +62,13 @@ npm run dev        # http://localhost:5173/macos27/
 **GitHub Pages** (deploy-from-root, current):
 
 ```bash
-scripts/deploy-root.sh   # build → copy dist/index.html + dist/assets/ into the repo root
+scripts/deploy-root.sh   # build → inject modulepreload → copy dist/index.html + dist/assets/ into the repo root
 ```
 
 Media (wallpapers/photos/tracks) lives at the repo root so GitHub Pages serves it
 at `/macos27/*`; `vite.config.ts` sets the matching `base` and a dev middleware
-serves it locally.
+serves it locally. A service worker (`sw.js`) caches hashed bundles and refreshes
+un-hashed files in the background, so repeat visits and offline boots work.
 
 **Cloudflare Pages** (auto-deploy from the GitHub mirror): connect the repo in
 the Pages dashboard — build command `npm run build`, output dir `dist`, env
@@ -78,30 +77,8 @@ Workers Builds) flips `base` to `/`; `copyRootStatic` mirrors repo-root media +
 `study/` + `wakfu/` into `dist` so every runtime path resolves without the
 GitHub-root layout. `wrangler.jsonc` points the deploy step at `dist`.
 
-## Who
-
-Operator of three ventures, deliberately building toward AI engineering:
-
-| Venture | Role | Since |
-|---|---|---|
-| **Dubbs Capital** | Founder & CEO — acquire/build highly predictable B2B technology companies | 2020 |
-| **Snappy** | CRO & minority investor — presentation studio serving restaurants (founded 2016); own revenue + GTM | 2022 |
-| **Union Made Apparel** | Owner-operator — physical product, e-commerce | 2022 |
-
-M.S. Computer Science — Georgia Tech (OMSCS), in progress · M.B.A. — Duke University, 2019. Focus: agents, RAG, evaluation, GTM for B2B, restaurant tech.
-
-## Public work
-
-- [macos27](https://github.com/wilsonwu-ai/macos27) — this site
-- [basenotes](https://github.com/wilsonwu-ai/basenotes) — Shopify storefront engineering (Cloudflare Workers, HMAC-signed App Proxy, metafields)
-- [allfish](https://github.com/wilsonwu-ai/allfish) — "AllTrails for anglers," React + MapLibre
-
-## Contact
-
-**wilson1.wu@gmail.com · (416) 412-1927 · [LinkedIn](https://www.linkedin.com/in/wilson1wu/) · [github.com/wilsonwu-ai](https://github.com/wilsonwu-ai)**
-
 ---
 
 ### Provenance & tech
 
-Built on the open "macOS 27" Liquid Glass browser simulation (an AI-generated Kimi share demo, recovered via the Wayback Machine when the origin was network-blocked), then customized end-to-end. v2 rebuilt the shipped bundle into a typed source tree: the system shell in `src/system`, all 34 apps as self-registering modules in `src/apps`, content extracted from the original bundle into per-app data files (`scripts/sync-extracted.mjs`). Weather (Open-Meteo) and Dictionary (dictionaryapi.dev) are live keyless APIs. Fonts are system-stack only — the Google Fonts link was removed after it was measured blocking first paint for seconds where Google is unreachable.
+Built on the open "macOS 27" Liquid Glass browser simulation (an AI-generated Kimi share demo, recovered via the Wayback Machine when the origin was network-blocked), then rebuilt end-to-end. v2 reconstructed the shipped bundle into a typed source tree: the system shell in `src/system`, all 34 apps as self-registering modules in `src/apps`. Weather (Open-Meteo) and Dictionary (dictionaryapi.dev) are live keyless APIs. Fonts are system-stack only — the Google Fonts link was removed after it was measured blocking first paint for seconds where Google is unreachable.

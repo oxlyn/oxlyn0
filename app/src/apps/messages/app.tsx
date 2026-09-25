@@ -9,7 +9,7 @@ interface Conv { id: string; members: string[]; pinned: boolean; unread: number;
 const seed = conversationsSeed as Conv[]
 
 const HUES: Record<string, number> = {
-  maya: 340, mom: 20, dad: 210, devon: 95, snappy: 42, dubbs: 262, union: 150, me: 210,
+  maya: 340, mom: 20, dad: 210, devon: 95, me: 210,
 }
 const hueOf = (name: string) => HUES[name.toLowerCase()] ?? ([...name].reduce((h, c) => h + c.charCodeAt(0), 0) % 360)
 const avatar = (name: string, size = 32) => (

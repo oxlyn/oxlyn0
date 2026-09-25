@@ -116,7 +116,7 @@ export function Terminal() {
           '     .;loddo:.  .olloddol;.      WM: zustand',
           '   cKMMMMMMMMMMNWMMMMMMMMMM0:    Apps: self-registering (src/apps/)',
           ' .KMMMMMMMMMMMMMMMMMMMMMMMWd.',
-          ' XMMMMMMMMMMMMMMMMMMMMMMMX.      Resume: this desktop',
+          ' XMMMMMMMMMMMMMMMMMMMMMMMX.      A desktop simulation',
           ';MMMMMMMMMMMMMMMMMMMMMMMM:',
           ':MMMMMMMMMMMMMMMMMMMMMMMM:',
           '.MMMMMMMMMMMMMMMMMMMMMMMMX.',

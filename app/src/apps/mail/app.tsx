@@ -64,7 +64,7 @@ function MailApp({ payload }: AppWindowProps) {
     setMessages((all) => [
       {
         id, account: 'icloud', to: [{ name: draft.to, email: draft.to }], flagged: false, mailbox: 'sent',
-        read: true, from: { name: 'wilson', email: 'wilson1.wu@gmail.com' }, subject: draft.subject || '(no subject)',
+        read: true, from: { name: 'oxlyn', email: 'oxlyn@icloud.com' }, subject: draft.subject || '(no subject)',
         at: 0, body: draft.body,
       },
       ...all,

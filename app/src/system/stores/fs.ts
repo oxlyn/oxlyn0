@@ -107,7 +107,7 @@ export const useFs = create<FsState>()(
       // Bump this whenever fs-seed.ts changes: a version mismatch discards the
       // stored tree, so returning visitors pick up the new seed instead of
       // keeping a stale copy forever.
-      version: 2,
+      version: 3,
     },
   ),
 )
