@@ -401,7 +401,10 @@ function Music({ payload }: AppWindowProps) {
         src={current?.src}
         onTimeUpdate={(e) => setElapsed(e.currentTarget.currentTime)}
         onLoadedMetadata={(e) => {
-          if (current && isFinite(e.currentTarget.duration)) setDurations((d) => ({ ...d, [current.id]: e.currentTarget.duration }))
+          // Read duration synchronously — e.currentTarget is nulled once the
+          // event has dispatched, but a functional updater runs later, at render.
+          const d = e.currentTarget.duration
+          if (current && isFinite(d)) setDurations((prev) => ({ ...prev, [current.id]: d }))
         }}
         onEnded={() => step(1)}
         className="hidden"
