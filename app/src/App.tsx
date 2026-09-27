@@ -11,9 +11,17 @@ import { Launchpad } from './system/components/Launchpad'
 import { Spotlight } from './system/components/Spotlight'
 
 /** Boot directly into a single app (used by the title-bar "pop out" button: ?app=<id>). */
+
+// Idempotency guard: StrictMode double-invokes the registry effect in dev, and
+// both runs attach to the same memoized appsReady() promise — a second
+// bootIntoApp would toggleFocusMode straight back out of the single-app view.
+let bootIntoAppDone = false
+
 function bootIntoApp() {
+  if (bootIntoAppDone) return
   const appId = new URLSearchParams(location.search).get('app')
   if (!appId || !appById.has(appId)) return
+  bootIntoAppDone = true
   useSystem.setState({ standalone: true })
   useSystem.getState().login()
   useWindows.getState().open(appId)
