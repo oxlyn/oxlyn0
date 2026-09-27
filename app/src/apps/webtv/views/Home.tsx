@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSources } from '../components/SourcesProvider'
 import MovieCard from '../components/MovieCard'
-import { fetchSiteData } from '../lib/api'
+import { fetchSiteData, isAbortError } from '../lib/api'
 import { extractCategories, extractVodList, isSiteUnreachable } from '../lib/maccms'
 import type { Category, VodItem } from '../lib/types'
 import type { WebTVNav } from '../nav'
@@ -33,6 +33,9 @@ export default function Home({ nav }: { nav: WebTVNav }) {
   const triedIdsRef = useRef<Set<string>>(new Set())
   const switchingRef = useRef(false)
   const autoSwitchRef = useRef(false)
+  // 请求序号：后到的请求使先到的失效，避免连点分类时按完成顺序把旧数据渲染上屏
+  const catSeqRef = useRef(0)
+  const listSeqRef = useRef(0)
 
   // ===== 站点切换 =====
 
@@ -97,11 +100,14 @@ export default function Home({ nav }: { nav: WebTVNav }) {
     async (siteId: string) => {
       const site = sites.find((s) => s.id === siteId)
       if (!site) return
+      const seq = ++catSeqRef.current
+      const ctrl = new AbortController()
       setCategories([])
       setCurrentCategoryId(null)
       triedIdsRef.current.add(siteId)
       try {
-        const data = await fetchSiteData(site, { ac: 'type' })
+        const data = await fetchSiteData(site, { ac: 'type' }, { signal: ctrl.signal })
+        if (seq !== catSeqRef.current) return // 已有更新的分类请求
         if (isSiteUnreachable(data)) {
           handleSiteFailure(siteId, (data.msg as string) || '当前站点不可达')
           return
@@ -112,6 +118,7 @@ export default function Home({ nav }: { nav: WebTVNav }) {
         triedIdsRef.current.clear()
         triedIdsRef.current.add(siteId)
       } catch (e) {
+        if (seq !== catSeqRef.current || isAbortError(e)) return // 已被取代，静默
         console.error('加载分类失败', e)
         setSiteError('加载分类失败，请稍后重试')
       }
@@ -123,6 +130,8 @@ export default function Home({ nav }: { nav: WebTVNav }) {
     async (siteId: string, categoryId: string | number | null, page: number, isLoadMore: boolean) => {
       const site = sites.find((s) => s.id === siteId)
       if (!site) return
+      const seq = ++listSeqRef.current
+      const ctrl = new AbortController()
       if (isLoadMore) {
         if (loadingMore) return
         setLoadingMore(true)
@@ -135,7 +144,8 @@ export default function Home({ nav }: { nav: WebTVNav }) {
           ac: 'detail',
           pg: page,
           t: categoryId ?? undefined,
-        })
+        }, { signal: ctrl.signal })
+        if (seq !== listSeqRef.current) return // 已有更新的列表请求
         if (isSiteUnreachable(data)) {
           if (!isLoadMore) {
             setMovieList([])
@@ -159,11 +169,15 @@ export default function Home({ nav }: { nav: WebTVNav }) {
         setTotalPages(pagecount)
         setTotalCount(total)
       } catch (e) {
+        if (seq !== listSeqRef.current) return
+        if (isAbortError(e)) return // 被更新的请求取代，静默
         console.error('加载影视列表失败', e)
         if (!isLoadMore) setMovieList([])
       } finally {
-        setListLoading(false)
-        setLoadingMore(false)
+        if (seq === listSeqRef.current) {
+          setListLoading(false)
+          setLoadingMore(false)
+        }
       }
     },
     // loadingMore 通过 ref 判断会造成过期闭包，这里直接依赖 state（滚动触发频率低）
