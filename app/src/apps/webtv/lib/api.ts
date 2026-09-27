@@ -48,11 +48,17 @@ async function fetchFirstAvailable(
         signal,
         headers: candidate.kind === 'proxy' ? candidate.headers : undefined,
       });
-      // 同源代理返回 404/405 → 说明部署环境没有 API 路由（如静态导出），跳过后续同源尝试
-      if (candidate.kind === 'proxy' && (resp.status === 404 || resp.status === 405)) {
-        sameOriginProxyAvailable = false;
-        errors.push(`proxy ${resp.status}`);
-        continue;
+      // 同源代理不可用（无服务端部署）：404/405，或被 Cloudflare Pages 的 SPA
+      // fallback 用 200 + index.html 兜底（content-type 为 text/html）。两种情况
+      // 都必须立即关闭该通道，否则 HTML 会被 parseLenient 当成 {__raw} 站点数据，
+      // 静默返回空列表且不再降级到直连/公共代理。
+      if (candidate.kind === 'proxy') {
+        const ct = resp.headers.get('content-type') || '';
+        if (resp.status === 404 || resp.status === 405 || ct.includes('text/html')) {
+          sameOriginProxyAvailable = false;
+          errors.push(`proxy ${resp.status || ct}`);
+          continue;
+        }
       }
       if (binary) {
         const bytes = await resp.arrayBuffer();
@@ -257,9 +263,12 @@ export async function searchAllSites(
         }),
         signal,
       });
-      if (resp.status === 404 || resp.status === 405) {
+      // 404/405，或 SPA fallback 兜底的 200 + index.html → 同源代理不存在，
+      // 关闭通道后落入下方浏览器逐站并发
+      const ct = resp.headers.get('content-type') || '';
+      if (resp.status === 404 || resp.status === 405 || ct.includes('text/html')) {
         sameOriginProxyAvailable = false;
-      } else if (resp.ok && resp.body) {
+      } else if (resp.ok && ct.includes('ndjson') && resp.body) {
         // 逐行读取 NDJSON 流，每到一个站点结果立即回调
         const reader = resp.body.getReader();
         const decoder = new TextDecoder();

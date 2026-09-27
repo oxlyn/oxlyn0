@@ -1,12 +1,18 @@
 // Cloudflare Workers (static assets) deploy config — the dashboard build runs
 // `npx wrangler deploy`, which reads this file instead of walking the whole
 // repo root (node_modules trips the 25 MiB per-file asset limit).
+// main (worker.ts) serves /api/proxy/* for the WebTV app server-side; only
+// those paths reach the script (run_worker_first), everything else is served
+// straight from dist/ without invoking the Worker.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "home",
+  "main": "worker.ts",
   "compatibility_date": "2026-09-03",
   "observability": { "enabled": true },
   "assets": {
-    "directory": "dist"
+    "directory": "dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/proxy/*"]
   }
 }
