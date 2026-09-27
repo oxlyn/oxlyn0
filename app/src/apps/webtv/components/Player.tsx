@@ -48,7 +48,9 @@ export default function Player({ url, isLive = false, onReady, onError }: Player
         aspectRatio: true,
         fullscreen: true,
         miniProgressBar: true,
-        type: isM3U8(url) ? 'm3u8' : undefined,
+        // 非 m3u8 传 ''：artplayer 只接受 string（undefined 会抛 [Type Error]），
+        // 空串则回落到按 URL 扩展名推断类型
+        type: isM3U8(url) ? 'm3u8' : '',
         customType: {
           m3u8: (video: HTMLVideoElement, mediaUrl: string) => {
             if (!art) return;
