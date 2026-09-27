@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Plugin } from 'rolldown-vite'
+import { webtvDevProxy } from './dev-proxy'
 
 // Vite root is this app/ directory; the repo root above it holds static media
 // (wallpapers/photos/tracks) and the bundled study app, so GitHub Pages keeps
@@ -69,7 +70,7 @@ export default defineConfig({
   base: BASE,
   server: { host: true, port: 5173 },
   resolve: { alias: { '@': resolve(import.meta.dirname, 'src') } },
-  plugins: [react(), tailwindcss(), rootStatic(), copyRootStatic()],
+  plugins: [react(), tailwindcss(), rootStatic(), copyRootStatic(), webtvDevProxy()],
   build: {
     outDir: resolve(REPO_ROOT, 'dist'),
     emptyOutDir: true,

@@ -1,0 +1,160 @@
+import { useCallback, useEffect, useState } from 'react'
+import MovieCard from '../components/MovieCard'
+import { useSources } from '../components/SourcesProvider'
+import { searchAllSites } from '../lib/api'
+import type { VodItem } from '../lib/types'
+import type { WebTVNav } from '../nav'
+
+/**
+ * 搜索页：跨站并发搜索 + 站点分组筛选（等价上游 SearchPage 的 doSearch +
+ * searchSiteGroups）。上游由 /search?kw= 路由参数驱动，窗口版改为
+ * shell 传入的初始关键词 + 页内输入。
+ */
+export default function Search({ nav, initialKw = '' }: { nav: WebTVNav; initialKw?: string }) {
+  const { sites } = useSources()
+
+  const [keyword, setKeyword] = useState(initialKw)
+  const [results, setResults] = useState<VodItem[]>([])
+  const [loading, setLoading] = useState(false)
+  const [done, setDone] = useState(false)
+  const [siteFilter, setSiteFilter] = useState<string | number>('__all')
+  const [progress, setProgress] = useState({ completed: 0, total: 0 })
+
+  const doSearch = useCallback(
+    async (kw: string) => {
+      const trimmed = kw.trim()
+      if (!trimmed) return
+      setLoading(true)
+      setDone(false)
+      setResults([])
+      setSiteFilter('__all')
+      setProgress({ completed: 0, total: 0 })
+      try {
+        const searchableSites = sites.filter((s) => s.searchable === 1)
+        const targetSites = searchableSites.length > 0 ? searchableSites : sites
+        const siteMap = new Map(targetSites.map((s) => [s.id, s]))
+        const seen = new Set<string>()
+
+        // 流式渐进：每到一个站点的结果立即合并上屏（按 站点+vod_id 去重）
+        // 注意：去重计算必须在 updater 外完成 —— StrictMode 下 updater 会被调用两次，
+        // 带副作用的 updater 会因第二次调用时 key 已存在而把结果全部丢掉
+        await searchAllSites(targetSites, trimmed, (siteId, list, completed, total) => {
+          setProgress({ completed, total })
+          const site = siteMap.get(siteId)
+          if (!site || list.length === 0) return
+          const fresh = list
+            .map((m) => ({ ...m, __siteId: site.id, __siteName: site.name }))
+            .filter((m) => {
+              if (!m.vod_name) return false
+              const key = `${m.__siteId}_${m.vod_id}`
+              if (seen.has(key)) return false
+              seen.add(key)
+              return true
+            })
+          if (fresh.length > 0) {
+            setResults((prev) => [...prev, ...fresh])
+          }
+        })
+      } finally {
+        setLoading(false)
+        setDone(true)
+      }
+    },
+    [sites]
+  )
+
+  useEffect(() => {
+    if (initialKw) doSearch(initialKw);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialKw])
+
+  const siteGroups = (() => {
+    const map = new Map<string, { id: string; name: string; count: number }>()
+    results.forEach((m) => {
+      const id = m.__siteId as string
+      if (!map.has(id)) map.set(id, { id, name: (m.__siteName as string) || id, count: 0 })
+      map.get(id)!.count++
+    })
+    return Array.from(map.values())
+  })()
+
+  const filtered = siteFilter === '__all' ? results : results.filter((m) => String(m.__siteId) === String(siteFilter))
+  const stats = loading
+    ? `已搜索 ${progress.completed}/${progress.total} 站 · 已找到 ${results.length} 个`
+    : done
+      ? `找到 ${results.length} 个结果`
+      : ''
+
+  return (
+    <section className="content-area search-page">
+      <div className="search-header">
+        <input
+          type="text"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          placeholder="输入影片名称搜索..."
+          onKeyDown={(e) => { if (e.key === 'Enter') doSearch(keyword); }}
+        />
+        <button className="btn-search" onClick={() => doSearch(keyword)}>搜索</button>
+        {stats && <span className="search-stats">{stats}</span>}
+      </div>
+      {loading && results.length === 0 ? (
+        <div className="loading-state">
+          <span className="spinner" />
+          {progress.total > 0 ? `正在搜索 ${progress.total} 个站点...` : '搜索中...'}
+        </div>
+      ) : results.length === 0 && done ? (
+        <div className="empty-state">
+          <div className="icon">🔍</div>
+          <div className="text">未找到相关影片</div>
+        </div>
+      ) : results.length === 0 ? (
+        <div className="empty-state">
+          <div className="icon">🔍</div>
+          <div className="text">输入关键词开始搜索（默认搜索所有启用站点）</div>
+        </div>
+      ) : (
+        <div className="search-body">
+          <aside className="search-sidebar">
+            <div className="search-sidebar-title">站点</div>
+            <div
+              className={`search-site-item${siteFilter === '__all' ? ' active' : ''}`}
+              onClick={() => setSiteFilter('__all')}
+            >
+              <span className="site-name">全部站点</span>
+              <span className="site-count">{results.length}</span>
+            </div>
+            {siteGroups.map((g) => (
+              <div
+                key={g.id}
+                className={`search-site-item${String(siteFilter) === g.id ? ' active' : ''}`}
+                onClick={() => setSiteFilter(g.id)}
+              >
+                <span className="site-name" title={g.name}>{g.name}</span>
+                <span className="site-count">{g.count}</span>
+              </div>
+            ))}
+          </aside>
+          <div className="movie-grid search-grid">
+            {filtered.map((m) => (
+              <MovieCard
+                key={`${m.__siteId}_${m.vod_id}`}
+                movie={m}
+                siteName={m.__siteName}
+                onClick={() => nav.open({ page: 'detail', siteId: String(m.__siteId), movieId: String(m.vod_id), from: 'search', kw: keyword })}
+              />
+            ))}
+          </div>
+          {loading && (
+            <div className="load-more">
+              <div>
+                <span className="spinner" />
+                正在搜索更多站点（{progress.completed}/{progress.total}）...
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </section>
+  )
+}

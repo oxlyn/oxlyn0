@@ -8,6 +8,10 @@ explore: every app works.
 - **Notes / Mail / Contacts / Calendar / Reminders** — self-contained demo data
 - **DevKit** — a 21-tool developer toolbox (all local, nothing uploaded)
 - **Terminal** — a small working shell over the same virtual file system
+- **WebTV** — TVBox-style 影视/IPTV player (Apple-CMS sources, live TV, parse
+  interfaces), ported natively from the `webtv/` Next.js project; metadata goes
+  through browser-direct/CORS-proxy fallbacks, video streams play via
+  artplayer + hls.js
 - **Study / Wakfu Guide** — embedded external sites (kept alive across window close)
 
 ## Keyboard
