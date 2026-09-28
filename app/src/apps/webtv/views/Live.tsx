@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import Player from '../components/Player'
+import LazyPlayer from '../components/LazyPlayer'
 import { useSources } from '../components/SourcesProvider'
 import { fetchLiveText } from '../lib/api'
 import { parsePlaylist } from '../lib/iptv'
@@ -137,7 +137,7 @@ export default function Live() {
 
       <div className="live-player-panel">
         {playerUrl && !iframeFallback.visible && (
-          <Player
+          <LazyPlayer
             url={playerUrl}
             isLive
             onError={handlePlayFailure}

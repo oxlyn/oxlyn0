@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import Player from '../components/Player'
+import LazyPlayer from '../components/LazyPlayer'
 import { useSources } from '../components/SourcesProvider'
 import { fetchSiteData, resolveParseUrl } from '../lib/api'
 import { isDirectPlayable, parsePlayData } from '../lib/maccms'
@@ -278,7 +278,7 @@ export default function Detail({
               <div className={`player-section${browserFullscreen ? ' browser-fullscreen' : ''}`}>
                 <div className="player-wrapper" ref={wrapperRef}>
                   {playerUrl && (
-                    <Player
+                    <LazyPlayer
                       url={playerUrl}
                       onReady={() => setPlayerLoading(false)}
                       onError={() => handlePlayFailureRef.current()}
