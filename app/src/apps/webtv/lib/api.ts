@@ -171,8 +171,12 @@ function directCandidate(targetUrl: string): Candidate {
 }
 
 /**
- * 按顺序尝试候选，返回首个被 accept 认可的结果。
- * 前 RACE_SIZE 个候选并发竞速（慢代理/慢直连不再串行阻塞降级），其余串行追加。
+ * 候选分两批：前 RACE_SIZE 个（同源代理 → 浏览器直连）并发竞速，
+ * 公共 CORS 代理为后备批。批内谁先返回结果就返回，不等最慢的那个；
+ * 整批都失败才推进下一批。
+ *
+ * CORS 代理是免费第三方服务，各自 12s 超时预算，因此批内必须竞速：
+ * Promise.all 要等最慢的那个 12s 才交结果，会让三个代理退化成串行叠成 36s。
  */
 async function firstMatch<T>(
   candidates: Candidate[],
@@ -184,15 +188,33 @@ async function firstMatch<T>(
     return accept(decodeResultBytes(result), result.status, candidate.kind);
   };
 
-  const raced = candidates.slice(0, RACE_SIZE);
-  for (const value of await Promise.all(raced.map(tryOne))) {
-    if (value !== null) return value;
-  }
-  for (const candidate of candidates.slice(RACE_SIZE)) {
-    const value = await tryOne(candidate);
+  const batches = [candidates.slice(0, RACE_SIZE), candidates.slice(RACE_SIZE)];
+  for (const batch of batches) {
+    const value = await raceBatch(batch, tryOne);
     if (value !== null) return value;
   }
   return null;
+}
+
+/** 批内竞速：任一候选返回被 accept 认可的结果即胜出；全失败返回 null */
+async function raceBatch<T>(
+  batch: Candidate[],
+  tryOne: (candidate: Candidate) => Promise<T | null>
+): Promise<T | null> {
+  if (batch.length === 0) return null;
+  return new Promise<T | null>((resolve) => {
+    let pending = batch.length;
+    for (const candidate of batch) {
+      tryOne(candidate)
+        .then((value) => {
+          if (value !== null) resolve(value);
+          else if (--pending === 0) resolve(null);
+        })
+        .catch(() => {
+          if (--pending === 0) resolve(null);
+        });
+    }
+  });
 }
 
 // ===== 缓存与同键去重 =====
@@ -437,20 +459,31 @@ function parseExtraHeaders(parse: TvParse): Record<string, string> {
 /**
  * 调 JSON 型解析接口，返回提取后的真实播放地址。
  * 解析地址通常含时效 token，只去重不缓存。
+ *
+ * 主通道拿到响应体即视为结论，不再换代理重试：解析接口返回的就是目标站点的
+ * 真实响应体，公共 CORS 代理转发回来是同一份字节。有些解析站会直接返回一个
+ * 无关的 HTML 页面（既无地址也无 iframe），这种"取到了但提取不到"是确定结果——
+ * 继续串行试公共代理等于白等十几秒，表现为「点开视频转圈半天」。
+ * 只有主通道在**网络层**全部失败（无服务端代理 + 目标站无 CORS）时才走公共代理。
  */
 export async function resolveParseUrl(parse: TvParse, playUrl: string, opts: RequestOptions = {}): Promise<string> {
   const target = composeParseUrl(parse, playUrl);
   const headers = parseExtraHeaders(parse);
   const proxyUrl = `/api/proxy/parse?url=${encodeURIComponent(target)}&headers=${encodeURIComponent(JSON.stringify(headers))}`;
-  const candidates: Candidate[] = [
+  const primary: Candidate[] = [
     ...proxyCandidates(proxyUrl).map((c) => ({ ...c, headers })),
     directCandidate(target),
-    ...corsCandidates(target),
   ];
 
   return dedup(`parse|${parse.id}|${target}`, opts.signal, async () => {
-    const url = await firstMatch(candidates, (text, status) =>
-      extractParseUrl(parseLenient(text, status)) || null
+    const results = await Promise.all(primary.map(fetchOne));
+    const hit = results.find((r) => r !== null);
+    if (hit) {
+      return extractParseUrl(parseLenient(decodeResultBytes(hit), hit.status)) || '';
+    }
+
+    const url = await firstMatch(corsCandidates(target), (text) =>
+      extractParseUrl(parseLenient(text, 0)) || null
     );
     return url ?? '';
   });
