@@ -1,7 +1,11 @@
 /**
- * localStorage 版本地统计：替代原版服务端的 disable-site / report-error 接口。
+ * 本地统计/设置存储：替代原版服务端的 disable-site / report-error 接口。
  * 语义对齐：站点连续自动跳过 3 次禁用；解析接口报错 play 3 次 / parse 6 次冻结。
+ *
+ * 读写走 persist（内存镜像 + IndexedDB 后端），键名保持 tvbox_ 前缀不变；
+ * 首次启动自动把旧 localStorage 数据迁移过去（见 persist.ts）。
  */
+import { readValue, removeValue, writeValue } from './persist';
 
 const KEY_SKIP_COUNTS = 'tvbox_site_skip_counts';
 const KEY_DISABLED_SITES = 'tvbox_site_disabled';
@@ -15,20 +19,24 @@ export const PARSE_PLAY_THRESHOLD = 3;
 export const PARSE_PARSE_THRESHOLD = 6;
 
 function readJson<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
-  } catch {
-    return fallback;
-  }
+  return readValue(key, fallback);
 }
 
 function writeJson(key: string, value: unknown): void {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // localStorage 不可用时静默忽略
-  }
+  writeValue(key, value);
+}
+
+/** 动态键（订阅实体 tvbox_sub_*）的通用读写删，供 sources.ts 使用 */
+export function readPersisted<T>(key: string, fallback: T): T {
+  return readValue(key, fallback);
+}
+
+export function writePersisted(key: string, value: unknown): void {
+  writeValue(key, value);
+}
+
+export function removePersisted(key: string): void {
+  removeValue(key);
 }
 
 // ===== 上次选择的源（下次打开恢复）=====
@@ -37,18 +45,12 @@ const KEY_LAST_SITE = 'tvbox_last_site';
 const KEY_LAST_LIVE = 'tvbox_last_live';
 
 function loadLastId(key: string): string {
-  try {
-    return localStorage.getItem(key) || '';
-  } catch {
-    return '';
-  }
+  return readValue<string>(key, '');
 }
 
 function saveLastId(key: string, id: string): void {
-  try {
-    if (id) localStorage.setItem(key, id);
-    else localStorage.removeItem(key);
-  } catch { /* 忽略 */ }
+  if (id) writeValue(key, id);
+  else removeValue(key);
 }
 
 export function loadLastSiteId(): string {

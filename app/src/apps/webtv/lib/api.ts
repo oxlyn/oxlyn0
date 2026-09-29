@@ -15,7 +15,7 @@ import { readStoredEntry, writeStoredEntry } from './contentCache';
  *
  * 请求层能力：
  * - 结果缓存 + 同键去重（并发相同请求只打一次网络）；
- * - 缓存落地 localStorage（contentCache）：冷启动直接命中，不必等网络；
+ * - 缓存落地 IndexedDB（contentCache）：冷启动直接命中，不必等网络；
  * - 过期缓存走 stale-while-revalidate：旧数据先上屏，后台刷新完成后经 onUpdate 更新；
  * - 代理与直连并发竞速，慢代理不再串行拖垮降级；
  * - 代理被判定不可用后进入冷却期而非永久失效，冷却到期自动重新尝试。
@@ -242,14 +242,14 @@ function trimMemory(): void {
 }
 
 /**
- * 内存未命中时回落到 localStorage（contentCache），并把条目抬回内存，
+ * 内存未命中时回落到 IndexedDB（contentCache），并把条目抬回内存，
  * 本次会话的后续读取零开销。返回值带 fresh 标记：过期条目不再删除，
  * 而是交给 stale-while-revalidate —— 先上屏，后台刷新。
  */
-function cacheGet<T>(key: string): { value: T; fresh: boolean } | null {
+async function cacheGet<T>(key: string): Promise<{ value: T; fresh: boolean } | null> {
   let hit = cache.get(key);
   if (!hit) {
-    const stored = readStoredEntry(key);
+    const stored = await readStoredEntry(key);
     if (!stored) return null;
     hit = stored;
     cache.set(key, hit);
@@ -265,7 +265,8 @@ function cachePut(key: string, ttl: number, value: unknown): void {
   const at = Date.now();
   cache.set(key, { at, ttl, value });
   trimMemory();
-  writeStoredEntry(key, at, ttl, value);
+  // IDB 写入失败不影响本会话：内存里已有，下次后台刷新还会再写
+  void writeStoredEntry(key, at, ttl, value);
 }
 
 /** 只做同键去重，不落缓存（用于时效性内容，如解析地址） */
@@ -310,7 +311,7 @@ async function cached<T>(
   run: () => Promise<T>
 ): Promise<T> {
   if (opts.cache !== false && !opts.force) {
-    const hit = cacheGet<T>(key);
+    const hit = await cacheGet<T>(key);
     if (hit) {
       if (!hit.fresh) {
         // stale-while-revalidate：过期缓存立即上屏，后台刷新完成后经 onUpdate 更新

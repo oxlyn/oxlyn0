@@ -71,7 +71,7 @@ export interface TvParse {
   sourceId: string;
 }
 
-/** 一条 TVBox 订阅（localStorage 持久化） */
+/** 一条 TVBox 订阅（浏览器本地持久化） */
 export interface Subscription {
   id: string;
   name: string;

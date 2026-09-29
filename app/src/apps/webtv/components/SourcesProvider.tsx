@@ -10,11 +10,13 @@ import {
   reportParseError as persistReportParseError,
   resetSkipCount as persistResetSkip,
   saveLastSiteId,
+  saveSkipCounts,
 } from '../lib/localStats';
+import { hydratePersisted } from '../lib/persist';
 
 /**
  * 全局源状态：等价原版 app.js 的 app 级 sites/lives/parses 加载与禁用逻辑。
- * 无服务端 —— 禁用/冻结全部落在 localStorage。
+ * 无服务端 —— 禁用/冻结全部落在浏览器本地（IndexedDB，经 persist 镜像）。
  */
 
 interface SourcesValue {
@@ -85,13 +87,27 @@ export function SourcesProvider({ children }: { children: React.ReactNode }) {
   }, [currentSiteId]);
 
   useEffect(() => {
-    // 初始加载时把已达禁用阈值的计数直接落为禁用（对齐原版 loadSites 的阈值过滤）
-    const counts = loadSkipCounts();
-    for (const [siteId, count] of Object.entries(counts)) {
-      if (count >= 3) persistDisableSite(siteId);
-    }
-    reload();
-    setReady(true);
+    let cancelled = false;
+    (async () => {
+      // 先把 IndexedDB 里的状态抬进内存镜像，之后的同步读取才拿得到数据
+      await hydratePersisted();
+      // 申请持久化存储：降低被「存储压力清理」和 Safari 7 天规则清掉的概率。
+      // 不支持或被拒绝时静默降级 —— 数据仍可用，只是可能被清理。
+      try {
+        void navigator.storage?.persist?.();
+      } catch { /* 忽略 */ }
+      if (cancelled) return;
+      // 初始加载时把已达禁用阈值的计数直接落为禁用（对齐原版 loadSites 的阈值过滤）
+      const counts = loadSkipCounts();
+      for (const [siteId, count] of Object.entries(counts)) {
+        if (count >= 3) persistDisableSite(siteId);
+      }
+      reload();
+      if (!cancelled) setReady(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [reload]);
 
   const failSite = useCallback(
@@ -108,9 +124,7 @@ export function SourcesProvider({ children }: { children: React.ReactNode }) {
         return true;
       }
       counts[siteId] = next;
-      try {
-        localStorage.setItem('tvbox_site_skip_counts', JSON.stringify(counts));
-      } catch { /* 忽略 */ }
+      saveSkipCounts(counts);
       return false;
     },
     []

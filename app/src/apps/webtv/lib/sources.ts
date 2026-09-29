@@ -6,12 +6,15 @@ import {
   loadDisabledSiteIds,
   loadFrozenParseIds,
   loadSubscriptions,
+  readPersisted,
+  removePersisted,
   saveSubscriptions,
+  writePersisted,
 } from './localStats';
 import { fetchSubscriptionRaw } from './api';
 
 /**
- * 源管理：内置预置源 ∪ localStorage 订阅（TVBox 配置 URL）。
+ * 源管理：内置预置源 ∪ 本地订阅（TVBox 配置 URL，IndexedDB 持久化）。
  * TVBox 配置解析等价移植 PHP ConfigSyncService：JSON5 注释剥离、编码容错、URL 校验、全局去重。
  */
 
@@ -161,7 +164,7 @@ export function parseTvboxConfigText(text: string): ParsedTvboxConfig {
   return out;
 }
 
-/** 添加订阅：拉取远程配置 → 解析 → 以订阅 id 归属入库（localStorage） */
+/** 添加订阅：拉取远程配置 → 解析 → 以订阅 id 归属入库（IndexedDB） */
 export async function addSubscription(url: string): Promise<{ added: number; name: string }> {
   const raw = await fetchSubscriptionRaw(url);
   const parsed = parseTvboxConfigText(raw);
@@ -195,23 +198,17 @@ export async function addSubscription(url: string): Promise<{ added: number; nam
 
 export function removeSubscription(subId: string): void {
   saveSubscriptions(loadSubscriptions().filter((s) => s.id !== subId));
-  try { localStorage.removeItem(`tvbox_sub_sites_${subId}`); } catch { /* 忽略 */ }
-  try { localStorage.removeItem(`tvbox_sub_lives_${subId}`); } catch { /* 忽略 */ }
-  try { localStorage.removeItem(`tvbox_sub_parses_${subId}`); } catch { /* 忽略 */ }
+  removePersisted(`tvbox_sub_sites_${subId}`);
+  removePersisted(`tvbox_sub_lives_${subId}`);
+  removePersisted(`tvbox_sub_parses_${subId}`);
 }
 
 function readSubEntities<T>(key: string): T[] {
-  try {
-    return JSON.parse(localStorage.getItem(key) || '[]') as T[];
-  } catch {
-    return [];
-  }
+  return readPersisted<T[]>(key, []);
 }
 
 function writeSubEntities(key: string, value: unknown): void {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch { /* 忽略 */ }
+  writePersisted(key, value);
 }
 
 // ===== 汇总读取（presets ∪ 订阅 - 本地禁用） =====
