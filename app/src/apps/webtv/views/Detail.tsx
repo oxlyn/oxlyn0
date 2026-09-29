@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { Heart } from 'lucide-react'
 import LazyPlayer from '../components/LazyPlayer'
 import { useSources } from '../components/SourcesProvider'
 import { fetchSiteData, resolveParseUrl } from '../lib/api'
 import { isDirectPlayable, parsePlayData } from '../lib/maccms'
+import { addFavorite, isFavorite, removeFavorite } from '../lib/localStats'
 import { getSiteById } from '../lib/sources'
+import { showToast } from '../lib/toast'
 import type { PlayLine, VodItem } from '../lib/types'
 import type { WebTVNav } from '../nav'
 
@@ -32,6 +35,9 @@ export default function Detail({
   const [playerUrl, setPlayerUrl] = useState('')
   const [playerVisible, setPlayerVisible] = useState(false)
   const [playerFailed, setPlayerFailed] = useState(false)
+  // 收藏以整部剧为粒度（siteId + movieId）。Detail 以 siteId_movieId 为 key 挂载，
+  // 从收藏页取消收藏后返回这里会重新挂载，状态自然是最新的
+  const [faved, setFaved] = useState(() => isFavorite(siteId, movieId))
   const [browserFullscreen, setBrowserFullscreen] = useState(false)
   const [iframeFallback, setIframeFallback] = useState<{ visible: boolean; url: string; tip: boolean }>({
     visible: false,
@@ -46,6 +52,28 @@ export default function Detail({
   // 播放链路全部读 ref，避免 setState 后立刻调用的过期闭包（首次自动播放场景）
   const stateRef = useRef({ movie, playLines, currentLineIdx, currentEpIdx, parses, iframeFallbackVisible: iframeFallback.visible })
   stateRef.current = { movie, playLines, currentLineIdx, currentEpIdx, parses, iframeFallbackVisible: iframeFallback.visible }
+
+  const toggleFav = useCallback(() => {
+    if (!movie) return
+    if (faved) {
+      removeFavorite(siteId, movieId)
+      setFaved(false)
+      showToast('已取消收藏', 'ok')
+      return
+    }
+    // 收藏的是整部剧：快照剧名/海报/备注（如「更新至x集」），不含任何单集信息
+    addFavorite({
+      siteId,
+      siteName: getSiteById(siteId)?.name || '',
+      movieId,
+      name: movie.vod_name || '',
+      pic: movie.vod_pic || '',
+      remarks: movie.vod_remarks || '',
+      year: movie.vod_year || '',
+    })
+    setFaved(true)
+    showToast('已收藏整部剧集', 'ok')
+  }, [movie, faved, siteId, movieId])
 
   // ===== 播放 =====
 
@@ -257,7 +285,16 @@ export default function Detail({
                 )}
               </div>
               <div className="detail-meta">
-                <div className="detail-title">{movie.vod_name}</div>
+                <div className="detail-title-row">
+                  <div className="detail-title">{movie.vod_name}</div>
+                  <button
+                    className={`fav-btn${faved ? ' active' : ''}`}
+                    title={faved ? '取消收藏' : '收藏整部剧'}
+                    onClick={toggleFav}
+                  >
+                    <Heart size={18} strokeWidth={2} fill={faved ? 'currentColor' : 'none'} />
+                  </button>
+                </div>
                 {movie.vod_year && <div className="detail-row"><span className="label">年份：</span>{movie.vod_year}</div>}
                 {movie.vod_area && <div className="detail-row"><span className="label">地区：</span>{movie.vod_area}</div>}
                 {movie.vod_class && <div className="detail-row"><span className="label">类型：</span>{movie.vod_class}</div>}

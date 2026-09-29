@@ -8,7 +8,7 @@ export type WebTVView =
   | { page: 'live' }
   | { page: 'parse'; url?: string }
   | { page: 'settings' }
-  | { page: 'detail'; siteId: string; movieId: string; from: 'home' | 'search'; kw?: string }
+  | { page: 'detail'; siteId: string; movieId: string; from: 'home' | 'search' | 'favorites'; kw?: string }
 
 export interface WebTVNav {
   /** 压栈跳转（返回键由 shell 出栈） */

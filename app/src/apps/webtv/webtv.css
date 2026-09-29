@@ -267,7 +267,51 @@
     gap: 8px;}.webtv-root .detail-info .detail-title {
     font-size: 22px;
     font-weight: 700;
-    color: #fff;}.webtv-root .detail-info .detail-row {
+    color: #fff;}/* 收藏按钮：标题右侧心形，空心=未收藏、实心=已收藏 */
+.webtv-root .detail-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;}
+.webtv-root .detail-title-row .detail-title {flex: 1;min-width: 0;}
+.webtv-root .fav-btn {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #999;
+    cursor: pointer;
+    transition: all 0.15s;}
+.webtv-root .fav-btn:hover {color: #e94560;border-color: rgba(233,69,96,0.4);background: rgba(233,69,96,0.08);}
+.webtv-root .fav-btn.active {color: #e94560;border-color: rgba(233,69,96,0.5);}/* 收藏页卡片：包一层以便叠加取消收藏按钮 */
+.webtv-root .fav-item {
+    position: relative;
+    break-inside: avoid;
+    margin-bottom: 12px;}
+.webtv-root .fav-item .movie-card {margin-bottom: 0;}
+.webtv-root .fav-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.55);
+    border: none;
+    color: #e94560;
+    cursor: pointer;
+    transition: all 0.15s;}
+.webtv-root .fav-remove:hover {background: rgba(0,0,0,0.75);transform: scale(1.1);}.webtv-root .detail-info .detail-row {
     font-size: 13px;
     color: #bbb;
     line-height: 1.7;}.webtv-root .detail-info .detail-row .label { color: #666; margin-right: 6px;}.webtv-root .detail-info .detail-desc {

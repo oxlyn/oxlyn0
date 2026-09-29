@@ -104,7 +104,7 @@ function Shell({ initialView }: { initialView: WebTVView }) {
         )}
         {view.page === 'live' && <Live />}
         {view.page === 'parse' && <Parse key={view.url ?? ''} initialUrl={view.url ?? ''} />}
-        {view.page === 'settings' && <Settings />}
+        {view.page === 'settings' && <Settings nav={nav} />}
       </main>
 
       <Toast />

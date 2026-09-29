@@ -67,6 +67,46 @@ export function saveLastLiveId(id: string): void {
   saveLastId(KEY_LAST_LIVE, id);
 }
 
+// ===== 收藏（以整部剧为粒度：siteId + vod_id 唯一确定一部剧，不含单集）=====
+
+const KEY_FAVORITES = 'tvbox_favorites';
+/** 上限保护：超出丢最旧的，避免把 localStorage 配额撑爆 */
+export const FAVORITES_MAX = 300;
+
+export interface FavoriteEntry {
+  siteId: string;
+  siteName: string;
+  movieId: string;
+  /** 收藏时的剧名/海报/备注快照：源挂掉或被移除后，收藏页仍能完整展示 */
+  name: string;
+  pic: string;
+  remarks: string;
+  year: string;
+  addedAt: number;
+}
+
+export function loadFavorites(): FavoriteEntry[] {
+  return readJson<FavoriteEntry[]>(KEY_FAVORITES, []);
+}
+
+function saveFavorites(list: FavoriteEntry[]): void {
+  writeJson(KEY_FAVORITES, list);
+}
+
+export function isFavorite(siteId: string, movieId: string): boolean {
+  return loadFavorites().some((f) => f.siteId === siteId && f.movieId === movieId);
+}
+
+export function addFavorite(entry: Omit<FavoriteEntry, 'addedAt'>): void {
+  const list = loadFavorites().filter((f) => !(f.siteId === entry.siteId && f.movieId === entry.movieId));
+  list.unshift({ ...entry, addedAt: Date.now() });
+  saveFavorites(list.slice(0, FAVORITES_MAX));
+}
+
+export function removeFavorite(siteId: string, movieId: string): void {
+  saveFavorites(loadFavorites().filter((f) => !(f.siteId === siteId && f.movieId === movieId)));
+}
+
 // ===== 站点跳过计数 =====
 
 export function loadSkipCounts(): Record<string, number> {
