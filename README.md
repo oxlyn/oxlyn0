@@ -9,7 +9,7 @@ explore: every app works.
 - **DevKit** — a 21-tool developer toolbox (all local, nothing uploaded)
 - **Terminal** — a small working shell over the same virtual file system
 - **WebTV** — TVBox-style 影视/IPTV player (Apple-CMS sources, live TV, parse
-  interfaces), ported natively from the `webtv/` Next.js project; metadata is
+  interfaces), a native window app; metadata is
   fetched server-side via the shared proxy core (`app/src/apps/webtv/lib/
   proxyCore.ts` — vite plugin in dev, Cloudflare Pages Functions / worker.ts
   in production), falling back to browser-direct + public CORS proxies when
