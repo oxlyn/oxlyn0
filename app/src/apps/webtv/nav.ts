@@ -1,12 +1,12 @@
 /**
- * 窗口内导航：替代上游 webtv 的 Next.js 路由（/、/search?kw=、/live、/parse?url=、
+ * 窗口内导航：替代上游 webtv 的 Next.js 路由（/、/search?kw=、/live、
  * /settings、/detail/[siteId]/[movieId]）—— 桌面窗口里用页面栈表达。
  */
 export type WebTVView =
   | { page: 'home' }
   | { page: 'search'; kw?: string }
   | { page: 'live' }
-  | { page: 'parse'; url?: string }
+  | { page: 'favorites' }
   | { page: 'settings' }
   | { page: 'detail'; siteId: string; movieId: string; from: 'home' | 'search' | 'favorites'; kw?: string }
 

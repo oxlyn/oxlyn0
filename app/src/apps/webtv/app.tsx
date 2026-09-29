@@ -8,7 +8,7 @@ import Home from './views/Home'
 import Search from './views/Search'
 import Detail from './views/Detail'
 import Live from './views/Live'
-import Parse from './views/Parse'
+import Favorites from './views/Favorites'
 import Settings from './views/Settings'
 import type { WebTVNav, WebTVView } from './nav'
 import './webtv.css'
@@ -18,7 +18,7 @@ import './webtv.css'
  * 上游为「TVBox 网页播放器」纯前端复刻版）。
  *
  * 桌面系统集成版差异：
- * - Next.js 路由 → 窗口内页面栈（首页/搜索/解析/直播/设置 + 详情）；
+ * - Next.js 路由 → 窗口内页面栈（首页/搜索/收藏/直播/设置 + 详情）；
  * - 数据层复用上游同构 lib/：静态部署下同源代理不可用，自动走公共 CORS 代理
  *   + 浏览器端 XML/GBK 转码（见 lib/api.ts）；
  * - 播放器为 artplayer + hls.js（m3u8 软解），样式整体收进 .webtv-root 作用域。
@@ -90,7 +90,7 @@ function Shell({ initialView }: { initialView: WebTVView }) {
         <div className="nav-actions">
           {navLink('首页', { page: 'home' })}
           {navLink('搜索', { page: 'search' })}
-          {navLink('解析', { page: 'parse' })}
+          {navLink('收藏', { page: 'favorites' })}
           {navLink('直播', { page: 'live' })}
           {navLink('设置', { page: 'settings' })}
         </div>
@@ -103,8 +103,8 @@ function Shell({ initialView }: { initialView: WebTVView }) {
           <Detail key={`${view.siteId}_${view.movieId}`} nav={nav} siteId={view.siteId} movieId={view.movieId} />
         )}
         {view.page === 'live' && <Live />}
-        {view.page === 'parse' && <Parse key={view.url ?? ''} initialUrl={view.url ?? ''} />}
-        {view.page === 'settings' && <Settings nav={nav} />}
+        {view.page === 'favorites' && <Favorites nav={nav} />}
+        {view.page === 'settings' && <Settings />}
       </main>
 
       <Toast />
@@ -113,14 +113,9 @@ function Shell({ initialView }: { initialView: WebTVView }) {
 }
 
 function WebTV({ payload }: AppWindowProps) {
-  // 跨应用联动：open('webtv', { search: '关键词' }) 直达搜索，{ parseUrl } 直达解析。
+  // 跨应用联动：open('webtv', { search: '关键词' }) 直达搜索。
   const search = typeof payload?.search === 'string' ? payload.search : undefined
-  const parseUrl = typeof payload?.parseUrl === 'string' ? payload.parseUrl : undefined
-  const initialView: WebTVView = parseUrl
-    ? { page: 'parse', url: parseUrl }
-    : search
-      ? { page: 'search', kw: search }
-      : { page: 'home' }
+  const initialView: WebTVView = search ? { page: 'search', kw: search } : { page: 'home' }
   return (
     <SourcesProvider>
       <Shell initialView={initialView} />

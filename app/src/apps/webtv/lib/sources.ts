@@ -4,7 +4,6 @@ import {
   disableSite as persistDisableSite,
   enableSite as persistEnableSite,
   loadDisabledSiteIds,
-  loadFrozenParseIds,
   loadSubscriptions,
   readPersisted,
   removePersisted,
@@ -228,9 +227,8 @@ export function getAllLives(): TvLive[] {
 }
 
 export function getAllParses(): TvParse[] {
-  const frozen = new Set(loadFrozenParseIds());
   const subs = loadSubscriptions().flatMap((sub) => readSubEntities<TvParse>(`tvbox_sub_parses_${sub.id}`));
-  return [...PRESET_PARSES, ...subs].filter((p) => !frozen.has(p.id)).sort((a, b) => a.sort - b.sort);
+  return [...PRESET_PARSES, ...subs].sort((a, b) => a.sort - b.sort);
 }
 
 export function getSiteById(id: string): TvSite | undefined {

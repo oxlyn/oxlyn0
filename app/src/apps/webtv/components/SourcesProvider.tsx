@@ -7,7 +7,6 @@ import {
   disableSite as persistDisableSite,
   loadLastSiteId,
   loadSkipCounts,
-  reportParseError as persistReportParseError,
   resetSkipCount as persistResetSkip,
   saveLastSiteId,
   saveSkipCounts,
@@ -32,8 +31,6 @@ interface SourcesValue {
   failSite: (siteId: string) => boolean;
   /** 站点加载成功：清零跳过计数 */
   succeedSite: (siteId: string) => void;
-  /** 解析接口报错（本地计数冻结），返回 {frozen} */
-  reportParseError: (parseId: string, type: 'play' | 'parse') => { frozen: boolean };
 }
 
 const SourcesContext = createContext<SourcesValue | null>(null);
@@ -134,15 +131,6 @@ export function SourcesProvider({ children }: { children: React.ReactNode }) {
     persistResetSkip(siteId);
   }, []);
 
-  const reportParseError = useCallback((parseId: string, type: 'play' | 'parse') => {
-    const result = persistReportParseError(parseId, type);
-    if (result.frozen) {
-      // 冻结后刷新可用线路列表
-      setParses(getAllParses());
-    }
-    return { frozen: result.frozen };
-  }, []);
-
   const value = useMemo<SourcesValue>(
     () => ({
       ready,
@@ -154,9 +142,8 @@ export function SourcesProvider({ children }: { children: React.ReactNode }) {
       reload,
       failSite,
       succeedSite,
-      reportParseError,
     }),
-    [ready, sites, lives, parses, currentSiteId, reload, failSite, succeedSite, reportParseError]
+    [ready, sites, lives, parses, currentSiteId, reload, failSite, succeedSite]
   );
 
   return <SourcesContext.Provider value={value}>{children}</SourcesContext.Provider>;
