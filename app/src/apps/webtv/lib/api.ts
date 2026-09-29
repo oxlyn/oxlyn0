@@ -2,6 +2,7 @@ import type { TvSite, TvLive, TvParse, VodItem } from './types';
 import { buildMacCmsUrl, buildParseIframeUrl, extractParseUrl, extractVodList } from './maccms';
 import { convertMacCmsXml, decodeXmlBytes, detectXmlCharset } from './maccmsXml';
 import { loadCorsProxies } from './localStats';
+import { readStoredEntry, writeStoredEntry } from './contentCache';
 
 /**
  * 元数据请求策略层：
@@ -14,6 +15,8 @@ import { loadCorsProxies } from './localStats';
  *
  * 请求层能力：
  * - 结果缓存 + 同键去重（并发相同请求只打一次网络）；
+ * - 缓存落地 localStorage（contentCache）：冷启动直接命中，不必等网络；
+ * - 过期缓存走 stale-while-revalidate：旧数据先上屏，后台刷新完成后经 onUpdate 更新；
  * - 代理与直连并发竞速，慢代理不再串行拖垮降级；
  * - 代理被判定不可用后进入冷却期而非永久失效，冷却到期自动重新尝试。
  */
@@ -227,28 +230,42 @@ interface CacheEntry {
 
 const cache = new Map<string, CacheEntry>();
 const inFlight = new Map<string, Promise<unknown>>();
+/** 正在后台刷新的键：stale-while-revalidate 的去重标记 */
+const revalidating = new Set<string>();
 
-function cacheGet<T>(key: string): T | null {
-  const hit = cache.get(key);
-  if (!hit) return null;
-  if (Date.now() - hit.at > hit.ttl) {
-    cache.delete(key);
-    return null;
-  }
-  // 命中即提升为最近使用（Map 迭代顺序即插入顺序）
-  cache.delete(key);
-  cache.set(key, hit);
-  return hit.value as T;
-}
-
-function cachePut(key: string, ttl: number, value: unknown): void {
-  if (cache.has(key)) cache.delete(key);
-  cache.set(key, { at: Date.now(), ttl, value });
+function trimMemory(): void {
   while (cache.size > CACHE_MAX_ENTRIES) {
     const oldest = cache.keys().next().value;
     if (oldest === undefined) break;
     cache.delete(oldest);
   }
+}
+
+/**
+ * 内存未命中时回落到 localStorage（contentCache），并把条目抬回内存，
+ * 本次会话的后续读取零开销。返回值带 fresh 标记：过期条目不再删除，
+ * 而是交给 stale-while-revalidate —— 先上屏，后台刷新。
+ */
+function cacheGet<T>(key: string): { value: T; fresh: boolean } | null {
+  let hit = cache.get(key);
+  if (!hit) {
+    const stored = readStoredEntry(key);
+    if (!stored) return null;
+    hit = stored;
+    cache.set(key, hit);
+    trimMemory();
+  }
+  // 命中即提升为最近使用（Map 迭代顺序即插入顺序）
+  cache.delete(key);
+  cache.set(key, hit);
+  return { value: hit.value as T, fresh: Date.now() - hit.at <= hit.ttl };
+}
+
+function cachePut(key: string, ttl: number, value: unknown): void {
+  const at = Date.now();
+  cache.set(key, { at, ttl, value });
+  trimMemory();
+  writeStoredEntry(key, at, ttl, value);
 }
 
 /** 只做同键去重，不落缓存（用于时效性内容，如解析地址） */
@@ -260,16 +277,48 @@ function dedup<T>(key: string, signal: AbortSignal | undefined, run: () => Promi
   return withSignal(runner, signal);
 }
 
+/**
+ * 后台刷新：失败保留旧值（一次抖动不能把缓存打掉），成功才覆盖并通知。
+ * 刻意不接调用方的 signal —— 刷新是为下一次展示准备的，视图被取代不该杀掉它。
+ * 同键已有在途请求（inFlight）或在途刷新（revalidating）时跳过。
+ */
+function revalidate<T>(
+  key: string,
+  ttl: number,
+  canCache: (value: T) => boolean,
+  run: () => Promise<T>,
+  onUpdate?: (value: T) => void
+): void {
+  if (revalidating.has(key) || inFlight.has(key)) return;
+  revalidating.add(key);
+  void run()
+    .then((value) => {
+      if (!canCache(value)) return;
+      const prev = cache.get(key)?.value;
+      cachePut(key, ttl, value);
+      if (onUpdate && JSON.stringify(prev) !== JSON.stringify(value)) onUpdate(value);
+    })
+    .catch(() => { /* 刷新失败：保留旧值，下次进入再试 */ })
+    .finally(() => { revalidating.delete(key); });
+}
+
 async function cached<T>(
   key: string,
   ttl: number,
   opts: RequestOptions,
   canCache: (value: T) => boolean,
-  run: () => Promise<T>,
+  run: () => Promise<T>
 ): Promise<T> {
   if (opts.cache !== false && !opts.force) {
     const hit = cacheGet<T>(key);
-    if (hit !== null) return hit;
+    if (hit) {
+      if (!hit.fresh) {
+        // stale-while-revalidate：过期缓存立即上屏，后台刷新完成后经 onUpdate 更新
+        opts.onStale?.();
+        revalidate(key, ttl, canCache, run, opts.onUpdate);
+      }
+      return hit.value;
+    }
   }
   return dedup(key, opts.signal, () =>
     run().then((value) => {
@@ -278,6 +327,7 @@ async function cached<T>(
     })
   );
 }
+
 
 // ===== 影视站点 =====
 
@@ -297,6 +347,10 @@ export interface RequestOptions {
   cache?: boolean;
   /** 跳过缓存但保留进行中请求的去重 */
   force?: boolean;
+  /** 命中过期缓存时立即回调：stale-while-revalidate 的「旧值已上屏」信号 */
+  onStale?: () => void;
+  /** 后台刷新完成且内容有变化时回调（新旧值经 JSON 比对，无变化不触发） */
+  onUpdate?: (value: unknown) => void;
 }
 
 /** 分类极少变化；搜索结果易变；详情与分页列表居中 */

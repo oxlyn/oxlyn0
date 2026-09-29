@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import LazyPlayer from '../components/LazyPlayer'
 import { useSources } from '../components/SourcesProvider'
 import { fetchLiveText } from '../lib/api'
+import { loadLastLiveId, saveLastLiveId } from '../lib/localStats'
 import { parsePlaylist } from '../lib/iptv'
 import type { M3UChannel } from '../lib/types'
 
@@ -20,8 +21,11 @@ export default function Live() {
   const [playerFailed, setPlayerFailed] = useState(false)
   const [iframeFallback, setIframeFallback] = useState<{ visible: boolean; url: string }>({ visible: false, url: '' })
   const failureHandledRef = useRef(false)
+  // 请求序号：切源使在途的频道加载/后台刷新失效，防止旧源结果覆盖新源
+  const liveSeqRef = useRef(0)
 
   const loadChannels = useCallback(async (liveId: string) => {
+    const seq = ++liveSeqRef.current
     setLoading(true)
     setChannels([])
     setCurrentChannel(null)
@@ -32,22 +36,36 @@ export default function Live() {
     try {
       const live = lives.find((l) => l.id === liveId)
       if (!live) return
-      const text = await fetchLiveText(live)
+      const text = await fetchLiveText(live, {
+        // 后台刷新完成且内容有变化时更新频道列表；已切到别的源则丢弃
+        onUpdate: (raw) => {
+          if (seq !== liveSeqRef.current) return
+          setChannels(parsePlaylist(raw as string))
+        },
+      })
+      if (seq !== liveSeqRef.current) return // 已切到别的直播源
       setChannels(parsePlaylist(text))
     } catch (e) {
+      if (seq !== liveSeqRef.current) return
       console.error('加载直播频道失败', e)
     } finally {
-      setLoading(false)
+      if (seq === liveSeqRef.current) setLoading(false)
     }
   }, [lives])
 
-  // 默认加载第一个直播源
+  // 恢复上次使用的直播源；没有记录（或已被移除）时用第一个
   useEffect(() => {
-    if (lives.length > 0 && !currentLiveId) {
-      setCurrentLiveId(lives[0].id)
-      loadChannels(lives[0].id)
-    }
+    if (lives.length === 0 || currentLiveId) return
+    const saved = loadLastLiveId()
+    const restored = lives.find((l) => l.id === saved)?.id ?? lives[0].id
+    setCurrentLiveId(restored)
+    loadChannels(restored)
   }, [lives, currentLiveId, loadChannels])
+
+  // 记住当前直播源，下次打开直接回到它
+  useEffect(() => {
+    if (currentLiveId) saveLastLiveId(currentLiveId)
+  }, [currentLiveId])
 
   const playChannel = (ch: M3UChannel) => {
     setCurrentChannel(ch)

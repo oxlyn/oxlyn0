@@ -31,6 +31,42 @@ function writeJson(key: string, value: unknown): void {
   }
 }
 
+// ===== 上次选择的源（下次打开恢复）=====
+
+const KEY_LAST_SITE = 'tvbox_last_site';
+const KEY_LAST_LIVE = 'tvbox_last_live';
+
+function loadLastId(key: string): string {
+  try {
+    return localStorage.getItem(key) || '';
+  } catch {
+    return '';
+  }
+}
+
+function saveLastId(key: string, id: string): void {
+  try {
+    if (id) localStorage.setItem(key, id);
+    else localStorage.removeItem(key);
+  } catch { /* 忽略 */ }
+}
+
+export function loadLastSiteId(): string {
+  return loadLastId(KEY_LAST_SITE);
+}
+
+export function saveLastSiteId(id: string): void {
+  saveLastId(KEY_LAST_SITE, id);
+}
+
+export function loadLastLiveId(): string {
+  return loadLastId(KEY_LAST_LIVE);
+}
+
+export function saveLastLiveId(id: string): void {
+  saveLastId(KEY_LAST_LIVE, id);
+}
+
 // ===== 站点跳过计数 =====
 
 export function loadSkipCounts(): Record<string, number> {

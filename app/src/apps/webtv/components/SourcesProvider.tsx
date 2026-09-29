@@ -5,9 +5,11 @@ import { getAllLives, getAllParses, getAllSites } from '../lib/sources';
 import { preloadPlayer } from './LazyPlayer';
 import {
   disableSite as persistDisableSite,
+  loadLastSiteId,
   loadSkipCounts,
   reportParseError as persistReportParseError,
   resetSkipCount as persistResetSkip,
+  saveLastSiteId,
 } from '../lib/localStats';
 
 /**
@@ -68,8 +70,19 @@ export function SourcesProvider({ children }: { children: React.ReactNode }) {
     setSites(nextSites);
     setLives(getAllLives());
     setParses(getAllParses());
-    setCurrentSiteId((prev) => prev ?? nextSites[0]?.id ?? null);
+    // 恢复上次使用的源；该源已被移除/禁用时回落到第一个
+    setCurrentSiteId((prev) => {
+      if (prev) return prev;
+      const saved = loadLastSiteId();
+      if (saved && nextSites.some((s) => s.id === saved)) return saved;
+      return nextSites[0]?.id ?? null;
+    });
   }, []);
+
+  // 记住当前源，下次打开直接回到它
+  useEffect(() => {
+    if (currentSiteId) saveLastSiteId(currentSiteId);
+  }, [currentSiteId]);
 
   useEffect(() => {
     // 初始加载时把已达禁用阈值的计数直接落为禁用（对齐原版 loadSites 的阈值过滤）

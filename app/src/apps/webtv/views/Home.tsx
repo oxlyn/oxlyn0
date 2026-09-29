@@ -106,14 +106,30 @@ export default function Home({ nav }: { nav: WebTVNav }) {
       setCurrentCategoryId(null)
       triedIdsRef.current.add(siteId)
       try {
-        const data = await fetchSiteData(site, { ac: 'type' }, { signal: ctrl.signal })
+        let staleHit = false
+        const data = await fetchSiteData(site, { ac: 'type' }, {
+          signal: ctrl.signal,
+          onStale: () => { staleHit = true },
+          onUpdate: (raw) => {
+            if (seq !== catSeqRef.current) return // 已被更新的分类请求取代
+            const fresh = raw as Record<string, unknown>
+            if (isSiteUnreachable(fresh)) {
+              // 刷新失败：保留已上屏的缓存分类，只做提示，不清空也不切换
+              setSiteError('源暂时无响应，当前显示的是缓存内容')
+              return
+            }
+            setSiteError('')
+            setCategories(extractCategories(fresh))
+          },
+        })
         if (seq !== catSeqRef.current) return // 已有更新的分类请求
         if (isSiteUnreachable(data)) {
           handleSiteFailure(siteId, (data.msg as string) || '当前站点不可达')
           return
         }
         setSiteError('')
-        succeedSite(siteId)
+        // 命中的是缓存：本次没有真实请求，不算站点存活证据，别清失败计数
+        if (!staleHit) succeedSite(siteId)
         setCategories(extractCategories(data))
         triedIdsRef.current.clear()
         triedIdsRef.current.add(siteId)
@@ -144,7 +160,24 @@ export default function Home({ nav }: { nav: WebTVNav }) {
           ac: 'detail',
           pg: page,
           t: categoryId ?? undefined,
-        }, { signal: ctrl.signal })
+        }, {
+          signal: ctrl.signal,
+          // 追加页的刷新不回调：后台新数据只进缓存，下一页再取，不打乱已累积的列表
+          onUpdate: isLoadMore ? undefined : (raw) => {
+            if (seq !== listSeqRef.current) return // 已被更新的列表请求取代
+            const fresh = raw as Record<string, unknown>
+            if (isSiteUnreachable(fresh)) {
+              setSiteError('源暂时无响应，当前显示的是缓存内容')
+              return
+            }
+            setSiteError('')
+            const { list, pagecount, total } = extractVodList(fresh)
+            setMovieList(list)
+            setCurrentPage(page)
+            setTotalPages(pagecount)
+            setTotalCount(total)
+          },
+        })
         if (seq !== listSeqRef.current) return // 已有更新的列表请求
         if (isSiteUnreachable(data)) {
           if (!isLoadMore) {
