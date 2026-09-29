@@ -295,7 +295,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #000;}/* 网页全屏：整个 player-section 覆盖视口（含播放器栏） */.webtv-root .player-section.browser-fullscreen {
+    gap: 12px;
+    background: #000;}
+/* 占位里的提示文字：chunk 下载 / 解析接口在途 */
+.webtv-root .player-loading-text {color: #ccc;font-size: 13px;}
+/* 网页全屏：整个 player-section 覆盖视口（含播放器栏） */.webtv-root .player-section.browser-fullscreen {
     position: fixed;
     inset: 0;
     z-index: 9999;

@@ -2,6 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { TvLive, TvParse, TvSite } from '../lib/types';
 import { getAllLives, getAllParses, getAllSites } from '../lib/sources';
+import { preloadPlayer } from './LazyPlayer';
 import {
   disableSite as persistDisableSite,
   loadSkipCounts,
@@ -45,6 +46,22 @@ export function SourcesProvider({ children }: { children: React.ReactNode }) {
   const [lives, setLives] = useState<TvLive[]>([]);
   const [parses, setParses] = useState<TvParse[]>([]);
   const [currentSiteId, setCurrentSiteId] = useState<string | null>(null);
+
+  // 首次交互（点击/按键）就开始预热播放器 chunk。
+  // 不放在挂载时：那会和首页详情/分类请求抢同一批连接，拖慢首屏。
+  useEffect(() => {
+    const warmUp = () => {
+      void preloadPlayer()
+      window.removeEventListener('pointerdown', warmUp)
+      window.removeEventListener('keydown', warmUp)
+    }
+    window.addEventListener('pointerdown', warmUp)
+    window.addEventListener('keydown', warmUp)
+    return () => {
+      window.removeEventListener('pointerdown', warmUp)
+      window.removeEventListener('keydown', warmUp)
+    }
+  }, [])
 
   const reload = useCallback(() => {
     const nextSites = getAllSites();

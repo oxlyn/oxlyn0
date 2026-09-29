@@ -31,7 +31,6 @@ export default function Detail({
 
   const [playerUrl, setPlayerUrl] = useState('')
   const [playerVisible, setPlayerVisible] = useState(false)
-  const [playerLoading, setPlayerLoading] = useState(false)
   const [playerFailed, setPlayerFailed] = useState(false)
   const [browserFullscreen, setBrowserFullscreen] = useState(false)
   const [iframeFallback, setIframeFallback] = useState<{ visible: boolean; url: string; tip: boolean }>({
@@ -66,14 +65,13 @@ export default function Detail({
     originalPlayUrlRef.current = ep.url
 
     if (isDirectPlayable(ep.url)) {
-      setPlayerLoading(true)
       setPlayerUrl(ep.url)
       return
     }
-    // 非直连地址走第一条解析线路
+    // 非直连地址走第一条解析线路。等待期间 playerUrl 为空，
+    // 播放区显示「正在获取播放地址」（见下方 wrapper 分支）
     const parse = parseList[0]
     if (parse) {
-      setPlayerLoading(true)
       resolveParseUrl(parse, ep.url).then((realUrl) => {
         if (realUrl) {
           setPlayerUrl(realUrl)
@@ -82,7 +80,6 @@ export default function Detail({
         }
       })
     } else {
-      setPlayerLoading(true)
       setPlayerUrl(ep.url)
     }
   }, [])
@@ -102,7 +99,6 @@ export default function Detail({
   }, [playEpisode])
 
   const handlePlayFailure = useCallback(() => {
-    setPlayerLoading(false)
     if (trySwitchLine()) return
     const original = originalPlayUrlRef.current
     if (original && !stateRef.current.iframeFallbackVisible) {
@@ -277,20 +273,18 @@ export default function Detail({
             {playerVisible && (
               <div className={`player-section${browserFullscreen ? ' browser-fullscreen' : ''}`}>
                 <div className="player-wrapper" ref={wrapperRef}>
-                  {playerUrl && (
+                  {playerUrl ? (
                     <LazyPlayer
                       url={playerUrl}
-                      onReady={() => setPlayerLoading(false)}
                       onError={() => handlePlayFailureRef.current()}
                     />
+                  ) : (
+                    <div className="player-loading">
+                      <span className="spinner" />
+                      <span className="player-loading-text">正在获取播放地址...</span>
+                    </div>
                   )}
                 </div>
-                {playerLoading && playerUrl && (
-                  <div className="loading-state" style={{ padding: '18px 20px' }}>
-                    <span className="spinner" />
-                    正在加载播放器...
-                  </div>
-                )}
                 {playerFailed && (
                   <div className="player-fail-tip">
                     <span>⚠ 解析失败，可尝试新标签打开观看！</span>
