@@ -8,6 +8,7 @@ import {
   unfreezeParse,
   type SubscriptionEntry,
 } from '../lib/localStats'
+import { getTheme, setTheme, type WtTheme } from '../lib/theme'
 import { showToast } from '../lib/toast'
 import type { TvSite } from '../lib/types'
 
@@ -25,6 +26,7 @@ export default function Settings() {
   const [frozenParses, setFrozenParses] = useState<string[]>([])
   const [url, setUrl] = useState('')
   const [adding, setAdding] = useState(false)
+  const [theme, setThemeState] = useState<WtTheme>(getTheme())
 
   const refresh = useCallback(() => {
     setSubs(loadSubscriptions())
@@ -35,6 +37,11 @@ export default function Settings() {
   useEffect(() => {
     refresh()
   }, [refresh])
+
+  const changeTheme = (t: WtTheme) => {
+    setTheme(t)
+    setThemeState(t)
+  }
 
   const handleAdd = async () => {
     const trimmed = url.trim()
@@ -80,6 +87,19 @@ export default function Settings() {
     <section className="content-area" style={{ maxWidth: 860 }}>
       <div className="page-title"><span>设置</span></div>
 
+      {/* 外观：主题即时生效，选择持久化在 localStorage */}
+      <div style={{ background: 'var(--wt-panel)', borderRadius: 10, padding: 16, marginBottom: 20 }}>
+        <div style={{ fontWeight: 600, marginBottom: 12 }}>外观</div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {([['classic', '经典 · 藏蓝红'], ['modern', '现代 · 紫夜']] as Array<[WtTheme, string]>).map(([t, label]) => (
+            <button key={t} className={`line-tab${theme === t ? ' active' : ''}`} onClick={() => changeTheme(t)}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <div style={{ color: '#666', fontSize: 12, marginTop: 10 }}>主题即时生效并记住选择</div>
+      </div>
+
       {/* 复用线路 tab 的样式：解析工具 / 订阅与源 */}
       <div className="line-tabs" style={{ marginBottom: 20 }}>
         <button className={`line-tab${tab === 'parse' ? ' active' : ''}`} onClick={() => setTab('parse')}>
@@ -97,7 +117,7 @@ export default function Settings() {
       ) : (
         <>
           {/* 订阅管理 */}
-          <div style={{ background: '#16213e', borderRadius: 10, padding: 16, marginBottom: 20 }}>
+          <div style={{ background: 'var(--wt-panel)', borderRadius: 10, padding: 16, marginBottom: 20 }}>
             <div style={{ fontWeight: 600, marginBottom: 12 }}>TVBox 订阅</div>
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               <input
@@ -129,7 +149,7 @@ export default function Settings() {
           </div>
 
           {/* 已禁用站点 */}
-          <div style={{ background: '#16213e', borderRadius: 10, padding: 16, marginBottom: 20 }}>
+          <div style={{ background: 'var(--wt-panel)', borderRadius: 10, padding: 16, marginBottom: 20 }}>
             <div style={{ fontWeight: 600, marginBottom: 12 }}>已禁用站点（连续失败自动禁用）</div>
             {disabledSites.length === 0 ? (
               <div style={{ color: '#666', fontSize: 13 }}>无</div>
@@ -144,7 +164,7 @@ export default function Settings() {
           </div>
 
           {/* 已冻结解析线路 */}
-          <div style={{ background: '#16213e', borderRadius: 10, padding: 16 }}>
+          <div style={{ background: 'var(--wt-panel)', borderRadius: 10, padding: 16 }}>
             <div style={{ fontWeight: 600, marginBottom: 12 }}>已冻结解析线路（解析工具里报错达到阈值）</div>
             {frozenParses.length === 0 ? (
               <div style={{ color: '#666', fontSize: 13 }}>无</div>

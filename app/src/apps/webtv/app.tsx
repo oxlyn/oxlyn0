@@ -11,6 +11,7 @@ import Live from './views/Live'
 import Favorites from './views/Favorites'
 import Settings from './views/Settings'
 import type { WebTVNav, WebTVView } from './nav'
+import { getTheme } from './lib/theme'
 import './webtv.css'
 
 /**
@@ -57,7 +58,7 @@ function Shell({ initialView }: { initialView: WebTVView }) {
   )
 
   return (
-    <div className="webtv-root">
+    <div className="webtv-root" data-wt-theme={getTheme()}>
       <header className="app-header">
         <span className="logo" onClick={() => nav.open({ page: 'home' })} role="button">
           <span className="logo-icon">▶</span>

@@ -2,6 +2,7 @@
 import { useEffect, useRef } from 'react'
 import Artplayer from 'artplayer'
 import Hls from 'hls.js'
+import { getTheme } from '../lib/theme'
 
 /**
  * ArtPlayer 封装：npm 引入 artplayer + hls.js（原版为 CDN 全局变量），
@@ -81,6 +82,8 @@ export default function Player({ url, isLive = false, onReady, onError }: Player
         aspectRatio: true,
         fullscreen: true,
         miniProgressBar: true,
+        // 播放器强调色跟随主题：经典保持 artplayer 默认视觉，现代用主题紫
+        ...(getTheme() === 'modern' ? { theme: '#a78bfa' } : {}),
         // 不写死类型：artplayer 按 URL 扩展名判定，m3u8 命中 customType 走 hls.js，
         // 其余交给浏览器原生解码 —— 换源时源类型变化（m3u8↔mp4）不会被旧 type 绑住
         type: '',
