@@ -1,6 +1,6 @@
 /**
- * 本地统计/设置存储：替代原版服务端的 disable-site 接口。
- * 语义对齐：站点连续自动跳过 3 次禁用。
+ * 本地统计/设置存储：替代原版服务端的 disable-site / report-error 接口。
+ * 语义对齐：站点连续自动跳过 3 次禁用；解析接口报错 play 3 次 / parse 6 次冻结。
  *
  * 读写走 persist（内存镜像 + IndexedDB 后端），键名保持 tvbox_ 前缀不变；
  * 首次启动自动把旧 localStorage 数据迁移过去（见 persist.ts）。
@@ -9,10 +9,14 @@ import { readValue, removeValue, writeValue } from './persist';
 
 const KEY_SKIP_COUNTS = 'tvbox_site_skip_counts';
 const KEY_DISABLED_SITES = 'tvbox_site_disabled';
+const KEY_PARSE_ERRORS = 'tvbox_parse_errors';
+const KEY_FROZEN_PARSES = 'tvbox_parse_frozen';
 const KEY_SUBSCRIPTIONS = 'tvbox_subscriptions';
 const KEY_CORS_PROXIES = 'tvbox_cors_proxies';
 
 export const AUTO_DISABLE_THRESHOLD = 3;
+export const PARSE_PLAY_THRESHOLD = 3;
+export const PARSE_PARSE_THRESHOLD = 6;
 
 function readJson<T>(key: string, fallback: T): T {
   return readValue(key, fallback);
@@ -150,6 +154,48 @@ export function disableSite(siteId: string): void {
 
 export function enableSite(siteId: string): void {
   writeJson(KEY_DISABLED_SITES, loadDisabledSiteIds().filter((id) => id !== siteId));
+}
+
+// ===== 解析接口报错冻结 =====
+
+interface ParseErrorEntry {
+  play: number;
+  parse: number;
+}
+
+function loadParseErrors(): Record<string, ParseErrorEntry> {
+  return readJson<Record<string, ParseErrorEntry>>(KEY_PARSE_ERRORS, {});
+}
+
+export function reportParseError(parseId: string, type: 'play' | 'parse'): { frozen: boolean; threshold: number } {
+  const errors = loadParseErrors();
+  const entry = errors[parseId] || { play: 0, parse: 0 };
+  entry[type] += 1;
+  errors[parseId] = entry;
+  writeJson(KEY_PARSE_ERRORS, errors);
+
+  const threshold = type === 'play' ? PARSE_PLAY_THRESHOLD : PARSE_PARSE_THRESHOLD;
+  if (entry[type] >= threshold) {
+    freezeParse(parseId);
+    return { frozen: true, threshold };
+  }
+  return { frozen: false, threshold };
+}
+
+export function loadFrozenParseIds(): string[] {
+  return readJson<string[]>(KEY_FROZEN_PARSES, []);
+}
+
+export function freezeParse(parseId: string): void {
+  const ids = loadFrozenParseIds();
+  if (!ids.includes(parseId)) {
+    ids.push(parseId);
+    writeJson(KEY_FROZEN_PARSES, ids);
+  }
+}
+
+export function unfreezeParse(parseId: string): void {
+  writeJson(KEY_FROZEN_PARSES, loadFrozenParseIds().filter((id) => id !== parseId));
 }
 
 // ===== 订阅 =====

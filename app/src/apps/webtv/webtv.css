@@ -391,7 +391,134 @@
     height: 500px;
     border: none;
     display: block;
-    background: #000;}/* ===================== 线路 + 剧集 ===================== */.webtv-root .episodes-section {
+    background: #000;}/* ===================== 解析页报错按钮 + 拖到收藏 ===================== */.webtv-root .parse-page-player {
+    position: relative;}.webtv-root .parse-report-area {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 8px;}.webtv-root .parse-bookmark-link {
+    background: rgba(0, 0, 0, 0.5);
+    color: #ffd700;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    padding: 3px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: grab;
+    transition: background 0.2s, color 0.2s;
+    line-height: 1.8;
+    text-decoration: none;
+    white-space: nowrap;}.webtv-root .parse-bookmark-link:hover {
+    background: rgba(255, 215, 0, 0.15);
+    color: #ffe44d;
+    border-color: rgba(255, 215, 0, 0.5);}.webtv-root .parse-report-btn {
+    background: rgba(0, 0, 0, 0.5);
+    color: #ccc;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 3px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    line-height: 1.8;}.webtv-root .parse-report-btn:hover, .webtv-root .parse-report-btn.active {
+    background: rgba(233, 69, 96, 0.6);
+    color: #fff;
+    border-color: rgba(233, 69, 96, 0.4);}.webtv-root .parse-report-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: #1e2a4a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    overflow: hidden;
+    min-width: 100px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);}.webtv-root .parse-report-menu-item {
+    padding: 8px 16px;
+    font-size: 13px;
+    color: #ccc;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;}.webtv-root .parse-report-menu-item:hover {
+    background: rgba(233, 69, 96, 0.15);
+    color: #fff;}.webtv-root .player-bar {
+    height: 52px;
+    padding: 0 16px;
+    background: #0f3460;
+    display: flex;
+    align-items: center;
+    gap: 12px;}.webtv-root .player-bar .player-title {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;}.webtv-root .player-bar .player-title .main-title {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;}.webtv-root .player-bar .player-title .sub-title {
+    color: #aaa;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;}.webtv-root .player-bar .player-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;}.webtv-root .player-bar .player-actions .icon-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.15s;}.webtv-root .player-bar .player-actions .icon-btn:hover { color: #fff; border-color: #e94560; background: rgba(233, 69, 96, 0.15);}.webtv-root .player-bar .player-actions .icon-btn:disabled { opacity: 0.4; cursor: default;}.webtv-root .player-bar .player-actions .text-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    transition: all 0.15s;
+    white-space: nowrap;}.webtv-root .player-bar .player-actions .text-btn:hover:not(:disabled) { color: #fff; border-color: #e94560; background: rgba(233, 69, 96, 0.15);}.webtv-root .player-bar .player-actions .text-btn:disabled { opacity: 0.4; cursor: default;}.webtv-root .player-fail-tip {
+    background: rgba(233, 69, 96, 0.1);
+    border: 1px solid rgba(233, 69, 96, 0.3);
+    color: #ff7a90;
+    padding: 8px 16px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;}.webtv-root .player-fail-tip > span { flex: 1;}.webtv-root .player-fail-tip .open-tab {
+    background: #e94560;
+    color: #fff;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    flex-shrink: 0;}.webtv-root .player-fail-tip .open-tab:hover { background: #ff5a7a;}.webtv-root .player-fail-tip .close-tip {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #aaa;
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    flex-shrink: 0;}.webtv-root .player-fail-tip .close-tip:hover {
+    color: #fff;
+    border-color: #e94560;
+    background: rgba(233, 69, 96, 0.2);}/* ===================== 线路 + 剧集 ===================== */.webtv-root .episodes-section {
     background: #16213e;
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.04);
@@ -513,7 +640,105 @@
         max-height: none;
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;}.webtv-root .search-page .search-sidebar-title { width: 100%;}.webtv-root .search-page .search-site-item { flex: 0 0 auto;}}/* ===================== 直播页 ===================== */.webtv-root .live-page {
+        gap: 6px;}.webtv-root .search-page .search-sidebar-title { width: 100%;}.webtv-root .search-page .search-site-item { flex: 0 0 auto;}}/* ===================== 解析页 ===================== */.webtv-root .parse-page {
+    max-width: 100%;
+    height: calc(100vh - 56px);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow: hidden;}.webtv-root .parse-page-box {
+    flex-shrink: 0;
+    background: #16213e;
+    border-radius: 10px;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.04);}.webtv-root .parse-page-row-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;}.webtv-root .parse-page-label-inline {
+    font-size: 14px;
+    color: #ccc;
+    white-space: nowrap;
+    flex-shrink: 0;}.webtv-root .parse-page-select-inline {
+    width: 130px;
+    flex-shrink: 0;
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #eee;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;}.webtv-root .parse-page-select-inline:focus {
+    border-color: #e94560;
+    box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.1);}.webtv-root .parse-page-select-inline option { background: #16213e; color: #eee;}.webtv-root .parse-page-input-inline {
+    flex: 1;
+    min-width: 0;
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #eee;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;}.webtv-root .parse-page-input-inline:focus {
+    border-color: #e94560;
+    box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.1);}.webtv-root .btn-play-inline {
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #0f3460, #e94560);
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;}.webtv-root .btn-play-inline:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;}.webtv-root .btn-play-inline:not(:disabled):hover {
+    opacity: 0.85;}.webtv-root .btn-open-inline {
+    flex-shrink: 0;
+    background: transparent;
+    color: #5fb878;
+    border: 1px solid #5fb878;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;}.webtv-root .btn-open-inline:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;}.webtv-root .btn-open-inline:not(:disabled):hover {
+    background: rgba(95, 184, 120, 0.1);}/* iframe 播放器 - 自动填充剩余高度 */.webtv-root .parse-page-player {
+    position: relative;
+    flex: 1;
+    min-height: 200px;
+    background: #16213e;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;}.webtv-root .parse-page-player iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #000;}.webtv-root .parse-page-player-placeholder {
+    color: #555;
+    font-size: 14px;}/* 解析工具嵌入设置页：不再独占视口 —— 根高度放开，播放区给固定可视高度 */
+.webtv-root .settings-parse .parse-page {
+    height: auto;
+    overflow: visible;
+    padding: 0;}
+.webtv-root .settings-parse .parse-page-player {
+    flex: none;
+    height: min(62vh, 560px);
+    min-height: 320px;}
+/* ===================== 直播页 ===================== */.webtv-root .live-page {
     display: grid;
     grid-template-columns: 200px 280px 1fr;
     gap: 12px;
@@ -653,6 +878,7 @@
 .webtv-root .app-main { flex: 1; min-height: 0; height: 100%; }
 .webtv-root .sidebar { position: static; top: auto; max-height: none; }
 .webtv-root .search-page .search-sidebar { max-height: 480px; }
+.webtv-root .parse-page { height: 100%; }
 .webtv-root .live-page { height: 100%; min-height: 0; }
 /* 网页全屏：铺满应用窗口而非浏览器视口 */
 .webtv-root .player-section.browser-fullscreen { position: absolute; }
