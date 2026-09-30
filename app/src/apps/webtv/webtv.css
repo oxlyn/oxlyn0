@@ -1141,6 +1141,7 @@
   box-shadow: 0 6px 18px rgba(var(--wt-accent-rgb), 0.3);}
 .webtv-root[data-wt-theme='tvbox'] .app-main {
   flex: 1;
+  flex-direction: column; /* 首页的横向分类 Tab 条在上、内容在下 —— 缺了这条 Tab 条会横着占 3000+px 把内容挤出视口 */
   min-width: 0;
   min-height: 0;
   height: 100%;}
