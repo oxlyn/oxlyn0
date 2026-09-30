@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import MovieCard from '../components/MovieCard'
 import { useSources } from '../components/SourcesProvider'
 import { searchAllSites } from '../lib/api'
@@ -9,7 +9,25 @@ import type { WebTVNav } from '../nav'
  * 搜索页：跨站并发搜索 + 站点分组筛选（等价上游 SearchPage 的 doSearch +
  * searchSiteGroups）。上游由 /search?kw= 路由参数驱动，窗口版改为
  * shell 传入的初始关键词 + 页内输入。
+ *
+ * 结果缓存：shell 只渲染页面栈顶，进详情页时本组件整体卸载 —— 按关键词把
+ * 已完成的搜索结果存进组件外快照，返回/重进搜索页时整份恢复（含滚动位置），
+ * 不再重新搜索；结果一直保留到下一次搜索（显式重搜总是拉取最新，
+ * 未搜完就离开的不缓存 —— 恢复一份冻结的半成品还不如重搜）。
+ * 只存内存，会话内有效。
  */
+
+interface SearchSnapshot {
+  keyword: string
+  results: VodItem[]
+  siteFilter: string | number
+  progress: { completed: number; total: number }
+  scrollTop: number
+}
+
+const SEARCH_CACHE_MAX = 5
+const searchCache = new Map<string, SearchSnapshot>()
+
 export default function Search({ nav, initialKw = '' }: { nav: WebTVNav; initialKw?: string }) {
   const { sites } = useSources()
 
@@ -19,6 +37,52 @@ export default function Search({ nav, initialKw = '' }: { nav: WebTVNav; initial
   const [done, setDone] = useState(false)
   const [siteFilter, setSiteFilter] = useState<string | number>('__all')
   const [progress, setProgress] = useState({ completed: 0, total: 0 })
+
+  const contentRef = useRef<HTMLElement>(null)
+  const pendingScrollRef = useRef(0)
+  const mountedRef = useRef(false)
+
+  // 离开搜索页（进详情等，组件整体卸载）时留存已完成的搜索现场
+  const stateRef = useRef({
+    keyword: '',
+    results: [] as VodItem[],
+    done: false,
+    siteFilter: '__all' as string | number,
+    progress: { completed: 0, total: 0 },
+  })
+  stateRef.current = { keyword, results, done, siteFilter, progress }
+
+  useEffect(() => {
+    return () => {
+      const s = stateRef.current
+      const kw = s.keyword.trim()
+      // 未搜完的半成品不缓存：恢复一份冻结的中间态不如重搜
+      if (!kw || !s.done) return
+      searchCache.delete(kw)
+      searchCache.set(kw, {
+        keyword: kw,
+        results: s.results,
+        siteFilter: s.siteFilter,
+        progress: s.progress,
+        scrollTop: contentRef.current?.scrollTop ?? 0,
+      })
+      while (searchCache.size > SEARCH_CACHE_MAX) {
+        const oldest = searchCache.keys().next().value
+        if (oldest === undefined) break
+        searchCache.delete(oldest)
+      }
+    }
+  }, [])
+
+  const restoreSnapshot = (snap: SearchSnapshot) => {
+    setKeyword(snap.keyword)
+    setResults(snap.results)
+    setSiteFilter(snap.siteFilter)
+    setProgress(snap.progress)
+    setDone(true)
+    setLoading(false)
+    pendingScrollRef.current = snap.scrollTop
+  }
 
   const doSearch = useCallback(
     async (kw: string) => {
@@ -63,10 +127,33 @@ export default function Search({ nav, initialKw = '' }: { nav: WebTVNav; initial
     [sites]
   )
 
+  // 挂载决策：带关键词且缓存里有已完成的同词搜索 → 整份恢复；
+  // 否则带词搜索；不带词打开搜索页 → 恢复上一次的搜索结果（直到下次搜索）
   useEffect(() => {
-    if (initialKw) doSearch(initialKw);
+    mountedRef.current = true
+    const kw = initialKw.trim()
+    if (kw) {
+      const snap = searchCache.get(kw)
+      if (snap) {
+        restoreSnapshot(snap)
+        return
+      }
+      doSearch(kw)
+      return
+    }
+    const snaps = [...searchCache.values()]
+    const last = snaps[snaps.length - 1]
+    if (last) restoreSnapshot(last)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialKw])
+
+  // 恢复的结果渲染完成后回到离开时的滚动位置
+  useLayoutEffect(() => {
+    if (pendingScrollRef.current > 0 && contentRef.current) {
+      contentRef.current.scrollTop = pendingScrollRef.current
+      pendingScrollRef.current = 0
+    }
+  })
 
   const siteGroups = (() => {
     const map = new Map<string, { id: string; name: string; count: number }>()
@@ -86,7 +173,7 @@ export default function Search({ nav, initialKw = '' }: { nav: WebTVNav; initial
       : ''
 
   return (
-    <section className="content-area search-page">
+    <section className="content-area search-page" ref={contentRef}>
       <div className="search-header">
         <input
           type="text"
