@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useSources } from '../components/SourcesProvider'
 import MovieCard from '../components/MovieCard'
 import { fetchSiteData, isAbortError } from '../lib/api'
@@ -14,6 +14,25 @@ import type { WebTVNav } from '../nav'
 
 const ALL_SITES_UNREACHABLE_TIP =
   '所有站点均不可达。TVBox 配置中大部分源为客户端爬虫源（csp_/py_/.js），网页端仅支持苹果CMS标准HTTP API站点，请到设置页添加可用的订阅源。'
+
+/**
+ * 返回首页时的现场快照：分类/列表/翻页/滚动位置。
+ * shell 只渲染页面栈顶，进详情页时 Home 会整体卸载，状态必须存在组件外；
+ * 返回（重新挂载）且是同一站点时整份恢复，不再回到「全部」分类重新拉取。
+ * 只存内存 —— 会话内有效，刷新页面后走正常加载（列表由 IDB 缓存兜底速度）。
+ */
+interface HomeSnapshot {
+  siteId: string
+  categoryId: string | number | null
+  categories: Category[]
+  movieList: VodItem[]
+  currentPage: number
+  totalPages: number
+  totalCount: number
+  scrollTop: number
+}
+
+let homeSnapshot: HomeSnapshot | null = null
 
 export default function Home({ nav }: { nav: WebTVNav }) {
   const { sites, currentSiteId, setCurrentSiteId, failSite, succeedSite } = useSources()
@@ -36,6 +55,63 @@ export default function Home({ nav }: { nav: WebTVNav }) {
   // 请求序号：后到的请求使先到的失效，避免连点分类时按完成顺序把旧数据渲染上屏
   const catSeqRef = useRef(0)
   const listSeqRef = useRef(0)
+  // 现场恢复：mountedForSiteRef 记录本组件实例已为哪个站点做过初始加载/恢复
+  const mountedForSiteRef = useRef<string | null>(null)
+  const pendingScrollRef = useRef(0)
+
+  // 离开首页（进详情/搜索等，组件整体卸载）时留存现场
+  const stateRef = useRef({
+    siteId: '',
+    categoryId: null as string | number | null,
+    categories: [] as Category[],
+    movieList: [] as VodItem[],
+    currentPage: 1,
+    totalPages: 1,
+    totalCount: 0,
+  })
+  stateRef.current = {
+    siteId: currentSiteId ?? '',
+    categoryId: currentCategoryId,
+    categories,
+    movieList,
+    currentPage,
+    totalPages,
+    totalCount,
+  }
+
+  useEffect(() => {
+    return () => {
+      const s = stateRef.current
+      // 站点未知或初始加载还没出结果（分类和列表都为空）时不留存：
+      // 否则快速离开再返回会恢复成空现场并跳过加载，首页卡死在空状态
+      if (!s.siteId || (s.categories.length === 0 && s.movieList.length === 0)) return
+      homeSnapshot = {
+        siteId: s.siteId,
+        categoryId: s.categoryId,
+        categories: s.categories,
+        movieList: s.movieList,
+        currentPage: s.currentPage,
+        totalPages: s.totalPages,
+        totalCount: s.totalCount,
+        scrollTop: contentRef.current?.scrollTop ?? 0,
+      }
+    }
+  }, [])
+
+  /** 恢复同一站点的现场；快照不存在或站点不匹配时返回 false（走正常加载） */
+  const restoreSnapshot = (siteId: string): boolean => {
+    const snap = homeSnapshot
+    homeSnapshot = null
+    if (!snap || snap.siteId !== siteId) return false
+    setCategories(snap.categories)
+    setCurrentCategoryId(snap.categoryId)
+    setMovieList(snap.movieList)
+    setCurrentPage(snap.currentPage)
+    setTotalPages(snap.totalPages)
+    setTotalCount(snap.totalCount)
+    pendingScrollRef.current = snap.scrollTop
+    return true
+  }
 
   // ===== 站点切换 =====
 
@@ -220,6 +296,12 @@ export default function Home({ nav }: { nav: WebTVNav }) {
   // 站点变化（手动选择 / 自动切换）→ 重新加载分类和列表
   useEffect(() => {
     if (!currentSiteId) return
+    // 同一站点的二次执行不重复恢复/加载（防御 StrictMode 双执行；当前宿主未开启）
+    if (mountedForSiteRef.current === currentSiteId) return
+    const isRemount = mountedForSiteRef.current === null
+    mountedForSiteRef.current = currentSiteId
+    // 首次挂载且留有同一站点的现场 → 整份恢复，不回「全部」重新拉取
+    if (isRemount && restoreSnapshot(currentSiteId)) return
     if (autoSwitchRef.current) {
       autoSwitchRef.current = false // 自动切换：保留 triedIds 追踪
     } else {
@@ -232,6 +314,14 @@ export default function Home({ nav }: { nav: WebTVNav }) {
     loadMovieList(currentSiteId, null, 1, false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSiteId])
+
+  // 恢复的列表渲染完成后回到离开时的滚动位置（海报有 aspect-ratio 占位，首帧列高即确定）
+  useLayoutEffect(() => {
+    if (pendingScrollRef.current > 0 && contentRef.current) {
+      contentRef.current.scrollTop = pendingScrollRef.current
+      pendingScrollRef.current = 0
+    }
+  })
 
   const selectCategory = (catId: string | number | null) => {
     setCurrentCategoryId(catId)
