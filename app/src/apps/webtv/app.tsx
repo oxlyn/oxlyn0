@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Clapperboard } from 'lucide-react'
 import { AppWindowProps } from '@/system/types'
 import type { AppDefinition } from '@/system/types'
@@ -11,7 +11,7 @@ import Live from './views/Live'
 import Favorites from './views/Favorites'
 import Settings from './views/Settings'
 import type { WebTVNav, WebTVView } from './nav'
-import { getTheme, THEME_CHANGE_EVENT } from './lib/theme'
+import { useWtTheme } from './lib/theme'
 import './webtv.css'
 
 /**
@@ -29,13 +29,7 @@ function Shell({ initialView }: { initialView: WebTVView }) {
   const { sites, currentSiteId, setCurrentSiteId } = useSources()
   const [stack, setStack] = useState<WebTVView[]>([initialView])
   const [keyword, setKeyword] = useState('')
-  // 主题走 state 而非只改 DOM 属性：导航栏布局（搜索框是否常驻）随主题不同
-  const [theme, setThemeState] = useState(getTheme())
-  useEffect(() => {
-    const onThemeChange = () => setThemeState(getTheme())
-    window.addEventListener(THEME_CHANGE_EVENT, onThemeChange)
-    return () => window.removeEventListener(THEME_CHANGE_EVENT, onThemeChange)
-  }, [])
+  const theme = useWtTheme()
 
   const view = stack[stack.length - 1]
 
@@ -72,7 +66,7 @@ function Shell({ initialView }: { initialView: WebTVView }) {
           <span>WebTV</span>
         </span>
         <div className="nav-bar">
-          {onHome && (
+          {onHome && theme !== 'tvbox' && (
             <select
               className="site-select"
               value={currentSiteId ?? ''}
@@ -84,7 +78,7 @@ function Shell({ initialView }: { initialView: WebTVView }) {
             </select>
           )}
           {/* 现代主题：搜索框常驻顶栏，任意页面都能直接搜 */}
-          {(onHome || theme === 'modern') && (
+          {(theme === 'modern' || (onHome && theme !== 'tvbox')) && (
             <>
               <input
                 className="search-box"

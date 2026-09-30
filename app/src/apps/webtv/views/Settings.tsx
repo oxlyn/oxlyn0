@@ -91,7 +91,7 @@ export default function Settings() {
       <div style={{ background: 'var(--wt-panel)', borderRadius: 10, padding: 16, marginBottom: 20 }}>
         <div style={{ fontWeight: 600, marginBottom: 12 }}>外观</div>
         <div style={{ display: 'flex', gap: 8 }}>
-          {([['classic', '经典 · 藏蓝红'], ['modern', '现代 · 紫夜']] as Array<[WtTheme, string]>).map(([t, label]) => (
+          {([['classic', '经典 · 藏蓝红'], ['modern', '现代 · 紫夜'], ['tvbox', 'TVBox · 电视']] as Array<[WtTheme, string]>).map(([t, label]) => (
             <button key={t} className={`line-tab${theme === t ? ' active' : ''}`} onClick={() => changeTheme(t)}>
               {label}
             </button>

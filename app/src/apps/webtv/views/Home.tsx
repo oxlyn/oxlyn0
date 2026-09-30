@@ -5,6 +5,7 @@ import { fetchSiteData, isAbortError } from '../lib/api'
 import { extractCategories, extractVodList, isSiteUnreachable } from '../lib/maccms'
 import type { Category, VodItem } from '../lib/types'
 import type { WebTVNav } from '../nav'
+import { useWtTheme } from '../lib/theme'
 
 /**
  * 首页：分类侧栏 + 影片网格（无限滚动）+ 站点容错切换。
@@ -36,6 +37,7 @@ let homeSnapshot: HomeSnapshot | null = null
 
 export default function Home({ nav }: { nav: WebTVNav }) {
   const { sites, currentSiteId, setCurrentSiteId, failSite, succeedSite } = useSources()
+  const theme = useWtTheme()
 
   const [categories, setCategories] = useState<Category[]>([])
   const [currentCategoryId, setCurrentCategoryId] = useState<string | number | null>(null)
@@ -367,6 +369,18 @@ export default function Home({ nav }: { nav: WebTVNav }) {
         <div className="page-title">
           <span>{currentSite ? currentSite.name : 'TVBox'}</span>
           {totalCount > 0 && <span style={{ color: '#666', fontSize: 13 }}>共 {totalCount} 部</span>}
+          {/* TVBox 主题：左侧导航轨放不下源选择，移到标题行右侧 */}
+          {theme === 'tvbox' && (
+            <select
+              className="site-select tv-source-select"
+              value={currentSiteId ?? ''}
+              onChange={(e) => setCurrentSiteId(e.target.value)}
+            >
+              {sites.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          )}
         </div>
         {siteError && (
           <div className="site-error-tip">
