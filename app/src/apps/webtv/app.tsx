@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Clapperboard } from 'lucide-react'
 import { AppWindowProps } from '@/system/types'
 import type { AppDefinition } from '@/system/types'
@@ -11,7 +11,7 @@ import Live from './views/Live'
 import Favorites from './views/Favorites'
 import Settings from './views/Settings'
 import type { WebTVNav, WebTVView } from './nav'
-import { getTheme } from './lib/theme'
+import { getTheme, THEME_CHANGE_EVENT } from './lib/theme'
 import './webtv.css'
 
 /**
@@ -29,6 +29,13 @@ function Shell({ initialView }: { initialView: WebTVView }) {
   const { sites, currentSiteId, setCurrentSiteId } = useSources()
   const [stack, setStack] = useState<WebTVView[]>([initialView])
   const [keyword, setKeyword] = useState('')
+  // 主题走 state 而非只改 DOM 属性：导航栏布局（搜索框是否常驻）随主题不同
+  const [theme, setThemeState] = useState(getTheme())
+  useEffect(() => {
+    const onThemeChange = () => setThemeState(getTheme())
+    window.addEventListener(THEME_CHANGE_EVENT, onThemeChange)
+    return () => window.removeEventListener(THEME_CHANGE_EVENT, onThemeChange)
+  }, [])
 
   const view = stack[stack.length - 1]
 
@@ -58,7 +65,7 @@ function Shell({ initialView }: { initialView: WebTVView }) {
   )
 
   return (
-    <div className="webtv-root" data-wt-theme={getTheme()}>
+    <div className="webtv-root" data-wt-theme={theme}>
       <header className="app-header">
         <span className="logo" onClick={() => nav.open({ page: 'home' })} role="button">
           <span className="logo-icon">▶</span>
@@ -66,16 +73,19 @@ function Shell({ initialView }: { initialView: WebTVView }) {
         </span>
         <div className="nav-bar">
           {onHome && (
+            <select
+              className="site-select"
+              value={currentSiteId ?? ''}
+              onChange={(e) => setCurrentSiteId(e.target.value)}
+            >
+              {sites.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          )}
+          {/* 现代主题：搜索框常驻顶栏，任意页面都能直接搜 */}
+          {(onHome || theme === 'modern') && (
             <>
-              <select
-                className="site-select"
-                value={currentSiteId ?? ''}
-                onChange={(e) => setCurrentSiteId(e.target.value)}
-              >
-                {sites.map((s) => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
               <input
                 className="search-box"
                 type="text"

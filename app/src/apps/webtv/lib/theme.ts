@@ -23,7 +23,13 @@ export function setTheme(theme: WtTheme): void {
     localStorage.setItem(KEY, theme)
   } catch { /* 忽略：本会话内仍可通过 applyTheme 生效 */ }
   applyTheme(theme)
+  try {
+    window.dispatchEvent(new Event(THEME_CHANGE_EVENT))
+  } catch { /* 忽略 */ }
 }
+
+/** 主题变更事件：Shell 订阅它以便即时重渲染（导航栏布局随主题不同） */
+export const THEME_CHANGE_EVENT = 'wt-theme-change'
 
 /** 直接改根节点属性，即时生效（Shell 渲染时也会从 getTheme() 带上同样的值） */
 export function applyTheme(theme: WtTheme): void {

@@ -6,7 +6,7 @@
     outline: none;}/* ===================== 顶部导航栏 ===================== */.webtv-root .app-header {
     height: 56px;
     background: var(--wt-panel);
-    border-bottom: 1px solid rgba(var(--wt-accent-rgb),, 0.2);
+    border-bottom: 1px solid rgba(var(--wt-accent-rgb), 0.2);
     display: flex;
     align-items: center;
     padding: 0 20px;
@@ -44,7 +44,7 @@
     font-size: 13px;
     transition: border-color 0.2s, box-shadow 0.2s;}.webtv-root .app-header .nav-bar .site-select { min-width: 140px; max-width: 220px;}.webtv-root .app-header .nav-bar .search-box { flex: 1; min-width: 120px; max-width: 360px;}.webtv-root .app-header .nav-bar .site-select:focus, .webtv-root .app-header .nav-bar .search-box:focus {
     border-color: var(--wt-accent);
-    box-shadow: 0 0 0 3px rgba(var(--wt-accent-rgb),, 0.1);}.webtv-root .app-header .nav-bar .search-box::placeholder { color: #555;}.webtv-root .app-header .nav-bar .btn-search {
+    box-shadow: 0 0 0 3px rgba(var(--wt-accent-rgb), 0.1);}.webtv-root .app-header .nav-bar .search-box::placeholder { color: #555;}.webtv-root .app-header .nav-bar .btn-search {
     background: linear-gradient(135deg, var(--wt-panel-2), var(--wt-accent));
     color: #fff;
     border: none;
@@ -53,7 +53,7 @@
     font-size: 13px;
     font-weight: 500;
     transition: transform 0.15s, box-shadow 0.15s;
-    white-space: nowrap;}.webtv-root .app-header .nav-bar .btn-search:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(var(--wt-accent-rgb),, 0.3);}.webtv-root .app-header .nav-bar .btn-search:active { transform: translateY(0);}.webtv-root .app-header .nav-actions {
+    white-space: nowrap;}.webtv-root .app-header .nav-bar .btn-search:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(var(--wt-accent-rgb), 0.3);}.webtv-root .app-header .nav-bar .btn-search:active { transform: translateY(0);}.webtv-root .app-header .nav-actions {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -68,7 +68,7 @@
     white-space: nowrap;}.webtv-root .app-header .nav-actions .nav-link:hover, .webtv-root .app-header .nav-actions .nav-link.active {
     color: #fff;
     border-color: var(--wt-accent);
-    background: rgba(var(--wt-accent-rgb),, 0.12);}/* ===================== 主体布局 ===================== */.webtv-root .app-main {
+    background: rgba(var(--wt-accent-rgb), 0.12);}/* ===================== 主体布局 ===================== */.webtv-root .app-main {
     display: flex;
     min-height: calc(100vh - 56px);}/* ===================== 左侧分类栏 ===================== */.webtv-root .sidebar {
     width: 180px;
@@ -94,10 +94,10 @@
     margin-bottom: 2px;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;}.webtv-root .sidebar .cat-item:hover { background: rgba(var(--wt-accent-rgb),, 0.08); color: #ddd;}.webtv-root .sidebar .cat-item.active {
-    background: linear-gradient(135deg, rgba(var(--wt-panel-2-rgb),, 0.6), rgba(var(--wt-accent-rgb),, 0.3));
+    text-overflow: ellipsis;}.webtv-root .sidebar .cat-item:hover { background: rgba(var(--wt-accent-rgb), 0.08); color: #ddd;}.webtv-root .sidebar .cat-item.active {
+    background: linear-gradient(135deg, rgba(var(--wt-panel-2-rgb), 0.6), rgba(var(--wt-accent-rgb), 0.3));
     color: #fff;
-    box-shadow: 0 2px 8px rgba(var(--wt-accent-rgb),, 0.15);}.webtv-root .sidebar .cat-empty {
+    box-shadow: 0 2px 8px rgba(var(--wt-accent-rgb), 0.15);}.webtv-root .sidebar .cat-empty {
     padding: 20px 14px;
     text-align: center;
     color: #555;
@@ -113,8 +113,8 @@
     display: flex;
     align-items: center;
     gap: 8px;}/* 站点不可达等错误提示 */.webtv-root .site-error-tip {
-    background: rgba(var(--wt-accent-rgb),, 0.15);
-    border: 1px solid rgba(var(--wt-accent-rgb),, 0.4);
+    background: rgba(var(--wt-accent-rgb), 0.15);
+    border: 1px solid rgba(var(--wt-accent-rgb), 0.4);
     border-radius: 4px;
     padding: 10px 14px;
     margin-bottom: 12px;
@@ -135,7 +135,7 @@
     display: block;}.webtv-root .movie-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    border-color: rgba(var(--wt-accent-rgb),, 0.3);}.webtv-root .movie-card .card-poster {
+    border-color: rgba(var(--wt-accent-rgb), 0.3);}.webtv-root .movie-card .card-poster {
     width: 100%;
     aspect-ratio: 2/3;
     object-fit: cover;
@@ -160,7 +160,7 @@
     margin-bottom: 4px;}.webtv-root .movie-card .card-remarks {
     font-size: 11px;
     color: var(--wt-accent);
-    background: rgba(var(--wt-accent-rgb),, 0.1);
+    background: rgba(var(--wt-accent-rgb), 0.1);
     padding: 1px 6px;
     border-radius: 3px;
     display: inline-block;
@@ -176,21 +176,21 @@
     color: #888;
     font-size: 13px;}.webtv-root .load-more .load-more-btn {
     background: var(--wt-panel);
-    border: 1px solid rgba(var(--wt-accent-rgb),, 0.3);
+    border: 1px solid rgba(var(--wt-accent-rgb), 0.3);
     color: var(--wt-accent);
     padding: 8px 28px;
     border-radius: 6px;
     font-size: 13px;
     transition: all 0.15s;
     cursor: pointer;}.webtv-root .load-more .load-more-btn:hover:not(:disabled) {
-    background: rgba(var(--wt-accent-rgb),, 0.1);
+    background: rgba(var(--wt-accent-rgb), 0.1);
     color: var(--wt-accent-light);}.webtv-root .load-more .load-more-btn:disabled {
     opacity: 0.5;
     cursor: default;}.webtv-root .load-more .spinner {
     display: inline-block;
     width: 14px;
     height: 14px;
-    border: 2px solid rgba(var(--wt-accent-rgb),, 0.2);
+    border: 2px solid rgba(var(--wt-accent-rgb), 0.2);
     border-top-color: var(--wt-accent);
     border-radius: 50%;
     animation: webtv-spin 0.8s linear infinite;
@@ -213,7 +213,7 @@
     transition: all 0.15s;}.webtv-root .pagination .page-btn:hover:not(:disabled) {
     border-color: var(--wt-accent);
     color: #fff;
-    background: rgba(var(--wt-accent-rgb),, 0.08);}.webtv-root .pagination .page-btn:disabled { opacity: 0.35; cursor: default;}.webtv-root .pagination .page-btn.active {
+    background: rgba(var(--wt-accent-rgb), 0.08);}.webtv-root .pagination .page-btn:disabled { opacity: 0.35; cursor: default;}.webtv-root .pagination .page-btn.active {
     background: linear-gradient(135deg, var(--wt-panel-2), var(--wt-accent));
     color: #fff;
     border-color: transparent;}.webtv-root .pagination .page-info { color: #888; font-size: 13px; padding: 0 8px;}/* ===================== 详情页（左右分栏） ===================== */.webtv-root .detail-page {
@@ -259,7 +259,7 @@
     cursor: pointer;
     transition: background 0.15s;
     z-index: 2;}.webtv-root .detail-info > .back-btn:hover {
-    background: rgba(var(--wt-accent-rgb),, 0.8);}.webtv-root .detail-info .detail-meta {
+    background: rgba(var(--wt-accent-rgb), 0.8);}.webtv-root .detail-info .detail-meta {
     flex: 1;
     min-width: 0;
     display: flex;
@@ -288,8 +288,8 @@
     color: #999;
     cursor: pointer;
     transition: all 0.15s;}
-.webtv-root .fav-btn:hover {color: var(--wt-accent);border-color: rgba(var(--wt-accent-rgb),,0.4);background: rgba(var(--wt-accent-rgb),,0.08);}
-.webtv-root .fav-btn.active {color: var(--wt-accent);border-color: rgba(var(--wt-accent-rgb),,0.5);}/* 收藏页卡片：包一层以便叠加取消收藏按钮 */
+.webtv-root .fav-btn:hover {color: var(--wt-accent);border-color: rgba(var(--wt-accent-rgb),0.4);background: rgba(var(--wt-accent-rgb),0.08);}
+.webtv-root .fav-btn.active {color: var(--wt-accent);border-color: rgba(var(--wt-accent-rgb),0.5);}/* 收藏页卡片：包一层以便叠加取消收藏按钮 */
 .webtv-root .fav-item {
     position: relative;
     break-inside: avoid;
@@ -386,7 +386,7 @@
     transition: all 0.2s;
     flex-shrink: 0;}.webtv-root .iframe-fallback-header .close-tip:hover {
     color: #fff;
-    background: rgba(var(--wt-accent-rgb),, 0.7);}.webtv-root .iframe-fallback-player {
+    background: rgba(var(--wt-accent-rgb), 0.7);}.webtv-root .iframe-fallback-player {
     width: 100%;
     height: 500px;
     border: none;
@@ -423,9 +423,9 @@
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
     line-height: 1.8;}.webtv-root .parse-report-btn:hover, .webtv-root .parse-report-btn.active {
-    background: rgba(var(--wt-accent-rgb),, 0.6);
+    background: rgba(var(--wt-accent-rgb), 0.6);
     color: #fff;
-    border-color: rgba(var(--wt-accent-rgb),, 0.4);}.webtv-root .parse-report-menu {
+    border-color: rgba(var(--wt-accent-rgb), 0.4);}.webtv-root .parse-report-menu {
     position: absolute;
     top: 100%;
     right: 0;
@@ -442,7 +442,7 @@
     cursor: pointer;
     transition: background 0.15s;
     white-space: nowrap;}.webtv-root .parse-report-menu-item:hover {
-    background: rgba(var(--wt-accent-rgb),, 0.15);
+    background: rgba(var(--wt-accent-rgb), 0.15);
     color: #fff;}.webtv-root .player-bar {
     height: 52px;
     padding: 0 16px;
@@ -479,7 +479,7 @@
     align-items: center;
     justify-content: center;
     font-size: 14px;
-    transition: all 0.15s;}.webtv-root .player-bar .player-actions .icon-btn:hover { color: #fff; border-color: var(--wt-accent); background: rgba(var(--wt-accent-rgb),, 0.15);}.webtv-root .player-bar .player-actions .icon-btn:disabled { opacity: 0.4; cursor: default;}.webtv-root .player-bar .player-actions .text-btn {
+    transition: all 0.15s;}.webtv-root .player-bar .player-actions .icon-btn:hover { color: #fff; border-color: var(--wt-accent); background: rgba(var(--wt-accent-rgb), 0.15);}.webtv-root .player-bar .player-actions .icon-btn:disabled { opacity: 0.4; cursor: default;}.webtv-root .player-bar .player-actions .text-btn {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #ccc;
@@ -487,9 +487,9 @@
     border-radius: 6px;
     font-size: 12px;
     transition: all 0.15s;
-    white-space: nowrap;}.webtv-root .player-bar .player-actions .text-btn:hover:not(:disabled) { color: #fff; border-color: var(--wt-accent); background: rgba(var(--wt-accent-rgb),, 0.15);}.webtv-root .player-bar .player-actions .text-btn:disabled { opacity: 0.4; cursor: default;}.webtv-root .player-fail-tip {
-    background: rgba(var(--wt-accent-rgb),, 0.1);
-    border: 1px solid rgba(var(--wt-accent-rgb),, 0.3);
+    white-space: nowrap;}.webtv-root .player-bar .player-actions .text-btn:hover:not(:disabled) { color: #fff; border-color: var(--wt-accent); background: rgba(var(--wt-accent-rgb), 0.15);}.webtv-root .player-bar .player-actions .text-btn:disabled { opacity: 0.4; cursor: default;}.webtv-root .player-fail-tip {
+    background: rgba(var(--wt-accent-rgb), 0.1);
+    border: 1px solid rgba(var(--wt-accent-rgb), 0.3);
     color: #ff7a90;
     padding: 8px 16px;
     font-size: 12px;
@@ -518,7 +518,7 @@
     flex-shrink: 0;}.webtv-root .player-fail-tip .close-tip:hover {
     color: #fff;
     border-color: var(--wt-accent);
-    background: rgba(var(--wt-accent-rgb),, 0.2);}/* ===================== 线路 + 剧集 ===================== */.webtv-root .episodes-section {
+    background: rgba(var(--wt-accent-rgb), 0.2);}/* ===================== 线路 + 剧集 ===================== */.webtv-root .episodes-section {
     background: var(--wt-panel);
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.04);
@@ -535,7 +535,7 @@
     padding: 6px 16px;
     border-radius: 6px;
     font-size: 13px;
-    transition: all 0.15s;}.webtv-root .line-tabs .line-tab:hover { color: #ddd; border-color: rgba(var(--wt-accent-rgb),, 0.3);}.webtv-root .line-tabs .line-tab.active {
+    transition: all 0.15s;}.webtv-root .line-tabs .line-tab:hover { color: #ddd; border-color: rgba(var(--wt-accent-rgb), 0.3);}.webtv-root .line-tabs .line-tab.active {
     background: linear-gradient(135deg, var(--wt-panel-2), var(--wt-accent));
     color: #fff;
     border-color: transparent;}.webtv-root .line-tabs .no-line {
@@ -548,7 +548,7 @@
     max-height: 320px;
     overflow-y: auto;
     padding: 4px;}.webtv-root .episode-list .ep-item {
-    background: rgba(var(--wt-panel-2-rgb),, 0.4);
+    background: rgba(var(--wt-panel-2-rgb), 0.4);
     border: 1px solid rgba(255, 255, 255, 0.06);
     color: #bbb;
     padding: 7px 14px;
@@ -556,11 +556,11 @@
     font-size: 12px;
     transition: all 0.15s;
     min-width: 60px;
-    text-align: center;}.webtv-root .episode-list .ep-item:hover { color: #fff; border-color: var(--wt-accent); background: rgba(var(--wt-accent-rgb),, 0.15);}.webtv-root .episode-list .ep-item.active {
+    text-align: center;}.webtv-root .episode-list .ep-item:hover { color: #fff; border-color: var(--wt-accent); background: rgba(var(--wt-accent-rgb), 0.15);}.webtv-root .episode-list .ep-item.active {
     background: linear-gradient(135deg, var(--wt-panel-2), var(--wt-accent));
     color: #fff;
     border-color: transparent;
-    box-shadow: 0 2px 8px rgba(var(--wt-accent-rgb),, 0.25);}.webtv-root .episode-list .empty { color: #666; font-size: 13px; padding: 12px 0;}/* ===================== 搜索页 ===================== */.webtv-root .search-page .search-header {
+    box-shadow: 0 2px 8px rgba(var(--wt-accent-rgb), 0.25);}.webtv-root .episode-list .empty { color: #666; font-size: 13px; padding: 12px 0;}/* ===================== 搜索页 ===================== */.webtv-root .search-page .search-header {
     background: var(--wt-panel);
     border-radius: 10px;
     padding: 16px 20px;
@@ -574,7 +574,7 @@
     color: #eee;
     padding: 10px 14px;
     border-radius: 6px;
-    font-size: 14px;}.webtv-root .search-page .search-header input:focus { border-color: var(--wt-accent); box-shadow: 0 0 0 3px rgba(var(--wt-accent-rgb),, 0.1);}.webtv-root .search-page .search-header .btn-search {
+    font-size: 14px;}.webtv-root .search-page .search-header input:focus { border-color: var(--wt-accent); box-shadow: 0 0 0 3px rgba(var(--wt-accent-rgb), 0.1);}.webtv-root .search-page .search-header .btn-search {
     background: linear-gradient(135deg, var(--wt-panel-2), var(--wt-accent));
     color: #fff;
     border: none;
@@ -582,7 +582,7 @@
     border-radius: 6px;
     font-size: 14px;
     font-weight: 500;
-    transition: transform 0.15s, box-shadow 0.15s;}.webtv-root .search-page .search-header .btn-search:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(var(--wt-accent-rgb),, 0.3);}.webtv-root .search-page .search-header .search-stats {
+    transition: transform 0.15s, box-shadow 0.15s;}.webtv-root .search-page .search-header .btn-search:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(var(--wt-accent-rgb), 0.3);}.webtv-root .search-page .search-header .search-stats {
     color: #888;
     font-size: 13px;
     align-self: center;
@@ -617,7 +617,7 @@
     transition: background 0.15s, color 0.15s;}.webtv-root .search-page .search-site-item:hover {
     background: rgba(255, 255, 255, 0.06);
     color: #fff;}.webtv-root .search-page .search-site-item.active {
-    background: rgba(var(--wt-accent-rgb),, 0.15);
+    background: rgba(var(--wt-accent-rgb), 0.15);
     color: var(--wt-accent);}.webtv-root .search-page .search-site-item .site-name {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -630,7 +630,7 @@
     border-radius: 10px;
     padding: 1px 7px;
     color: #aaa;}.webtv-root .search-page .search-site-item.active .site-count {
-    background: rgba(var(--wt-accent-rgb),, 0.25);
+    background: rgba(var(--wt-accent-rgb), 0.25);
     color: #ff9db0;}.webtv-root .search-page .search-grid {
     flex: 1 1 auto;
     min-width: 0;}@media (max-width: 768px) {.webtv-root .search-page .search-body { flex-direction: column;}.webtv-root .search-page .search-sidebar {
@@ -672,7 +672,7 @@
     outline: none;
     transition: border-color 0.2s;}.webtv-root .parse-page-select-inline:focus {
     border-color: var(--wt-accent);
-    box-shadow: 0 0 0 3px rgba(var(--wt-accent-rgb),, 0.1);}.webtv-root .parse-page-select-inline option { background: var(--wt-panel); color: #eee;}.webtv-root .parse-page-input-inline {
+    box-shadow: 0 0 0 3px rgba(var(--wt-accent-rgb), 0.1);}.webtv-root .parse-page-select-inline option { background: var(--wt-panel); color: #eee;}.webtv-root .parse-page-input-inline {
     flex: 1;
     min-width: 0;
     background: var(--wt-bg-soft);
@@ -684,7 +684,7 @@
     outline: none;
     transition: border-color 0.2s;}.webtv-root .parse-page-input-inline:focus {
     border-color: var(--wt-accent);
-    box-shadow: 0 0 0 3px rgba(var(--wt-accent-rgb),, 0.1);}.webtv-root .btn-play-inline {
+    box-shadow: 0 0 0 3px rgba(var(--wt-accent-rgb), 0.1);}.webtv-root .btn-play-inline {
     flex-shrink: 0;
     background: linear-gradient(135deg, var(--wt-panel-2), var(--wt-accent));
     color: #fff;
@@ -768,8 +768,8 @@
     margin-bottom: 2px;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;}.webtv-root .live-page .source-item:hover { background: rgba(var(--wt-accent-rgb),, 0.08); color: #ddd;}.webtv-root .live-page .source-item.active {
-    background: linear-gradient(135deg, rgba(var(--wt-panel-2-rgb),, 0.6), rgba(var(--wt-accent-rgb),, 0.3));
+    text-overflow: ellipsis;}.webtv-root .live-page .source-item:hover { background: rgba(var(--wt-accent-rgb), 0.08); color: #ddd;}.webtv-root .live-page .source-item.active {
+    background: linear-gradient(135deg, rgba(var(--wt-panel-2-rgb), 0.6), rgba(var(--wt-accent-rgb), 0.3));
     color: #fff;}.webtv-root .live-page .channel-item {
     padding: 10px 14px;
     border-radius: 6px;
@@ -783,8 +783,8 @@
     gap: 8px;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;}.webtv-root .live-page .channel-item:hover { background: rgba(var(--wt-accent-rgb),, 0.08); color: #ddd;}.webtv-root .live-page .channel-item.active {
-    background: linear-gradient(135deg, rgba(var(--wt-panel-2-rgb),, 0.6), rgba(var(--wt-accent-rgb),, 0.3));
+    text-overflow: ellipsis;}.webtv-root .live-page .channel-item:hover { background: rgba(var(--wt-accent-rgb), 0.08); color: #ddd;}.webtv-root .live-page .channel-item.active {
+    background: linear-gradient(135deg, rgba(var(--wt-panel-2-rgb), 0.6), rgba(var(--wt-accent-rgb), 0.3));
     color: #fff;}.webtv-root .live-page .channel-item .ch-logo {
     width: 24px;
     height: 24px;
@@ -834,7 +834,7 @@
     display: inline-block;
     width: 24px;
     height: 24px;
-    border: 2px solid rgba(var(--wt-accent-rgb),, 0.2);
+    border: 2px solid rgba(var(--wt-accent-rgb), 0.2);
     border-top-color: var(--wt-accent);
     border-radius: 50%;
     animation: webtv-spin 0.8s linear infinite;
@@ -965,3 +965,116 @@
 .webtv-root[data-wt-theme='modern'] .live-source-panel,
 .webtv-root[data-wt-theme='modern'] .live-channel-panel,
 .webtv-root[data-wt-theme='modern'] .live-player-panel { border-radius: 14px;}
+
+/* ==========================================================================
+   现代主题：布局调整（配色之外的结构变化）
+   ========================================================================== */
+
+/* 首页：分类侧栏 → 顶部横向胶囊条，内容占满整行宽度（切分类不用甩视线到最左） */
+.webtv-root[data-wt-theme='modern'] .app-main { flex-direction: column; }
+.webtv-root[data-wt-theme='modern'] .sidebar {
+  width: auto;
+  max-height: none;
+  position: static;
+  background: transparent;
+  border-right: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;}
+.webtv-root[data-wt-theme='modern'] .sidebar::-webkit-scrollbar { display: none;}
+.webtv-root[data-wt-theme='modern'] .sidebar .sidebar-title {
+  flex: none;
+  padding: 0;
+  border-bottom: none;
+  margin-bottom: 0;
+  margin-right: 2px;
+  color: #666;
+  font-size: 12px;
+  letter-spacing: 2px;}
+.webtv-root[data-wt-theme='modern'] .sidebar .cat-item {
+  flex: none;
+  margin-bottom: 0;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid transparent;
+  color: #bbb;
+  font-size: 13px;
+  text-align: center;}
+.webtv-root[data-wt-theme='modern'] .sidebar .cat-item:hover { background: rgba(255, 255, 255, 0.1); color: #fff;}
+.webtv-root[data-wt-theme='modern'] .sidebar .cat-item.active {
+  background: linear-gradient(135deg, var(--wt-panel-2), var(--wt-accent));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(var(--wt-accent-rgb), 0.35);}
+.webtv-root[data-wt-theme='modern'] .sidebar .cat-empty { padding: 4px 0;}
+
+/* 首页/搜索/收藏：瀑布流 → 均匀响应式网格（行对齐、卡片等高，更好扫视） */
+.webtv-root[data-wt-theme='modern'] .movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;}
+.webtv-root[data-wt-theme='modern'] .movie-card { margin-bottom: 0;}
+.webtv-root[data-wt-theme='modern'] .fav-item { margin-bottom: 0;}
+
+/* 顶栏：更高、去掉重投影，导航改胶囊式 */
+.webtv-root[data-wt-theme='modern'] .app-header {
+  height: 60px;
+  padding: 0 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: none;}
+.webtv-root[data-wt-theme='modern'] .app-header .logo { font-size: 16px;}
+.webtv-root[data-wt-theme='modern'] .app-header .nav-actions .nav-link {
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 13px;}
+.webtv-root[data-wt-theme='modern'] .app-header .nav-actions .nav-link:hover { background: rgba(255, 255, 255, 0.07);}
+.webtv-root[data-wt-theme='modern'] .app-header .nav-actions .nav-link.active {
+  background: linear-gradient(135deg, var(--wt-panel-2), var(--wt-accent));
+  color: #fff;}
+
+/* 搜索页：站点筛选侧栏 → 换行平铺的站点胶囊（与首页分类一致的心智模型） */
+.webtv-root[data-wt-theme='modern'] .search-page .search-body { flex-direction: column;}
+.webtv-root[data-wt-theme='modern'] .search-page .search-sidebar {
+  flex: none;
+  width: 100%;
+  position: static;
+  max-height: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  margin-bottom: 4px;}
+.webtv-root[data-wt-theme='modern'] .search-page .search-sidebar-title { width: auto; color: #666; letter-spacing: 2px;}
+.webtv-root[data-wt-theme='modern'] .search-page .search-site-item {
+  flex: 0 0 auto;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid transparent;
+  font-size: 13px;}
+.webtv-root[data-wt-theme='modern'] .search-page .search-site-item.active {
+  background: linear-gradient(135deg, var(--wt-panel-2), var(--wt-accent));
+  color: #fff;}
+.webtv-root[data-wt-theme='modern'] .search-page .search-site-item.active .site-count { color: #fff;}
+
+/* 详情页：信息栏收窄让播放器更宽，播放器圆角 + 投影（网页全屏时取消圆角） */
+.webtv-root[data-wt-theme='modern'] .detail-page { gap: 20px;}
+.webtv-root[data-wt-theme='modern'] .detail-left { width: 300px;}
+.webtv-root[data-wt-theme='modern'] .player-wrapper {
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.45);}
+.webtv-root[data-wt-theme='modern'] .player-section.browser-fullscreen .player-wrapper { border-radius: 0; box-shadow: none;}
+
+/* 直播页：面板配比微调（频道列表更宽） */
+.webtv-root[data-wt-theme='modern'] .live-page { grid-template-columns: 220px 300px 1fr; gap: 14px;}
+
+/* 内容区留白更宽松 */
+.webtv-root[data-wt-theme='modern'] .content-area { padding: 20px;}
