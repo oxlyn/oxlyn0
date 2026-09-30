@@ -50,6 +50,8 @@ export default function Home({ nav }: { nav: WebTVNav }) {
   const [siteError, setSiteError] = useState('')
 
   const contentRef = useRef<HTMLElement>(null)
+  // 卸载清理时 ref 已被 React 摘除，滚动位置由 onScroll 持续记录
+  const scrollTopRef = useRef(0)
   const currentSite = sites.find((s) => s.id === currentSiteId) || null
   const triedIdsRef = useRef<Set<string>>(new Set())
   const switchingRef = useRef(false)
@@ -95,7 +97,7 @@ export default function Home({ nav }: { nav: WebTVNav }) {
         currentPage: s.currentPage,
         totalPages: s.totalPages,
         totalCount: s.totalCount,
-        scrollTop: contentRef.current?.scrollTop ?? 0,
+        scrollTop: scrollTopRef.current,
       }
     }
   }, [])
@@ -298,7 +300,7 @@ export default function Home({ nav }: { nav: WebTVNav }) {
   // 站点变化（手动选择 / 自动切换）→ 重新加载分类和列表
   useEffect(() => {
     if (!currentSiteId) return
-    // 同一站点的二次执行不重复恢复/加载（防御 StrictMode 双执行；当前宿主未开启）
+    // 同一站点的二次执行不重复恢复/加载（宿主开着 StrictMode，effect 会双执行）
     if (mountedForSiteRef.current === currentSiteId) return
     const isRemount = mountedForSiteRef.current === null
     mountedForSiteRef.current = currentSiteId
@@ -317,11 +319,26 @@ export default function Home({ nav }: { nav: WebTVNav }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSiteId])
 
-  // 恢复的列表渲染完成后回到离开时的滚动位置（海报有 aspect-ratio 占位，首帧列高即确定）
+  // 恢复的列表渲染完成后回到离开时的滚动位置。图片解码/字体就绪会让内容高度
+  // 持续变化，直接赋一次会被后续回流冲掉 —— 持续校正到「高度稳定且到达目标」
+  // 或超时（2.5s）为止。用 setTimeout 而非 rAF：页面被遮挡时 rAF 会整帧冻结，
+  // setTimeout 至少以节流频率继续跑，任何窗口状态下恢复都可靠。
   useLayoutEffect(() => {
     if (pendingScrollRef.current > 0 && contentRef.current) {
-      contentRef.current.scrollTop = pendingScrollRef.current
+      const target = pendingScrollRef.current
+      const el = contentRef.current
       pendingScrollRef.current = 0
+      const deadline = Date.now() + 2500
+      let lastH = -1
+      const attempt = () => {
+        if (!contentRef.current || Date.now() > deadline) return
+        const stable = el.scrollHeight === lastH
+        lastH = el.scrollHeight
+        el.scrollTop = target
+        if (stable && Math.abs(el.scrollTop - target) <= 60) return
+        setTimeout(attempt, 60)
+      }
+      attempt()
     }
   })
 
@@ -334,7 +351,9 @@ export default function Home({ nav }: { nav: WebTVNav }) {
 
   const onScroll = () => {
     const el = contentRef.current
-    if (!el || loadingMore || listLoading) return
+    if (!el) return
+    scrollTopRef.current = el.scrollTop // 无论是否在加载都要记录，供返回恢复用
+    if (loadingMore || listLoading) return
     if (currentPage >= totalPages) return
     if (movieList.length === 0) return
     if (!currentSiteId) return

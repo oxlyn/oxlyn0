@@ -40,7 +40,9 @@ export default function Search({ nav, initialKw = '' }: { nav: WebTVNav; initial
 
   const contentRef = useRef<HTMLElement>(null)
   const pendingScrollRef = useRef(0)
-  const mountedRef = useRef(false)
+  // 卸载清理时 ref 已被 React 摘除（StrictMode 下更是必然），不能在 cleanup 里读 DOM；
+  // 用滚动事件持续记录当前位置，清理时只读这个 ref
+  const scrollTopRef = useRef(0)
 
   // 离开搜索页（进详情等，组件整体卸载）时留存已完成的搜索现场
   const stateRef = useRef({
@@ -64,7 +66,7 @@ export default function Search({ nav, initialKw = '' }: { nav: WebTVNav; initial
         results: s.results,
         siteFilter: s.siteFilter,
         progress: s.progress,
-        scrollTop: contentRef.current?.scrollTop ?? 0,
+        scrollTop: scrollTopRef.current,
       })
       while (searchCache.size > SEARCH_CACHE_MAX) {
         const oldest = searchCache.keys().next().value
@@ -130,7 +132,6 @@ export default function Search({ nav, initialKw = '' }: { nav: WebTVNav; initial
   // 挂载决策：带关键词且缓存里有已完成的同词搜索 → 整份恢复；
   // 否则带词搜索；不带词打开搜索页 → 恢复上一次的搜索结果（直到下次搜索）
   useEffect(() => {
-    mountedRef.current = true
     const kw = initialKw.trim()
     if (kw) {
       const snap = searchCache.get(kw)
@@ -147,11 +148,25 @@ export default function Search({ nav, initialKw = '' }: { nav: WebTVNav; initial
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialKw])
 
-  // 恢复的结果渲染完成后回到离开时的滚动位置
+  // 恢复的结果渲染完成后回到离开时的滚动位置。图片解码/字体就绪会让内容高度
+  // 持续变化，直接赋一次会被后续回流冲掉 —— 持续校正到「高度稳定且到达目标」
+  // 或超时（2.5s）为止。
   useLayoutEffect(() => {
     if (pendingScrollRef.current > 0 && contentRef.current) {
-      contentRef.current.scrollTop = pendingScrollRef.current
+      const target = pendingScrollRef.current
+      const el = contentRef.current
       pendingScrollRef.current = 0
+      const deadline = Date.now() + 2500
+      let lastH = -1
+      const attempt = () => {
+        if (!contentRef.current || Date.now() > deadline) return
+        const stable = el.scrollHeight === lastH
+        lastH = el.scrollHeight
+        el.scrollTop = target
+        if (stable && Math.abs(el.scrollTop - target) <= 60) return
+        requestAnimationFrame(attempt)
+      }
+      attempt()
     }
   })
 
@@ -173,7 +188,11 @@ export default function Search({ nav, initialKw = '' }: { nav: WebTVNav; initial
       : ''
 
   return (
-    <section className="content-area search-page" ref={contentRef}>
+    <section
+      className="content-area search-page"
+      ref={contentRef}
+      onScroll={(e) => { scrollTopRef.current = e.currentTarget.scrollTop }}
+    >
       <div className="search-header">
         <input
           type="text"
