@@ -1,4 +1,6 @@
 import { create } from 'zustand'
+import { webapps } from '../webapps'
+import { webappToDefinition } from './webapp'
 import type { AppDefinition } from './types'
 
 /**
@@ -11,6 +13,9 @@ import type { AppDefinition } from './types'
  * the shell can re-render. To add an app, create a directory under src/apps/
  * with an app.tsx — it then shows up on the Dock, Launchpad, Spotlight and
  * the desktop. Nothing else to wire up.
+ *
+ * Online websites skip the directory entirely: add an entry to the
+ * src/webapps.ts manifest (synthesized below).
  */
 const loaders = import.meta.glob<{ default: AppDefinition }>('../apps/*/app.tsx')
 
@@ -34,6 +39,12 @@ export function appsReady(): Promise<void> {
       } else {
         console.error('[registry] app module failed to load:', result.reason)
       }
+    }
+    // Manifest-synthesized website apps join the same registry.
+    for (const site of webapps) {
+      const app = webappToDefinition(site)
+      apps.push(app)
+      appById.set(app.id, app)
     }
     apps.sort((a, b) => a.name.localeCompare(b.name))
     rebuildDock()

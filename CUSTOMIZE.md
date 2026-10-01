@@ -87,7 +87,34 @@ export default {
 That's it — the system auto-discovers it at load time and shows it in the Dock,
 Launchpad, Spotlight. Full contract + available stores: [src/apps/README.md](src/apps/README.md).
 
-## 4. System-level knobs
+## 4. Embed an online website as an app (one object)
+
+Websites skip the whole app directory — add one object to `src/webapps.ts` and
+the site appears in Launchpad / Spotlight like any built-in app, in a real
+window:
+
+```ts
+{
+  id: 'excalidraw',
+  name: 'Excalidraw',
+  url: 'https://excalidraw.com',
+  icon: { from: '#6965DB', to: '#3B36B3', Icon: PenTool },
+  keywords: ['白板', 'whiteboard'],
+}
+```
+
+- `embed: 'direct'` (default) renders the site in an iframe. This only works
+  for sites that don't send `X-Frame-Options` / CSP `frame-ancestors` — check
+  first with `curl -sI <url> | grep -i frame`.
+- `embed: 'none'` — for refusing sites: the window shows a card with the site
+  icon and an "open in browser" button instead (embedding is a browser-level
+  hard block, there is no way around it client-side).
+- Websites default to singleton + keepAlive: reopening focuses the existing
+  window, closing parks the iframe and reopening restores it with zero reload.
+
+The framework lives in `src/system/webapp.tsx` — no need to touch it.
+
+## 5. System-level knobs
 
 - **Default theme / wallpaper** — `src/system/stores/system.ts`
 - **Dock order** — `DOCK_ORDER` in `src/system/registry.ts`

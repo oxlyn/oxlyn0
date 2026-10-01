@@ -15,6 +15,10 @@ explore: every app works.
   in production), falling back to browser-direct + public CORS proxies when
   no server-side route answers; video streams play via artplayer + hls.js
 - **Study / Wakfu Guide** — embedded external sites (kept alive across window close)
+- **Online web apps** — websites-as-apps via the `src/webapps.ts` manifest
+  (Excalidraw, Photopea, GitHub): one object per site, synthesized by the
+  `src/system/webapp.tsx` framework (iframe window app; sites refusing
+  embedding via X-Frame-Options get an "open in browser" fallback card)
 
 ## Keyboard
 
