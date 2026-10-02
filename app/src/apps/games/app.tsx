@@ -44,6 +44,20 @@ const MCJS: WebAppSite = {
   icon: { from: '#4DA3FF', to: '#1E5FD6', Icon: Gamepad2 } satisfies AppIconSpec,
 }
 
+/**
+ * 三国（sg.wanqukongjian.cn，Cocos chessTower）。站点 HTTPS 证书只覆盖
+ * www.wanqukongjian.cn、不含 sg 子域，浏览器在 iframe 里无法跳过证书错误，
+ * 只能走 embed: 'none' 降级卡片；站方修复证书后把 embed 改成 'direct' 即可。
+ */
+const SANGUO: WebAppSite = {
+  id: 'sanguo-chess-tower',
+  name: '三国',
+  url: 'https://sg.wanqukongjian.cn/',
+  icon: { from: '#FFD60A', to: '#B25000', Icon: Gamepad2 } satisfies AppIconSpec,
+  embed: 'none',
+  note: '该站点的 HTTPS 证书只覆盖 www.wanqukongjian.cn，未包含 sg 子域，浏览器拒绝在窗口内加载。点击下方按钮在新标签页打开（首次需在浏览器中手动信任证书）；站点修复证书后本窗口即可直接游玩。',
+}
+
 /** 网页游戏视图：站点 iframe + 悬浮返回键（游戏是全屏画布，返回键不占画布）。 */
 function WebGameView({ site, onBack }: { site: WebAppSite; onBack: () => void }) {
   return (
@@ -174,6 +188,7 @@ function Games({ winId }: AppWindowProps) {
     { title: '葫芦娃', desc: '葫芦娃 H5 网页游戏（Egret 引擎）。', playable: true, play: () => setWebGame(HLW), gradient: 'linear-gradient(140deg,#BF5AF2,#5E2FB8)', glyph: '🎮' },
     { title: '我的世界 H5', desc: 'bloxd.io · 类 Minecraft 方块沙盒。', playable: true, play: () => setWebGame(BLOXD), gradient: 'linear-gradient(140deg,#7CBD56,#4A7A2A)', glyph: '⛏️' },
     { title: 'MCJS', desc: '网页版 MC 中文版。', playable: true, play: () => setWebGame(MCJS), gradient: 'linear-gradient(140deg,#4DA3FF,#1E5FD6)', glyph: '🧱' },
+    { title: '三国', desc: '三国主题 H5 游戏。', playable: true, play: () => setWebGame(SANGUO), gradient: 'linear-gradient(140deg,#FFD60A,#B25000)', glyph: '⚔️' },
     { title: 'Chess', desc: 'Full board with move rules and capture log.', playable: true, play: () => open('chess'), gradient: 'linear-gradient(140deg,#C7A47A,#7A5230)', glyph: '♛' },
     { title: '2048', desc: 'Merge the tiles.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#FFD60A,#FF9F0A)', glyph: '2⁴⁸' },
     { title: 'Minesweeper', desc: 'Classic deduction.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#8E8E93,#48484A)', glyph: '💣' },
