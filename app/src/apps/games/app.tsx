@@ -12,10 +12,10 @@ const BUBBLE_TANKS: WebAppSite = {
   icon: { from: '#64D2FF', to: '#0A84FF', Icon: Gamepad2 } satisfies AppIconSpec,
 }
 
-/** 王二火大（gonghui.k0s.cn）— 红警 2 网页重制（ra2web）的联机对战平台。 */
+/** 红色警戒2（gonghui.k0s.cn，平台名「王二火大」）— 红警 2 网页重制（ra2web）的联机对战平台。 */
 const RA2_GONGHUI: WebAppSite = {
   id: 'ra2-gonghui',
-  name: '王二火大',
+  name: '红色警戒2',
   url: 'https://gonghui.k0s.cn/',
   icon: { from: '#FF453A', to: '#8E1C14', Icon: Gamepad2 } satisfies AppIconSpec,
 }
@@ -146,7 +146,7 @@ function Games({ winId }: AppWindowProps) {
   const cards = [
     { title: 'Snake', desc: 'The classic — arrow keys, neon green.', playable: true, play: () => setView('snake'), gradient: 'linear-gradient(140deg,#30D158,#0a5c2e)', glyph: '🐍' },
     { title: 'Bubble Tanks', desc: '泡泡坦克 HTML5 重制版 — collect, grow, evolve.', playable: true, play: () => setWebGame(BUBBLE_TANKS), gradient: 'linear-gradient(140deg,#64D2FF,#0A84FF)', glyph: '🫧' },
-    { title: '王二火大', desc: '红警 2 网页重制 · 联机对战平台。', playable: true, play: () => setWebGame(RA2_GONGHUI), gradient: 'linear-gradient(140deg,#FF453A,#8E1C14)', glyph: '☢️' },
+    { title: '红色警戒2', desc: '红警 2 网页重制 · 联机对战平台。', playable: true, play: () => setWebGame(RA2_GONGHUI), gradient: 'linear-gradient(140deg,#FF453A,#8E1C14)', glyph: '☢️' },
     { title: 'Chess', desc: 'Full board with move rules and capture log.', playable: true, play: () => open('chess'), gradient: 'linear-gradient(140deg,#C7A47A,#7A5230)', glyph: '♛' },
     { title: '2048', desc: 'Merge the tiles.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#FFD60A,#FF9F0A)', glyph: '2⁴⁸' },
     { title: 'Minesweeper', desc: 'Classic deduction.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#8E8E93,#48484A)', glyph: '💣' },
