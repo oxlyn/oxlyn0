@@ -36,6 +36,14 @@ const BLOXD: WebAppSite = {
   icon: { from: '#7CBD56', to: '#4A7A2A', Icon: Gamepad2 } satisfies AppIconSpec,
 }
 
+/** MCJS（mcjs.link）— 网页版 MC 中文版。 */
+const MCJS: WebAppSite = {
+  id: 'mcjs',
+  name: 'MCJS',
+  url: 'https://mcjs.link/',
+  icon: { from: '#4DA3FF', to: '#1E5FD6', Icon: Gamepad2 } satisfies AppIconSpec,
+}
+
 /** 网页游戏视图：站点 iframe + 悬浮返回键（游戏是全屏画布，返回键不占画布）。 */
 function WebGameView({ site, onBack }: { site: WebAppSite; onBack: () => void }) {
   return (
@@ -165,6 +173,7 @@ function Games({ winId }: AppWindowProps) {
     { title: '红色警戒2', desc: '红警 2 网页重制 · 联机对战平台。', playable: true, play: () => setWebGame(RA2_GONGHUI), gradient: 'linear-gradient(140deg,#FF453A,#8E1C14)', glyph: '☢️' },
     { title: '葫芦娃', desc: '葫芦娃 H5 网页游戏（Egret 引擎）。', playable: true, play: () => setWebGame(HLW), gradient: 'linear-gradient(140deg,#BF5AF2,#5E2FB8)', glyph: '🎮' },
     { title: '我的世界 H5', desc: 'bloxd.io · 类 Minecraft 方块沙盒。', playable: true, play: () => setWebGame(BLOXD), gradient: 'linear-gradient(140deg,#7CBD56,#4A7A2A)', glyph: '⛏️' },
+    { title: 'MCJS', desc: '网页版 MC 中文版。', playable: true, play: () => setWebGame(MCJS), gradient: 'linear-gradient(140deg,#4DA3FF,#1E5FD6)', glyph: '🧱' },
     { title: 'Chess', desc: 'Full board with move rules and capture log.', playable: true, play: () => open('chess'), gradient: 'linear-gradient(140deg,#C7A47A,#7A5230)', glyph: '♛' },
     { title: '2048', desc: 'Merge the tiles.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#FFD60A,#FF9F0A)', glyph: '2⁴⁸' },
     { title: 'Minesweeper', desc: 'Classic deduction.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#8E8E93,#48484A)', glyph: '💣' },
@@ -215,5 +224,5 @@ export default {
   defaultSize: { w: 1020, h: 680 },
   minSize: { w: 640, h: 460 },
   category: 'Entertainment',
-  keywords: ['snake', 'chess', 'bubble tank', '泡泡坦克', 'ra2', '红警', '红色警戒', '联机对战', '葫芦娃', 'hlw', 'bloxd', 'minecraft', '我的世界', '方块', '沙盒', 'arcade', 'play'],
+  keywords: ['snake', 'chess', 'bubble tank', '泡泡坦克', 'ra2', '红警', '红色警戒', '联机对战', '葫芦娃', 'hlw', 'bloxd', 'minecraft', '我的世界', '方块', '沙盒', 'mcjs', '网页版mc', 'arcade', 'play'],
 } satisfies AppDefinition
