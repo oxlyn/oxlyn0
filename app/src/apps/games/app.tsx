@@ -20,6 +20,14 @@ const RA2_GONGHUI: WebAppSite = {
   icon: { from: '#FF453A', to: '#8E1C14', Icon: Gamepad2 } satisfies AppIconSpec,
 }
 
+/** 葫芦娃（cgb.ipyaoguai.com/hlw，hlw = 葫芦娃）— Egret 引擎 H5 游戏。 */
+const HLW: WebAppSite = {
+  id: 'hlw-demo',
+  name: '葫芦娃',
+  url: 'https://cgb.ipyaoguai.com/hlw/hlw_demo/index.html',
+  icon: { from: '#BF5AF2', to: '#5E2FB8', Icon: Gamepad2 } satisfies AppIconSpec,
+}
+
 /** 网页游戏视图：站点 iframe + 悬浮返回键（游戏是全屏画布，返回键不占画布）。 */
 function WebGameView({ site, onBack }: { site: WebAppSite; onBack: () => void }) {
   return (
@@ -147,6 +155,7 @@ function Games({ winId }: AppWindowProps) {
     { title: 'Snake', desc: 'The classic — arrow keys, neon green.', playable: true, play: () => setView('snake'), gradient: 'linear-gradient(140deg,#30D158,#0a5c2e)', glyph: '🐍' },
     { title: 'Bubble Tanks', desc: '泡泡坦克 HTML5 重制版 — collect, grow, evolve.', playable: true, play: () => setWebGame(BUBBLE_TANKS), gradient: 'linear-gradient(140deg,#64D2FF,#0A84FF)', glyph: '🫧' },
     { title: '红色警戒2', desc: '红警 2 网页重制 · 联机对战平台。', playable: true, play: () => setWebGame(RA2_GONGHUI), gradient: 'linear-gradient(140deg,#FF453A,#8E1C14)', glyph: '☢️' },
+    { title: '葫芦娃', desc: '葫芦娃 H5 网页游戏（Egret 引擎）。', playable: true, play: () => setWebGame(HLW), gradient: 'linear-gradient(140deg,#BF5AF2,#5E2FB8)', glyph: '🎮' },
     { title: 'Chess', desc: 'Full board with move rules and capture log.', playable: true, play: () => open('chess'), gradient: 'linear-gradient(140deg,#C7A47A,#7A5230)', glyph: '♛' },
     { title: '2048', desc: 'Merge the tiles.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#FFD60A,#FF9F0A)', glyph: '2⁴⁸' },
     { title: 'Minesweeper', desc: 'Classic deduction.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#8E8E93,#48484A)', glyph: '💣' },
@@ -197,5 +206,5 @@ export default {
   defaultSize: { w: 1020, h: 680 },
   minSize: { w: 640, h: 460 },
   category: 'Entertainment',
-  keywords: ['snake', 'chess', 'bubble tank', '泡泡坦克', 'ra2', '红警', '红色警戒', '联机对战', 'arcade', 'play'],
+  keywords: ['snake', 'chess', 'bubble tank', '泡泡坦克', 'ra2', '红警', '红色警戒', '联机对战', '葫芦娃', 'hlw', 'arcade', 'play'],
 } satisfies AppDefinition
