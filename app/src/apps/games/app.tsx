@@ -1,15 +1,38 @@
 import { useEffect, useRef, useState } from 'react'
 import { useWindows } from '@/system/stores/windows'
-import { WebEmbedFrame } from '@/system/webapp'
+import { WebEmbedFrame, type WebAppSite } from '@/system/webapp'
 import type { AppDefinition, AppWindowProps, AppIconSpec } from '@/system/types'
 import { Gamepad2 } from 'lucide-react'
 
 /** 泡泡坦克（bubble-tank.zackwill.space）— Flash 经典 1/2/3 的 HTML5 重制版。 */
-const BUBBLE_TANKS = {
+const BUBBLE_TANKS: WebAppSite = {
   id: 'bubble-tanks',
   name: 'Bubble Tanks',
   url: 'https://bubble-tank.zackwill.space/',
   icon: { from: '#64D2FF', to: '#0A84FF', Icon: Gamepad2 } satisfies AppIconSpec,
+}
+
+/** 王二火大（gonghui.k0s.cn）— 红警 2 网页重制（ra2web）的联机对战平台。 */
+const RA2_GONGHUI: WebAppSite = {
+  id: 'ra2-gonghui',
+  name: '王二火大',
+  url: 'https://gonghui.k0s.cn/',
+  icon: { from: '#FF453A', to: '#8E1C14', Icon: Gamepad2 } satisfies AppIconSpec,
+}
+
+/** 网页游戏视图：站点 iframe + 悬浮返回键（游戏是全屏画布，返回键不占画布）。 */
+function WebGameView({ site, onBack }: { site: WebAppSite; onBack: () => void }) {
+  return (
+    <div className="relative h-full">
+      <WebEmbedFrame site={site} />
+      <button
+        onClick={onBack}
+        className="absolute left-3 top-3 z-10 rounded-full bg-white/92 px-3 py-1.5 text-[12.5px] font-medium text-black/70 shadow-lg ring-1 ring-black/10 backdrop-blur transition-transform hover:scale-105"
+      >
+        ← Games
+      </button>
+    </div>
+  )
 }
 
 function Snake({ onBack, winId }: { onBack: () => void; winId: string }) {
@@ -114,27 +137,16 @@ function Snake({ onBack, winId }: { onBack: () => void; winId: string }) {
 }
 
 function Games({ winId }: AppWindowProps) {
-  const [view, setView] = useState<'hub' | 'snake' | 'bubbleTanks'>('hub')
+  const [view, setView] = useState<'hub' | 'snake'>('hub')
+  const [webGame, setWebGame] = useState<WebAppSite | null>(null)
   const open = useWindows((s) => s.open)
+  if (webGame) return <WebGameView site={webGame} onBack={() => setWebGame(null)} />
   if (view === 'snake') return <Snake onBack={() => setView('hub')} winId={winId} />
-  if (view === 'bubbleTanks') {
-    return (
-      <div className="relative h-full">
-        <WebEmbedFrame site={BUBBLE_TANKS} />
-        {/* 站点是全屏游戏，返回键做成悬浮 chip，不占游戏画布 */}
-        <button
-          onClick={() => setView('hub')}
-          className="absolute left-3 top-3 z-10 rounded-full bg-white/92 px-3 py-1.5 text-[12.5px] font-medium text-black/70 shadow-lg ring-1 ring-black/10 backdrop-blur transition-transform hover:scale-105"
-        >
-          ← Games
-        </button>
-      </div>
-    )
-  }
 
   const cards = [
     { title: 'Snake', desc: 'The classic — arrow keys, neon green.', playable: true, play: () => setView('snake'), gradient: 'linear-gradient(140deg,#30D158,#0a5c2e)', glyph: '🐍' },
-    { title: 'Bubble Tanks', desc: '泡泡坦克 HTML5 重制版 — collect, grow, evolve.', playable: true, play: () => setView('bubbleTanks'), gradient: 'linear-gradient(140deg,#64D2FF,#0A84FF)', glyph: '🫧' },
+    { title: 'Bubble Tanks', desc: '泡泡坦克 HTML5 重制版 — collect, grow, evolve.', playable: true, play: () => setWebGame(BUBBLE_TANKS), gradient: 'linear-gradient(140deg,#64D2FF,#0A84FF)', glyph: '🫧' },
+    { title: '王二火大', desc: '红警 2 网页重制 · 联机对战平台。', playable: true, play: () => setWebGame(RA2_GONGHUI), gradient: 'linear-gradient(140deg,#FF453A,#8E1C14)', glyph: '☢️' },
     { title: 'Chess', desc: 'Full board with move rules and capture log.', playable: true, play: () => open('chess'), gradient: 'linear-gradient(140deg,#C7A47A,#7A5230)', glyph: '♛' },
     { title: '2048', desc: 'Merge the tiles.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#FFD60A,#FF9F0A)', glyph: '2⁴⁸' },
     { title: 'Minesweeper', desc: 'Classic deduction.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#8E8E93,#48484A)', glyph: '💣' },
@@ -185,5 +197,5 @@ export default {
   defaultSize: { w: 1020, h: 680 },
   minSize: { w: 640, h: 460 },
   category: 'Entertainment',
-  keywords: ['snake', 'chess', 'bubble tank', '泡泡坦克', 'arcade', 'play'],
+  keywords: ['snake', 'chess', 'bubble tank', '泡泡坦克', 'ra2', '红警', '红色警戒', '联机对战', 'arcade', 'play'],
 } satisfies AppDefinition
