@@ -85,6 +85,14 @@ const A_DARK_ROOM: WebAppSite = {
   icon: { from: '#48484A', to: '#1C1C1E', Icon: Gamepad2 } satisfies AppIconSpec,
 }
 
+/** Threej（threej.in）— 开源浏览器小游戏合集索引（街机/解谜/竞速/策略/棋牌），即点即玩。 */
+const THREEJ: WebAppSite = {
+  id: 'threej',
+  name: 'Threej',
+  url: 'https://threej.in/',
+  icon: { from: '#00C7BE', to: '#0A5C5C', Icon: Gamepad2 } satisfies AppIconSpec,
+}
+
 /**
  * 2048（play2048.co，Gabriele Cirulli 原版）。站点通过 CSP frame-ancestors 只允许
  * 自身及官方域（next.play2048.co 等）嵌入，浏览器层面拒绝 iframe，同三国一样只能
@@ -233,6 +241,7 @@ function Games({ winId }: AppWindowProps) {
     { title: '老游戏合集', desc: '30000+ 中文老游戏在线玩（FC/GBA/NDS/PS…）。', playable: true, play: () => setWebGame(RETRO), gradient: 'linear-gradient(140deg,#FFC24B,#E2571B)', glyph: '🕹️' },
     { title: '炎龙传说', desc: 'Flash 动作游戏 · Ruffle 本地回放。', playable: true, play: () => setWebGame(YLCS3), gradient: 'linear-gradient(140deg,#FF6B4A,#B22222)', glyph: '🐉' },
     { title: '小黑屋', desc: 'A Dark Room 中文 · 极简文字放置生存。', playable: true, play: () => setWebGame(A_DARK_ROOM), gradient: 'linear-gradient(140deg,#48484A,#1C1C1E)', glyph: '🔥' },
+    { title: 'Threej', desc: '开源浏览器小游戏合集（街机/解谜/竞速/棋牌）。', playable: true, play: () => setWebGame(THREEJ), gradient: 'linear-gradient(140deg,#00C7BE,#0A5C5C)', glyph: '🎲' },
     { title: 'Chess', desc: 'Full board with move rules and capture log.', playable: true, play: () => open('chess'), gradient: 'linear-gradient(140deg,#C7A47A,#7A5230)', glyph: '♛' },
     { title: '2048', desc: 'play2048.co · 经典数字合并游戏。', playable: true, play: () => setWebGame(GAME_2048), gradient: 'linear-gradient(140deg,#FFD60A,#FF9F0A)', glyph: '2⁴⁸' },
     { title: 'Minesweeper', desc: 'Classic deduction.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#8E8E93,#48484A)', glyph: '💣' },
@@ -283,5 +292,5 @@ export default {
   defaultSize: { w: 1020, h: 680 },
   minSize: { w: 640, h: 460 },
   category: 'Entertainment',
-  keywords: ['snake', 'chess', 'bubble tank', '泡泡坦克', 'ra2', '红警', '红色警戒', '联机对战', '葫芦娃', 'hlw', 'bloxd', 'minecraft', '我的世界', '方块', '沙盒', 'mcjs', '网页版mc', '老游戏', '怀旧', '模拟器', 'fc', '红白机', '炎龙传说', '炎龙', 'ylcs3', 'flash', 'ruffle', '双燕', '小黑屋', 'a dark room', 'adarkroom', '放置', '文字游戏', '2048', 'play2048', '数字', '合并', 'arcade', 'play'],
+  keywords: ['snake', 'chess', 'bubble tank', '泡泡坦克', 'ra2', '红警', '红色警戒', '联机对战', '葫芦娃', 'hlw', 'bloxd', 'minecraft', '我的世界', '方块', '沙盒', 'mcjs', '网页版mc', '老游戏', '怀旧', '模拟器', 'fc', '红白机', '炎龙传说', '炎龙', 'ylcs3', 'flash', 'ruffle', '双燕', '小黑屋', 'a dark room', 'adarkroom', '放置', '文字游戏', 'threej', '浏览器游戏', '小游戏', '开源游戏', '2048', 'play2048', '数字', '合并', 'arcade', 'play'],
 } satisfies AppDefinition
