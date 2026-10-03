@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flash 本地播放 · mhhf 版 · 个人学习用</title>
+<style>
+  html, body { height: 100%; }
+  body { background: #14161e; color: #b8bcc8; display: flex; flex-direction: column;
+         align-items: center; gap: 10px; font-family: "PingFang SC", sans-serif;
+         margin: 0; padding: 12px; box-sizing: border-box; overflow: hidden; }
+  h3 { margin: 2px 0 0; font-weight: 600; color: #e0d8c0; }
+  p { margin: 0; font-size: 12px; color: #7a7e8a; }
+  #stage { position: relative; background: #000; box-shadow: 0 0 40px rgba(0,0,0,0.6);
+           display: flex; align-items: center; justify-content: center; }
+  #player { width: 640px; height: 448px; background: #000; }
+  #fs-btn { position: absolute; top: 10px; right: 10px; z-index: 10; padding: 4px 12px;
+            border: 1px solid #8a8f9c; border-radius: 6px; background: rgba(20,22,30,0.65);
+            color: #d7dae2; font-size: 12px; cursor: pointer; opacity: 0.3; transition: opacity .15s; }
+  #stage:hover #fs-btn, #fs-btn:focus-visible { opacity: 1; }
+  /* 全屏时由 #stage 铺满整屏，画面容器由脚本等比缩放居中 */
+  #stage:fullscreen { box-shadow: none; }
+  #stage:-webkit-full-screen { box-shadow: none; }
+</style>
+</head>
+<body>
+<h3>炎龙传说3双燕（mhhf 干净版）· 本地 Flash 回放（个人学习用，请勿传播）</h3>
+<div id="stage"><div id="player"></div></div>
+<p>开源模拟器 Ruffle 本地运行 · 文件来自 mhhf.com 公开页面，仅供个人学习 · 单击画面捕获键盘 · 按 F 或右上按钮全屏</p>
+<script src="ruffle/ruffle.js"></script>
+<script src="player-setup.js?v=2"></script>
+<script>
+window.addEventListener("load", () => mountFlashPlayer("ylcs3.swf"));
+</script>
+</body>
+</html>

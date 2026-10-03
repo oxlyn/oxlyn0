@@ -66,6 +66,17 @@ const RETRO: WebAppSite = {
   icon: { from: '#FFC24B', to: '#E2571B', Icon: Gamepad2 } satisfies AppIconSpec,
 }
 
+/**
+ * 炎龙传说（仓库根目录 YLCS3/，炎龙传说3双燕）— Flash 动作游戏，用开源模拟器
+ * Ruffle 同源本地回放（捆绑站点，vite 会把 YLCS3/ 原样打进构建产物）。
+ */
+const YLCS3: WebAppSite = {
+  id: 'ylcs3',
+  name: '炎龙传说',
+  url: new URL(`${import.meta.env.BASE_URL}YLCS3/index.html`, window.location.origin).href,
+  icon: { from: '#FF6B4A', to: '#B22222', Icon: Gamepad2 } satisfies AppIconSpec,
+}
+
 /** 网页游戏视图：站点 iframe + 悬浮返回键（游戏是全屏画布，返回键不占画布）。 */
 function WebGameView({ site, onBack }: { site: WebAppSite; onBack: () => void }) {
   return (
@@ -198,6 +209,7 @@ function Games({ winId }: AppWindowProps) {
     { title: 'MCJS', desc: '网页版 MC 中文版。', playable: true, play: () => setWebGame(MCJS), gradient: 'linear-gradient(140deg,#4DA3FF,#1E5FD6)', glyph: '🧱' },
     { title: '三国', desc: '三国主题 H5 游戏。', playable: true, play: () => setWebGame(SANGUO), gradient: 'linear-gradient(140deg,#FFD60A,#B25000)', glyph: '⚔️' },
     { title: '老游戏合集', desc: '30000+ 中文老游戏在线玩（FC/GBA/NDS/PS…）。', playable: true, play: () => setWebGame(RETRO), gradient: 'linear-gradient(140deg,#FFC24B,#E2571B)', glyph: '🕹️' },
+    { title: '炎龙传说', desc: 'Flash 动作游戏 · Ruffle 本地回放。', playable: true, play: () => setWebGame(YLCS3), gradient: 'linear-gradient(140deg,#FF6B4A,#B22222)', glyph: '🐉' },
     { title: 'Chess', desc: 'Full board with move rules and capture log.', playable: true, play: () => open('chess'), gradient: 'linear-gradient(140deg,#C7A47A,#7A5230)', glyph: '♛' },
     { title: '2048', desc: 'Merge the tiles.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#FFD60A,#FF9F0A)', glyph: '2⁴⁸' },
     { title: 'Minesweeper', desc: 'Classic deduction.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#8E8E93,#48484A)', glyph: '💣' },
@@ -248,5 +260,5 @@ export default {
   defaultSize: { w: 1020, h: 680 },
   minSize: { w: 640, h: 460 },
   category: 'Entertainment',
-  keywords: ['snake', 'chess', 'bubble tank', '泡泡坦克', 'ra2', '红警', '红色警戒', '联机对战', '葫芦娃', 'hlw', 'bloxd', 'minecraft', '我的世界', '方块', '沙盒', 'mcjs', '网页版mc', '老游戏', '怀旧', '模拟器', 'fc', '红白机', 'arcade', 'play'],
+  keywords: ['snake', 'chess', 'bubble tank', '泡泡坦克', 'ra2', '红警', '红色警戒', '联机对战', '葫芦娃', 'hlw', 'bloxd', 'minecraft', '我的世界', '方块', '沙盒', 'mcjs', '网页版mc', '老游戏', '怀旧', '模拟器', 'fc', '红白机', '炎龙传说', '炎龙', 'ylcs3', 'flash', 'ruffle', '双燕', 'arcade', 'play'],
 } satisfies AppDefinition
