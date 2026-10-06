@@ -34,7 +34,7 @@ In Finder: select a file, then **Move to Trash** / **Rename** from the toolbar
 
 ## Architecture (v2 rebuild)
 
-TypeScript + JSX + [rolldown-vite] (the Rolldown app bundler — same core as tsdown,
+TypeScript + JSX + [rolldown-vite](https://rolldown.rs) (the Rolldown app bundler — same core as tsdown,
 with the dev server/HTML entry an SPA needs) + Tailwind 4 + zustand.
 The Vite project lives in `app/` (source entry `app/index.html`); the repo root
 keeps static media (`images/`) and build tooling (`scripts/`).
@@ -88,4 +88,4 @@ background, so repeat visits and offline boots work.
 
 ### Provenance & tech
 
-Built on the open "macOS 27" Liquid Glass browser simulation (an AI-generated Kimi share demo, recovered via the Wayback Machine when the origin was network-blocked), then rebuilt end-to-end. v2 reconstructed the shipped bundle into a typed source tree: the system shell in `src/system`, all 34 apps as self-registering modules in `src/apps`. Weather (Open-Meteo) and Dictionary (dictionaryapi.dev) are live keyless APIs. Fonts are system-stack only — the Google Fonts link was removed after it was measured blocking first paint for seconds where Google is unreachable.
+Built on the open "macOS 27" Liquid Glass browser simulation (an AI-generated Kimi share demo, recovered via the Wayback Machine when the origin was network-blocked), then rebuilt end-to-end. v2 reconstructed the shipped bundle into a typed source tree: the system shell in `src/system`, all 38 apps as self-registering modules in `src/apps`. Weather (Open-Meteo) and Dictionary (dictionaryapi.dev) are live keyless APIs. Fonts are system-stack only — the Google Fonts link was removed after it was measured blocking first paint for seconds where Google is unreachable.
