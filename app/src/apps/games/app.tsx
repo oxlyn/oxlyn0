@@ -146,6 +146,7 @@ function Games() {
     { title: '数独', desc: '原生 Sudoku · 唯一解挖洞 · 三档难度 · 计时。', playable: true, play: () => open('sudoku'), gradient: 'linear-gradient(140deg,#64D2FF,#1E5FD6)', glyph: '🧮' },
     { title: '黑白棋', desc: '原生 Reversi · 位置加权 AI · 自动过手判定。', playable: true, play: () => open('reversi'), gradient: 'linear-gradient(140deg,#BF5AF2,#5E2FB8)', glyph: '⚪' },
     { title: '打砖块', desc: '原生 Breakout · 鼠标/键盘 · Web Audio 音效。', playable: true, play: () => open('breakout'), gradient: 'linear-gradient(140deg,#FF6482,#B8125B)', glyph: '💥' },
+    { title: '24 点', desc: '原生 24 Game · 求解器保证有解 · 连对纪录。', playable: true, play: () => open('game24'), gradient: 'linear-gradient(140deg,#FF9F0A,#E2571B)', glyph: '🃏' },
   ]
 
   return (
