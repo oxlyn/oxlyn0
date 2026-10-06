@@ -10,7 +10,7 @@ export const podcastsSeed = {
       "title": "The Gradient Hour",
       "host": "Mira Chen & Dev Okafor",
       "desc": "A weekly conversation about interface design, motion, and the craft of building software that feels alive. Recorded in a sunlit studio in the Mission.",
-      "artwork": "/macos27/podcast-cover.svg",
+      "artwork": "/macos27/images/podcast-cover.svg",
       "genre": "Design"
     },
     {
@@ -18,7 +18,7 @@ export const podcastsSeed = {
       "title": "Night Circuit",
       "host": "DJ Nocturne",
       "desc": "One hour of synthwave, ambient and late-night electronic selections, mixed live. Best experienced after midnight with good headphones.",
-      "artwork": "/macos27/cover-1.svg",
+      "artwork": "/macos27/images/cover-1.svg",
       "genre": "Music"
     }
   ],

@@ -9,16 +9,18 @@ Every media file currently in the repo is a **generated gradient placeholder**
 (see `scripts/gen-media.mjs`) — that's why they're `.svg` and ~545 bytes each,
 not the original JPGs.
 
-Drop in your own files under the **same filenames** at the repo root:
+Drop in your own files under the **same filenames** in `images/` at the repo root
+(the mp3 tracks stay at the root):
 
-- **Wallpapers** — `wallpaper-graphite.svg` (default), `wallpaper-glass-dark.svg`,
-  `wallpaper-glass-light.svg`, `wallpaper-aurora.svg`, `wallpaper-sunset.svg`,
-  `wallpaper-mint.svg` (2560×1600-ish). The list lives in
+- **Wallpapers** — `images/wallpaper-graphite.svg` (default),
+  `images/wallpaper-glass-dark.svg`, `images/wallpaper-glass-light.svg`,
+  `images/wallpaper-aurora.svg`, `images/wallpaper-sunset.svg`,
+  `images/wallpaper-mint.svg` (2560×1600-ish). The list lives in
   `src/system/stores/system.ts` (`WALLPAPERS`).
-- **Photos app** — `photo-1.svg` … `photo-8.svg`
-- **Music/Podcasts** — `cover-1.svg` … `cover-4.svg`, `podcast-cover.svg`,
-  `track-1.mp3` … `track-4.mp3`
-- **Login avatar / favicon** — `avatar.svg`
+- **Photos app** — `images/photo-1.svg` … `images/photo-8.svg`
+- **Music/Podcasts** — `images/cover-1.svg` … `images/cover-4.svg`,
+  `images/podcast-cover.svg`, `track-1.mp3` … `track-4.mp3` (at the root)
+- **Login avatar / favicon** — `images/avatar.jpg`
 
 ⚠️ **Watch the extension.** The paths are hardcoded, so `photo-1.svg` is
 referenced as `photo-1.svg` in `src/apps/photos/data.ts`. If you supply
@@ -33,7 +35,8 @@ data file in the same commit:
 | Music | `src/apps/music/data.ts` |
 | Podcasts | `src/apps/podcasts/data.ts` |
 
-`avatar-lotus.jpg` is an unused leftover — nothing references it.
+`images/avatar.jpg` (the old `avatar-lotus.jpg` lotus photo) is the login avatar
+and favicon; the previous `avatar.svg` was removed.
 
 ## 2. Edit content (per-app data files)
 

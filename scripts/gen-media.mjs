@@ -1,6 +1,7 @@
 // Generates the gradient SVG media set (wallpapers / album covers / photo
 // samples) that replaced the original JPGs — ~1KB each instead of ~2.7MB total.
-import { writeFileSync } from 'node:fs'
+// Output goes to images/ at the repo root (referenced as /macos27/images/…).
+import { mkdirSync, writeFileSync } from 'node:fs'
 
 const svg = (w, h, stops, glows = []) => {
   const [from, to] = stops
@@ -64,7 +65,8 @@ const photos = Object.fromEntries(
   photoPalettes.map((p, i) => [`photo-${i + 1}`, svg(1600, 1200, p, [{ cx: 0.72, cy: 0.22, r: 0.6, c: '#ffffff', o: 0.22 }])]),
 )
 
+mkdirSync('images', { recursive: true })
 for (const [name, content] of Object.entries({ ...wallpapers, ...covers, ...photos })) {
-  writeFileSync(`${name}.svg`, content)
+  writeFileSync(`images/${name}.svg`, content)
 }
-console.log('generated', Object.keys({ ...wallpapers, ...covers, ...photos }).length, 'svg files')
+console.log('generated', Object.keys({ ...wallpapers, ...covers, ...photos }).length, 'svg files into images/')
