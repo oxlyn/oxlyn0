@@ -140,7 +140,7 @@ function Games() {
     { title: '迷你游戏合集', desc: '115 款单文件开源小游戏 · 在线试玩。', playable: true, play: () => setWebGame(MINI_GAMES), gradient: 'linear-gradient(140deg,#FF6482,#B8125B)', glyph: '👾' },
     { title: 'Chess', desc: 'Full board with move rules and capture log.', playable: true, play: () => open('chess'), gradient: 'linear-gradient(140deg,#C7A47A,#7A5230)', glyph: '♛' },
     { title: '2048', desc: '原生实现 · 方向键合并 · 本地最高分。', playable: true, play: () => open('2048'), gradient: 'linear-gradient(140deg,#FFD60A,#FF9F0A)', glyph: '2⁴⁸' },
-    { title: 'Minesweeper', desc: 'Classic deduction.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#8E8E93,#48484A)', glyph: '💣' },
+    { title: 'Minesweeper', desc: '原生扫雷 · 三档难度 · 首点必安全 · 最快纪录。', playable: true, play: () => open('minesweeper'), gradient: 'linear-gradient(140deg,#8E8E93,#48484A)', glyph: '💣' },
   ]
 
   return (
