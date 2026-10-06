@@ -55,15 +55,9 @@ Every app keeps its content in its own directory — usually `src/apps/<id>/data
 | Dictionary words | `src/apps/dictionary/data.ts` |
 
 `fs-seed.ts` and `notes-seed.ts` were **generated once** from the original bundle
-and are now ordinary source files — **edit them directly.**
-
-⚠️ **Do not re-run `scripts/sync-extracted.mjs` casually.** It overwrites all 14
-per-app `data.ts` files plus `fs-seed.ts` and `notes-seed.ts` wholesale, with no
-merge — every hand edit is lost. It's also no longer runnable: it reads
-`/tmp/extracted/*.json`, which no longer exists (the repo's `extracted/` is
-empty and the extraction JSON was never committed). Treat the committed
-`data.ts` files as the source of truth; the file-header banners saying
-"edit `/tmp/extracted/*.json` instead" are stale.
+and are now ordinary source files — **edit them directly.** (The old
+`scripts/sync-extracted.mjs` regeneration pipeline was removed in 2026-10 — the
+committed `data.ts` files are the single source of truth.)
 
 ## 3. Add a whole new app
 
