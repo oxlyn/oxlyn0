@@ -133,8 +133,8 @@ The framework lives in `src/system/webapp.tsx` — no need to touch it.
 ## Hosting-path note
 
 `vite.config.ts` picks the base by host: Cloudflare Pages build CI (`CF_PAGES=1`)
-serves at `/`, GitHub Pages and local
-builds at `/macos27/`. App code
+serves at `/`, local builds at
+`/macos27/`. App code
 should reference media through `import.meta.env.BASE_URL`; the music/podcast/
 photo data files predate that and hardcode `/macos27/…`, so the build mirrors
 the repo-root media into `dist/macos27/` (`copyRootStatic` plugin) to cover

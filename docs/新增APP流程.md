@@ -187,12 +187,10 @@ localStorage，手动选择后不再跟随桌面。
    带 payload 的打开路径
 2. `npm run typecheck` — TS 检查
 3. `npm run build` — 产物输出到 `dist/`；流程 B 的静态站点会按同路径镜像进
-   `dist/app/src/apps/<id>/site/`，根目录媒体目录（images/、audio/）也会镜像进 dist
-4. 发布：
-   - **GitHub Pages**：`scripts/deploy-root.sh` 把 `dist/index.html` 和
-     hash 资源同步回仓库根，commit + push 即发布（站点在仓库内
-     `app/src/apps/<id>/site/`，URL 与仓库路径一致，由 Pages 直接服务）
-   - **Cloudflare Pages/Workers**：直接部署 `dist/`，已是完整站点
+   `dist/app/src/apps/<id>/site/`，根目录媒体（images/ 及音乐模块 audio/）也会镜像进 dist
+4. 发布：push 到远端后由 Cloudflare Pages 自动构建部署（`npm run build` →
+   `dist/`，已是完整站点；站点在仓库内 `app/src/apps/<id>/site/`，
+   URL 与仓库路径一致）
 
 ## 常见坑
 

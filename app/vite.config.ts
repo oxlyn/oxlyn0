@@ -7,16 +7,15 @@ import type { Plugin } from 'rolldown-vite'
 import { webtvDevProxy } from './dev-proxy'
 
 // Vite root is this app/ directory; the repo root above it holds the image
-// media and the bundled study app, so GitHub Pages keeps
-// serving them at /macos27/*. In dev, serve those from root under the base path.
+// media (images/) and the bundled app sites. In dev, serve repo-root paths
+// under the /macos27/ base path.
 const REPO_ROOT = resolve(import.meta.dirname, '..')
 const MEDIA_RE = /\.(jpg|jpeg|png|gif|webp|svg|mp3|mp4|zip|pdf|woff2?)$/
 // Cloudflare Pages build CI serves the site at the domain root (CF_PAGES=1);
-// GitHub Pages serves the repo under /macos27/. Local builds keep the
-// /macos27/ default.
+// local builds keep the /macos27/ default.
 const BASE = process.env.CF_PAGES ? '/' : '/macos27/'
 // Bundled static sites live inside their app module (app/src/apps/<id>/site);
-// the URL mirrors the repo path because GitHub Pages serves the repo as-is.
+// embed URLs mirror the repo path, shared verbatim by dev and builds.
 const STATIC_SITES = [
   '/macos27/app/src/apps/study/site/',
   '/macos27/app/src/apps/wakfu/site/',
@@ -45,12 +44,11 @@ function rootStatic(): Plugin {
   }
 }
 
-// dist-only hosts (Cloudflare Pages) never see the repo root, so mirror the
-// static media into dist after every build. Two destinations are needed: the
-// dist root for BASE_URL-relative refs (images/, apps sites, finder/preview)
-// and dist/macos27/ for the /macos27/… paths hardcoded in the
-// music/podcast/photo data files. GitHub Pages serves the repo root and never
-// deploys these copies (deploy-root.sh takes only index.html + hashed assets).
+// The Pages build only publishes dist/, so mirror the static media into it
+// after every build. Two destinations are needed: the dist root for
+// BASE_URL-relative refs (images/, apps sites, finder/preview) and
+// dist/macos27/ for the /macos27/… paths hardcoded in the music/podcast/photo
+// data files.
 function copyRootStatic(): Plugin {
   return {
     name: 'copy-root-static',
@@ -75,8 +73,7 @@ function copyRootStatic(): Plugin {
       cpSync(resolve(REPO_ROOT, 'app/src/apps/music/audio'), at('app/src/apps/music/audio'), { recursive: true })
       cpSync(resolve(REPO_ROOT, 'app/src/apps/music/audio'), at('macos27/app/src/apps/music/audio'), { recursive: true })
       // Bundled app sites: mirror each into dist at its repo-relative path so
-      // BASE_URL-relative iframe URLs resolve on dist-only hosts (Cloudflare
-      // Pages). GitHub Pages serves the repo root directly and needs no copy.
+      // BASE_URL-relative iframe URLs resolve in the Pages build.
       const appSites: [string, string][] = [
         ['study', 'site'],
         ['wakfu', 'site'],

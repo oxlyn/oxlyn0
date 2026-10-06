@@ -37,11 +37,11 @@ In Finder: select a file, then **Move to Trash** / **Rename** from the toolbar
 TypeScript + JSX + [rolldown-vite] (the Rolldown app bundler — same core as tsdown,
 with the dev server/HTML entry an SPA needs) + Tailwind 4 + zustand.
 The Vite project lives in `app/` (source entry `app/index.html`); the repo root
-keeps static media + the deployed artifact so GitHub Pages serves `/macos27/*` directly.
+keeps static media (`images/`) and build tooling (`scripts/`).
 
 ```
 app/
-  index.html         ← Vite source entry (deploy never touches it)
+  index.html         ← Vite source entry (never touched by builds)
   src/
     system/          ← the "OS": window manager, menu bar, Dock, desktop,
       stores/          login, Launchpad, Spotlight, virtual file system
@@ -69,26 +69,20 @@ npm run dev        # http://localhost:5173/macos27/
 
 ## Deploy
 
-**GitHub Pages** (deploy-from-root, current):
-
-```bash
-scripts/deploy-root.sh   # build → inject modulepreload → copy dist/index.html + dist/assets/ into the repo root
-```
+**Cloudflare Pages** (`oxlyn0.pages.dev`, auto-deploy from the GitHub mirror):
+connect the repo in the Pages dashboard — build command `npm run build`,
+output dir `dist`, env `NODE_VERSION=22`. Cloudflare's build CI (`CF_PAGES=1`)
+flips `base` to `/`; `copyRootStatic` mirrors repo-root media and the bundled
+app sites (`app/src/apps/*/site`) into `dist` so every runtime path resolves;
+`functions/api/proxy/[[route]].ts` serves the WebTV same-origin proxy in
+production.
 
 Media lives in dedicated subdirectories — images (wallpapers/photos/covers/
 avatar) in the repo-root `images/`, the mp3 tracks inside the music app module
-at `app/src/apps/music/audio/` — so GitHub Pages serves it at
-`/macos27/*`; `vite.config.ts` sets the matching `base` and a dev middleware
-serves it locally. A service worker (`sw.js`) caches hashed bundles and refreshes
-un-hashed files in the background, so repeat visits and offline boots work.
-
-**Cloudflare Pages** (auto-deploy from the GitHub mirror): connect the repo in
-the Pages dashboard — build command `npm run build`, output dir `dist`, env
-`NODE_VERSION=22`. Cloudflare's build CI (`CF_PAGES=1`) flips `base` to `/`;
-`copyRootStatic` mirrors repo-root media +
-the bundled app sites (`app/src/apps/*/site`) into `dist` so every runtime path
-resolves without the GitHub-root layout; `functions/api/proxy/[[route]].ts`
-serves the WebTV same-origin proxy in production.
+at `app/src/apps/music/audio/`; `vite.config.ts` sets the matching `base` and a
+dev middleware serves it locally. A service worker (`sw.js`) caches hashed
+bundles and refreshes un-hashed files in the background, so repeat visits and
+offline boots work.
 
 ---
 

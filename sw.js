@@ -4,7 +4,7 @@
  *   navigations (HTML)        network-first, cached offline fallback
  *   /assets/*.js|css          cache-first — hashed file names, immutable
  *   everything else (media,   stale-while-revalidate — instant hit, freshened
- *   study/, devkit/ sites)    in the background
+ *   bundled sites)            in the background
  *
  * Bump VERSION when un-hashed files change and staleness matters (hashed
  * bundles never need it). Cross-origin requests (weather/dictionary APIs)
@@ -17,10 +17,10 @@ const PAGES_CACHE = `macos27-pages-${VERSION}`
 self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
-      // Warm the shell cache from the document's own asset list —
-      // deploy-root.sh injects a modulepreload link for every hashed chunk,
-      // so the full shell precaches in one pass and the second visit is
-      // entirely cache-served. The document itself seeds the offline fallback.
+      // Warm the shell cache from the document.s own asset list — Vite emits
+      // modulepreload links for the entry chunk.s static imports, so those
+      // precache in one pass and the second visit is largely cache-served.
+      // The document itself seeds the offline fallback.
       try {
         const doc = await fetch(self.registration.scope, { cache: 'no-cache' })
         if (doc.ok) {
