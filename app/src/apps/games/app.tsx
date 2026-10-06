@@ -141,6 +141,7 @@ function Games() {
     { title: 'Chess', desc: 'Full board with move rules and capture log.', playable: true, play: () => open('chess'), gradient: 'linear-gradient(140deg,#C7A47A,#7A5230)', glyph: '♛' },
     { title: '2048', desc: '原生实现 · 方向键合并 · 本地最高分。', playable: true, play: () => open('2048'), gradient: 'linear-gradient(140deg,#FFD60A,#FF9F0A)', glyph: '2⁴⁸' },
     { title: 'Minesweeper', desc: '原生扫雷 · 三档难度 · 首点必安全 · 最快纪录。', playable: true, play: () => open('minesweeper'), gradient: 'linear-gradient(140deg,#8E8E93,#48484A)', glyph: '💣' },
+    { title: '数字华容道', desc: '原生 15-puzzle · 随机走步保可解 · 最少步纪录。', playable: true, play: () => open('n-puzzle'), gradient: 'linear-gradient(140deg,#00C7BE,#0A5C5C)', glyph: '🔢' },
   ]
 
   return (
