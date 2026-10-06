@@ -103,15 +103,6 @@ const MINI_GAMES: WebAppSite = {
  * 自身及官方域（next.play2048.co 等）嵌入，浏览器层面拒绝 iframe，同三国一样只能
  * 走降级卡片；站方放开限制后把 embed 改成 'direct' 即可。
  */
-const GAME_2048: WebAppSite = {
-  id: 'play2048',
-  name: '2048',
-  url: 'https://play2048.co/',
-  icon: { from: '#FFD60A', to: '#FF9F0A', Icon: Gamepad2 } satisfies AppIconSpec,
-  embed: 'none',
-  note: '该站点通过 CSP frame-ancestors 只允许自身及官方域名嵌入，浏览器拒绝在窗口内加载。点击下方按钮在新标签页游玩；站点放开嵌入限制后本窗口即可直接游玩。',
-}
-
 /** 网页游戏视图：站点 iframe + 悬浮返回键（游戏是全屏画布，返回键不占画布）。 */
 function WebGameView({ site, onBack }: { site: WebAppSite; onBack: () => void }) {
   return (
@@ -148,7 +139,7 @@ function Games() {
     { title: '星团大作战', desc: '球球大作战类网页对战 · 大逃杀/团队战等多模式。', playable: true, play: () => setWebGame(BALL_ARENA), gradient: 'linear-gradient(140deg,#7D7AFF,#3423A6)', glyph: '🌌' },
     { title: '迷你游戏合集', desc: '115 款单文件开源小游戏 · 在线试玩。', playable: true, play: () => setWebGame(MINI_GAMES), gradient: 'linear-gradient(140deg,#FF6482,#B8125B)', glyph: '👾' },
     { title: 'Chess', desc: 'Full board with move rules and capture log.', playable: true, play: () => open('chess'), gradient: 'linear-gradient(140deg,#C7A47A,#7A5230)', glyph: '♛' },
-    { title: '2048', desc: 'play2048.co · 经典数字合并游戏。', playable: true, play: () => setWebGame(GAME_2048), gradient: 'linear-gradient(140deg,#FFD60A,#FF9F0A)', glyph: '2⁴⁸' },
+    { title: '2048', desc: '原生实现 · 方向键合并 · 本地最高分。', playable: true, play: () => open('2048'), gradient: 'linear-gradient(140deg,#FFD60A,#FF9F0A)', glyph: '2⁴⁸' },
     { title: 'Minesweeper', desc: 'Classic deduction.', playable: false, play: () => {}, gradient: 'linear-gradient(140deg,#8E8E93,#48484A)', glyph: '💣' },
   ]
 
