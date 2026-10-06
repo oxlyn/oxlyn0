@@ -157,5 +157,6 @@ https://macos27.kimi.page/track-1.mp3 … track-4.mp3
 The original site was a minified Vite bundle (an AI-generated "macOS 27" Kimi
 share demo, rebranded + redeployed). v2 reconstructed the full source tree:
 system shell in `src/system`, 34 apps in `src/apps`, all content extracted from
-the old bundle into per-app data files. The old artifact is preserved as
-`index.legacy.html` + the git history.
+the old bundle into per-app data files. The old entry page was removed from the
+working tree — the original minified bundle (`assets/index-Bfk0NWYJ.js`) survives
+only in git history, before the v2 rebuild commit.
