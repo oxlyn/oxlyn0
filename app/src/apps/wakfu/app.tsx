@@ -3,11 +3,11 @@ import { Swords } from 'lucide-react'
 import { useIframeDark } from '@/system/useIframeDark'
 import type { AppDefinition } from '@/system/types'
 
-const WAKFU_URL = `${import.meta.env.BASE_URL}apps/wakfu/index.html`
+const WAKFU_URL = `${import.meta.env.BASE_URL}app/src/apps/wakfu/site/index.html`
 
 /**
  * Wakfu 攻略站「万象之扉」— full multi-page fan site (副本/职业/任务/生活/图鉴/
- * 装备攻略 + 战斗日志分析), embedded verbatim from apps/wakfu/ at the repo root.
+ * 装备攻略 + 战斗日志分析), embedded verbatim from site/ inside this app directory.
  * Same-origin iframe; internal navigation stays inside the window. Follows the
  * desktop appearance via the site's own theme engine (0=暗夜, 1-4=四季).
  */

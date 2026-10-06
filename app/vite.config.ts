@@ -15,8 +15,14 @@ const MEDIA_RE = /\.(jpg|jpeg|png|gif|webp|svg|mp3|mp4|zip|pdf|woff2?)$/
 // Pages, WORKERS_CI=1 on Workers Builds); GitHub Pages serves the repo under
 // /macos27/. Local builds keep the /macos27/ default.
 const BASE = process.env.CF_PAGES || process.env.WORKERS_CI ? '/' : '/macos27/'
-// Bundled static sites (served verbatim from the repo-root apps/ directory).
-const STATIC_SITES = ['/macos27/apps/study/', '/macos27/apps/wakfu/', '/macos27/apps/devkit/', '/macos27/apps/YLCS3/']
+// Bundled static sites live inside their app module (app/src/apps/<id>/site);
+// the URL mirrors the repo path because GitHub Pages serves the repo as-is.
+const STATIC_SITES = [
+  '/macos27/app/src/apps/study/site/',
+  '/macos27/app/src/apps/wakfu/site/',
+  '/macos27/app/src/apps/devkit/site/',
+  '/macos27/app/src/apps/games/ylcs3/',
+]
 function rootStatic(): Plugin {
   return {
     name: 'root-static-media',
@@ -62,8 +68,18 @@ function copyRootStatic(): Plugin {
         cpSync(resolve(REPO_ROOT, dir), at(dir), { recursive: true })
         cpSync(resolve(REPO_ROOT, dir), at('macos27', dir), { recursive: true })
       }
-      for (const dir of ['apps']) {
-        cpSync(resolve(REPO_ROOT, dir), at(dir), { recursive: true })
+      // Bundled app sites: mirror each into dist at its repo-relative path so
+      // BASE_URL-relative iframe URLs resolve on dist-only hosts (Cloudflare
+      // Pages). GitHub Pages serves the repo root directly and needs no copy.
+      const appSites: [string, string][] = [
+        ['study', 'site'],
+        ['wakfu', 'site'],
+        ['devkit', 'site'],
+        ['games', 'ylcs3'],
+      ]
+      for (const [id, sub] of appSites) {
+        mkdirSync(at('app/src/apps', id), { recursive: true })
+        cpSync(resolve(REPO_ROOT, 'app/src/apps', id, sub), at('app/src/apps', id, sub), { recursive: true })
       }
     },
   }

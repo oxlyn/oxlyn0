@@ -3,12 +3,12 @@ import { Wrench } from 'lucide-react'
 import { useIframeDark } from '@/system/useIframeDark'
 import type { AppDefinition } from '@/system/types'
 
-const DEVKIT_URL = `${import.meta.env.BASE_URL}apps/devkit/index.html`
+const DEVKIT_URL = `${import.meta.env.BASE_URL}app/src/apps/devkit/site/index.html`
 
 /**
  * DevKit · 开发者工具箱 — self-contained dev-tools site (Base64/URL 编码、
  * JSON 格式化校验 + TypeScript 类型生成、图片/文本处理等), embedded verbatim
- * from apps/devkit/ at the repo root. Same-origin iframe. Follows the desktop
+ * from site/ inside this app directory. Same-origin iframe. Follows the desktop
  * appearance via the site's own data-theme engine, but a theme picked inside
  * DevKit (localStorage 'dk-theme') sticks.
  */

@@ -67,13 +67,13 @@ const RETRO: WebAppSite = {
 }
 
 /**
- * 炎龙传说（仓库 apps/YLCS3/，炎龙传说3双燕）— Flash 动作游戏，用开源模拟器
- * Ruffle 同源本地回放（捆绑站点，vite 会把 apps/YLCS3/ 原样打进构建产物）。
+ * 炎龙传说（本应用目录 ylcs3/，炎龙传说3双燕）— Flash 动作游戏，用开源模拟器
+ * Ruffle 同源本地回放（捆绑站点，vite 构建时会把 ylcs3/ 原样镜像进产物）。
  */
 const YLCS3: WebAppSite = {
   id: 'ylcs3',
   name: '炎龙传说',
-  url: new URL(`${import.meta.env.BASE_URL}apps/YLCS3/index.html`, window.location.origin).href,
+  url: new URL(`${import.meta.env.BASE_URL}app/src/apps/games/ylcs3/index.html`, window.location.origin).href,
   icon: { from: '#FF6B4A', to: '#B22222', Icon: Gamepad2 } satisfies AppIconSpec,
 }
 

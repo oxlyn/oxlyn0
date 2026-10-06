@@ -3,7 +3,7 @@ import { GraduationCap, Palette } from 'lucide-react'
 import { useSystem } from '@/system/stores/system'
 import type { AppDefinition } from '@/system/types'
 
-const STUDY_URL = `${import.meta.env.BASE_URL}apps/study/index.html`
+const STUDY_URL = `${import.meta.env.BASE_URL}app/src/apps/study/site/index.html`
 
 const LX_THEMES = [
   { id: 'dark', name: '深色', icon: '🌙' },
@@ -19,7 +19,7 @@ const LX_BG: Record<string, string> = {
 
 /**
  * 乐学二年级 — full 2nd-grade practice app (语文数学同步练习), embedded verbatim
- * from apps/study/index.html. Ships a 5-theme engine (深色/春夏秋冬) applied via
+ * from app/src/apps/study/site/index.html. Ships a 5-theme engine (深色/春夏秋冬) applied via
  * html[data-lx]; the floating switcher bottom-left picks the theme and it
  * persists. Until the visitor picks manually, the theme follows the desktop
  * appearance (dark → 深色, light → 春).
