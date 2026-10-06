@@ -10,7 +10,7 @@ export const tracksSeed = [
     "artist": "Vector Fields",
     "album": "Neon Skyline — Single",
     "genre": "Synthwave",
-    "src": "/macos27/track-1.mp3",
+    "src": "/macos27/audio/track-1.mp3",
     "artwork": "/macos27/images/cover-1.svg",
     "duration": 0,
     "addedAt": "2026-07-02T10:00:00"
@@ -21,7 +21,7 @@ export const tracksSeed = [
     "artist": "Café Mono",
     "album": "Golden Hour",
     "genre": "Lo-Fi",
-    "src": "/macos27/track-2.mp3",
+    "src": "/macos27/audio/track-2.mp3",
     "artwork": "/macos27/images/cover-2.svg",
     "duration": 0,
     "addedAt": "2026-07-06T10:00:00"
@@ -32,7 +32,7 @@ export const tracksSeed = [
     "artist": "The Meridian Trio",
     "album": "Blue Note Sessions",
     "genre": "Jazz",
-    "src": "/macos27/track-3.mp3",
+    "src": "/macos27/audio/track-3.mp3",
     "artwork": "/macos27/images/cover-3.svg",
     "duration": 0,
     "addedAt": "2026-07-10T10:00:00"
@@ -43,7 +43,7 @@ export const tracksSeed = [
     "artist": "Isla Wave",
     "album": "Drift",
     "genre": "Ambient",
-    "src": "/macos27/track-4.mp3",
+    "src": "/macos27/audio/track-4.mp3",
     "artwork": "/macos27/images/cover-4.svg",
     "duration": 0,
     "addedAt": "2026-07-14T10:00:00"

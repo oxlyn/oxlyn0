@@ -9,8 +9,8 @@ Every media file currently in the repo is a **generated gradient placeholder**
 (see `scripts/gen-media.mjs`) — that's why they're `.svg` and ~545 bytes each,
 not the original JPGs.
 
-Drop in your own files under the **same filenames** in `images/` at the repo root
-(the mp3 tracks stay at the root):
+Drop in your own files under the **same filenames** in `images/` (and `audio/`)
+at the repo root:
 
 - **Wallpapers** — `images/wallpaper-graphite.svg` (default),
   `images/wallpaper-glass-dark.svg`, `images/wallpaper-glass-light.svg`,
@@ -19,7 +19,7 @@ Drop in your own files under the **same filenames** in `images/` at the repo roo
   `src/system/stores/system.ts` (`WALLPAPERS`).
 - **Photos app** — `images/photo-1.svg` … `images/photo-8.svg`
 - **Music/Podcasts** — `images/cover-1.svg` … `images/cover-4.svg`,
-  `images/podcast-cover.svg`, `track-1.mp3` … `track-4.mp3` (at the root)
+  `images/podcast-cover.svg`, `audio/track-1.mp3` … `audio/track-4.mp3`
 - **Login avatar / favicon** — `images/avatar.jpg`
 
 ⚠️ **Watch the extension.** The paths are hardcoded, so `photo-1.svg` is

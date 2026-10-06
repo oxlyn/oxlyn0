@@ -78,8 +78,9 @@ npm run dev        # http://localhost:5173/macos27/
 scripts/deploy-root.sh   # build → inject modulepreload → copy dist/index.html + dist/assets/ into the repo root
 ```
 
-Media lives at the repo root — images (wallpapers/photos/covers/avatar) in
-`images/`, the mp3 tracks at the root — so GitHub Pages serves it at
+Media lives at the repo root in dedicated subdirectories — images
+(wallpapers/photos/covers/avatar) in `images/`, the mp3 tracks in `audio/` —
+so GitHub Pages serves it at
 `/macos27/*`; `vite.config.ts` sets the matching `base` and a dev middleware
 serves it locally. A service worker (`sw.js`) caches hashed bundles and refreshes
 un-hashed files in the background, so repeat visits and offline boots work.

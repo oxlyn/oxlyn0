@@ -7,7 +7,7 @@ import type { Plugin } from 'rolldown-vite'
 import { webtvDevProxy } from './dev-proxy'
 
 // Vite root is this app/ directory; the repo root above it holds static media
-// (images/, tracks) and the bundled study app, so GitHub Pages keeps
+// (images/, audio/) and the bundled study app, so GitHub Pages keeps
 // serving them at /macos27/*. In dev, serve those from root under the base path.
 const REPO_ROOT = resolve(import.meta.dirname, '..')
 const MEDIA_RE = /\.(jpg|jpeg|png|gif|webp|svg|mp3|mp4|zip|pdf|woff2?)$/
@@ -41,7 +41,7 @@ function rootStatic(): Plugin {
 
 // dist-only hosts (Cloudflare Pages) never see the repo root, so mirror the
 // static media into dist after every build. Two destinations are needed: the
-// dist root for BASE_URL-relative refs (images/, apps/ embeds, tracks,
+// dist root for BASE_URL-relative refs (images/, audio/, apps/ embeds,
 // finder/preview) and dist/macos27/ for the /macos27/… paths hardcoded in the
 // music/podcast/photo data files. GitHub Pages serves the repo root and never
 // deploys these copies (deploy-root.sh takes only index.html + hashed assets).
@@ -58,7 +58,7 @@ function copyRootStatic(): Plugin {
         cpSync(file, at(name))
         cpSync(file, at('macos27', name))
       }
-      for (const dir of ['images']) {
+      for (const dir of ['images', 'audio']) {
         cpSync(resolve(REPO_ROOT, dir), at(dir), { recursive: true })
         cpSync(resolve(REPO_ROOT, dir), at('macos27', dir), { recursive: true })
       }
