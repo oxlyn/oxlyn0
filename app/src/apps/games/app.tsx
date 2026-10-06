@@ -66,17 +66,6 @@ const RETRO: WebAppSite = {
   icon: { from: '#FFC24B', to: '#E2571B', Icon: Gamepad2 } satisfies AppIconSpec,
 }
 
-/**
- * 炎龙传说（本应用目录 ylcs3/，炎龙传说3双燕）— Flash 动作游戏，用开源模拟器
- * Ruffle 同源本地回放（捆绑站点，vite 构建时会把 ylcs3/ 原样镜像进产物）。
- */
-const YLCS3: WebAppSite = {
-  id: 'ylcs3',
-  name: '炎龙传说',
-  url: new URL(`${import.meta.env.BASE_URL}app/src/apps/games/ylcs3/index.html`, window.location.origin).href,
-  icon: { from: '#FF6B4A', to: '#B22222', Icon: Gamepad2 } satisfies AppIconSpec,
-}
-
 /** 小黑屋（adarkroom.doublespeakgames.com）— A Dark Room 中文版，极简文字放置生存游戏。 */
 const A_DARK_ROOM: WebAppSite = {
   id: 'a-dark-room',
@@ -255,7 +244,7 @@ function Games({ winId }: AppWindowProps) {
     { title: 'MCJS', desc: '网页版 MC 中文版。', playable: true, play: () => setWebGame(MCJS), gradient: 'linear-gradient(140deg,#4DA3FF,#1E5FD6)', glyph: '🧱' },
     { title: '三国', desc: '三国主题 H5 游戏。', playable: true, play: () => setWebGame(SANGUO), gradient: 'linear-gradient(140deg,#FFD60A,#B25000)', glyph: '⚔️' },
     { title: '老游戏合集', desc: '30000+ 中文老游戏在线玩（FC/GBA/NDS/PS…）。', playable: true, play: () => setWebGame(RETRO), gradient: 'linear-gradient(140deg,#FFC24B,#E2571B)', glyph: '🕹️' },
-    { title: '炎龙传说', desc: 'Flash 动作游戏 · Ruffle 本地回放。', playable: true, play: () => setWebGame(YLCS3), gradient: 'linear-gradient(140deg,#FF6B4A,#B22222)', glyph: '🐉' },
+    { title: '炎龙传说', desc: 'Flash 动作游戏 · Ruffle 本地回放 · 独立应用。', playable: true, play: () => open('ylcs3'), gradient: 'linear-gradient(140deg,#FF6B4A,#B22222)', glyph: '🐉' },
     { title: '小黑屋', desc: 'A Dark Room 中文 · 极简文字放置生存。', playable: true, play: () => setWebGame(A_DARK_ROOM), gradient: 'linear-gradient(140deg,#48484A,#1C1C1E)', glyph: '🔥' },
     { title: 'Threej', desc: '开源浏览器小游戏合集（街机/解谜/竞速/棋牌）。', playable: true, play: () => setWebGame(THREEJ), gradient: 'linear-gradient(140deg,#00C7BE,#0A5C5C)', glyph: '🎲' },
     { title: '星团大作战', desc: '球球大作战类网页对战 · 大逃杀/团队战等多模式。', playable: true, play: () => setWebGame(BALL_ARENA), gradient: 'linear-gradient(140deg,#7D7AFF,#3423A6)', glyph: '🌌' },

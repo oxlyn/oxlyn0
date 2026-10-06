@@ -20,7 +20,7 @@ const STATIC_SITES = [
   '/macos27/app/src/apps/study/site/',
   '/macos27/app/src/apps/wakfu/site/',
   '/macos27/app/src/apps/devkit/site/',
-  '/macos27/app/src/apps/games/ylcs3/',
+  '/macos27/app/src/apps/ylcs3/site/',
 ]
 function rootStatic(): Plugin {
   return {
@@ -78,7 +78,7 @@ function copyRootStatic(): Plugin {
         ['study', 'site'],
         ['wakfu', 'site'],
         ['devkit', 'site'],
-        ['games', 'ylcs3'],
+        ['ylcs3', 'site'],
       ]
       for (const [id, sub] of appSites) {
         mkdirSync(at('app/src/apps', id), { recursive: true })
