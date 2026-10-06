@@ -182,7 +182,7 @@ localStorage，手动选择后不再跟随桌面。
 ## 验证与发布
 
 1. `npm run dev` — 打开 http://localhost:5173/macos27/ （本地默认 BASE 为
-   `/macos27/`；`CF_PAGES`/`WORKERS_CI` 环境下为 `/`）。检查：
+   `/macos27/`；`CF_PAGES` 环境下为 `/`）。检查：
    Dock 图标 → Launchpad → Spotlight 搜索 → 打开窗口 → 拖拽/缩放/最小化 →
    带 payload 的打开路径
 2. `npm run typecheck` — TS 检查

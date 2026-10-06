@@ -2,9 +2,8 @@ import { buildMacCmsUrl } from './maccms';
 import { convertMacCmsXml, decodeXmlBytes, detectXmlCharset } from './maccmsXml';
 
 /**
- * WebTV 同源代理核心 —— 纯 fetch API 实现，同一份代码跑在三类服务端上：
+ * WebTV 同源代理核心 —— 纯 fetch API 实现，同一份代码跑在两类服务端上：
  * - `npm run dev`：vite 插件（app/dev-proxy.ts，Node 适配层）；
- * - Cloudflare Workers 静态资源部署（wrangler.jsonc → worker.ts）；
  * - Cloudflare Pages Functions（functions/api/proxy/[[route]].ts）。
  *
  * 行为对齐上游 webtv/ 的 Next.js Route Handlers（app/api/proxy/*）：服务端

@@ -1,7 +1,7 @@
 // Vite dev plugin: serve /api/proxy/* for the WebTV app in `npm run dev`.
 // Thin Node (connect) adapter over the shared fetch-API core in
 // app/src/apps/webtv/lib/proxyCore.ts — same handler as the Cloudflare
-// worker.ts / functions adapters, so dev matches production exactly.
+// Pages Functions adapter, so dev matches production exactly.
 import { Readable } from 'node:stream'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Plugin } from 'rolldown-vite'

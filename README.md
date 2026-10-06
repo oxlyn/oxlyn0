@@ -11,7 +11,7 @@ explore: every app works.
 - **WebTV** — TVBox-style 影视/IPTV player (Apple-CMS sources, live TV, parse
   interfaces), a native window app; metadata is
   fetched server-side via the shared proxy core (`app/src/apps/webtv/lib/
-  proxyCore.ts` — vite plugin in dev, Cloudflare Pages Functions / worker.ts
+  proxyCore.ts` — vite plugin in dev, Cloudflare Pages Functions
   in production), falling back to browser-direct + public CORS proxies when
   no server-side route answers; video streams play via artplayer + hls.js
 - **Study / Wakfu Guide** — embedded external sites (kept alive across window close)
@@ -84,11 +84,11 @@ un-hashed files in the background, so repeat visits and offline boots work.
 
 **Cloudflare Pages** (auto-deploy from the GitHub mirror): connect the repo in
 the Pages dashboard — build command `npm run build`, output dir `dist`, env
-`NODE_VERSION=22`. Cloudflare's build CI (`CF_PAGES` on Pages, `WORKERS_CI` on
-Workers Builds) flips `base` to `/`; `copyRootStatic` mirrors repo-root media +
+`NODE_VERSION=22`. Cloudflare's build CI (`CF_PAGES=1`) flips `base` to `/`;
+`copyRootStatic` mirrors repo-root media +
 the bundled app sites (`app/src/apps/*/site`) into `dist` so every runtime path
-resolves without the
-GitHub-root layout. `wrangler.jsonc` points the deploy step at `dist`.
+resolves without the GitHub-root layout; `functions/api/proxy/[[route]].ts`
+serves the WebTV same-origin proxy in production.
 
 ---
 

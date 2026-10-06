@@ -11,10 +11,10 @@ import { webtvDevProxy } from './dev-proxy'
 // serving them at /macos27/*. In dev, serve those from root under the base path.
 const REPO_ROOT = resolve(import.meta.dirname, '..')
 const MEDIA_RE = /\.(jpg|jpeg|png|gif|webp|svg|mp3|mp4|zip|pdf|woff2?)$/
-// Cloudflare build CI serves the site at the domain root (CF_PAGES=1 on
-// Pages, WORKERS_CI=1 on Workers Builds); GitHub Pages serves the repo under
-// /macos27/. Local builds keep the /macos27/ default.
-const BASE = process.env.CF_PAGES || process.env.WORKERS_CI ? '/' : '/macos27/'
+// Cloudflare Pages build CI serves the site at the domain root (CF_PAGES=1);
+// GitHub Pages serves the repo under /macos27/. Local builds keep the
+// /macos27/ default.
+const BASE = process.env.CF_PAGES ? '/' : '/macos27/'
 // Bundled static sites live inside their app module (app/src/apps/<id>/site);
 // the URL mirrors the repo path because GitHub Pages serves the repo as-is.
 const STATIC_SITES = [
