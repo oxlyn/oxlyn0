@@ -29,8 +29,7 @@ function neighbors(r: number, c: number, rows: number, cols: number): [number, n
   return out
 }
 
-export default function Minesweeper() {
-  const [level, setLevel] = useState<LevelKey>('easy')
+function Minesweeper() {  const [level, setLevel] = useState<LevelKey>('easy')
   const { rows, cols, mines } = LEVELS[level]
   const [cells, setCells] = useState<Cell[][]>(() => blank(rows, cols))
   const [phase, setPhase] = useState<'ready' | 'playing' | 'won' | 'lost'>('ready')
