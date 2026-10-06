@@ -51,8 +51,11 @@ app/
       <id>/
         app.tsx      ← exports AppDefinition { id, name, icon, component, size }
         data.ts      ← app content
-study/index.html     ← 乐学二年级 practice app, embedded verbatim by the Study app
-wakfu/               ← Wakfu 攻略站「万象之扉」, embedded verbatim by the Wakfu Guide app
+apps/                ← bundled static sites embedded verbatim as apps
+  study/             ← 乐学二年级 practice app, embedded by the Study app
+  wakfu/             ← Wakfu 攻略站「万象之扉」, embedded by the Wakfu Guide app
+  devkit/            ← DevKit · 开发者工具箱 standalone page
+  YLCS3/             ← 炎龙传说 Flash 游戏（Ruffle 本地回放）
 ```
 
 **Adding an app = creating one directory.** Drop `app/src/apps/<id>/app.tsx` that
@@ -85,7 +88,7 @@ un-hashed files in the background, so repeat visits and offline boots work.
 the Pages dashboard — build command `npm run build`, output dir `dist`, env
 `NODE_VERSION=22`. Cloudflare's build CI (`CF_PAGES` on Pages, `WORKERS_CI` on
 Workers Builds) flips `base` to `/`; `copyRootStatic` mirrors repo-root media +
-`study/` + `wakfu/` into `dist` so every runtime path resolves without the
+`apps/` into `dist` so every runtime path resolves without the
 GitHub-root layout. `wrangler.jsonc` points the deploy step at `dist`.
 
 ---

@@ -2,7 +2,7 @@
 // Deterministic — safe to re-run. Idempotence: run on a copy or ensure counts.
 import { readFileSync, writeFileSync } from 'node:fs'
 
-const p = 'study/index.html'
+const p = 'apps/study/index.html'
 const s0 = readFileSync(p, 'utf8')
 
 const esc = (o) => JSON.stringify(o).replace(/"([a-zA-Z_]+)":/g, '$1: ')

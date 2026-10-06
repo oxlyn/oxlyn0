@@ -16,7 +16,7 @@ Spotlight 和桌面上——**不需要在任何地方手动注册**。
 | 形态 | 现有例子 | 说明 |
 |---|---|---|
 | A. 标准 React 应用 | finder、notes、settings 等约 37 个 | 纯 React 组件，是默认方式 |
-| B. 静态站点 + iframe 壳 | study（乐学二年级）、wakfu（攻略站）、devkit（开发者工具箱） | 独立 HTML 站点放仓库根，React 壳只负责嵌入 |
+| B. 静态站点 + iframe 壳 | study（乐学二年级）、wakfu（攻略站）、devkit（开发者工具箱） | 独立 HTML 站点放仓库根 `apps/` 下，React 壳只负责嵌入 |
 
 ---
 
@@ -124,21 +124,21 @@ export default {
 
 ## 流程 B：新增静态站点嵌入应用（Study 模式）
 
-适用于已有独立 HTML 应用（自有主题引擎、无构建依赖），如 `study/index.html`、
-`wakfu/`。
+适用于已有独立 HTML 应用（自有主题引擎、无构建依赖），如 `apps/study/index.html`、
+`apps/wakfu/`。
 
 ### 第 1 步：静态站点放仓库根
 
-站点目录放在仓库根（如 `study/index.html`），保持原样不做打包。
+站点目录放在仓库根 `apps/` 下（如 `apps/study/index.html`），保持原样不做打包。
 
 ### 第 2 步：在 vite.config.ts 登记两处
 
 `app/vite.config.ts`：
 
-1. `STATIC_SITES` 数组（第 18 行）加入 `'/macos27/<site>/'` —— dev 服务器的
+1. `STATIC_SITES` 数组加入 `'/macos27/apps/<site>/'` —— dev 服务器的
    `rootStatic` 中间件会按原样服务这个路径
-2. `copyRootStatic` 插件的 `for (const site of ['study', 'wakfu', 'devkit'])` 循环
-   （第 56 行）加入 `'<site>'` —— build 后整目录拷贝进 `dist/<site>/`
+2. `copyRootStatic` 插件会把仓库根 `apps/` 整目录拷贝进 `dist/apps/`，
+   新站点放进 `apps/<site>/` 即可，无需改构建脚本
 
 ### 第 3 步：写 React 壳
 
@@ -146,7 +146,7 @@ export default {
 `app/src/apps/study/app.tsx`）：
 
 ```tsx
-const SITE_URL = `${import.meta.env.BASE_URL}study/index.html`
+const SITE_URL = `${import.meta.env.BASE_URL}apps/study/index.html`
 
 function StudyApp({ winId }: AppWindowProps) {
   const src = useMemo(() => `${SITE_URL}?w=${winId}`, [])
@@ -159,20 +159,20 @@ function StudyApp({ winId }: AppWindowProps) {
 ### 第 4 步（可选）：与桌面主题联动
 
 Study 壳演示了联动方式：监听 `useSystem` 的主题变化，写入 iframe 文档的
-`documentElement.dataset.lx`（`study/app.tsx:36-50`）；用户手动选择的主题存
+`documentElement.dataset.lx`（`app/src/apps/study/app.tsx:36-50`）；用户手动选择的主题存
 localStorage，手动选择后不再跟随桌面。
 
 ### 嵌入站点的性能约定
 
 - iframe 的 src 用**固定 URL**，不要拼 per-window 参数（如 `?w=${winId}`）——
   URL 一变 HTTP 缓存就完全失效，每次开窗都重新下载整个站点
-- 站点的大块 CSS/JS 拆成外链文件（study 已拆为 `study/app.css`、
-  `study/app.js`），浏览器才能跨次打开复用编译产物；全内联的单文件每次都要
+- 站点的大块 CSS/JS 拆成外链文件（study 已拆为 `apps/study/app.css`、
+  `apps/study/app.js`），浏览器才能跨次打开复用编译产物；全内联的单文件每次都要
   重新解析执行
 - 需要“关窗再开还是原来那个页面”的话设 `keepAlive: true`：系统会把窗口原地
   隐藏而不卸载（iframe 一旦离开 DOM 或重新挂载就会重载），重开时直接恢复
 - 弹出新标签页用 `popOutUrl` 指到站点本身，跳过桌面启动
-- Service Worker / manifest 等路径一律用相对路径，站点在 `/macos27/wakfu/`
+- Service Worker / manifest 等路径一律用相对路径，站点在 `/macos27/apps/wakfu/`
   这类子路径下，绝对路径会指向站点根（wakfu 已修）
 
 ---
