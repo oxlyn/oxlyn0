@@ -134,6 +134,7 @@ function Games() {
 
   const cards = [
     { title: 'Snake', desc: 'The classic — arrow keys, neon green · 独立应用。', playable: true, play: () => open('snake'), gradient: 'linear-gradient(140deg,#30D158,#0a5c2e)', glyph: '🐍' },
+    { title: '俄罗斯方块', desc: '原生 Tetris · 四档难度 · 本地分数排行。', playable: true, play: () => open('tetris'), gradient: 'linear-gradient(140deg,#22d3ee,#2563eb)', glyph: '🧩' },
     { title: 'Bubble Tanks', desc: '泡泡坦克 HTML5 重制版 — collect, grow, evolve.', playable: true, play: () => setWebGame(BUBBLE_TANKS), gradient: 'linear-gradient(140deg,#64D2FF,#0A84FF)', glyph: '🫧' },
     { title: '红色警戒2', desc: '红警 2 网页重制 · 联机对战平台。', playable: true, play: () => setWebGame(RA2_GONGHUI), gradient: 'linear-gradient(140deg,#FF453A,#8E1C14)', glyph: '☢️' },
     { title: '葫芦娃', desc: '葫芦娃 H5 网页游戏（Egret 引擎）。', playable: true, play: () => setWebGame(HLW), gradient: 'linear-gradient(140deg,#BF5AF2,#5E2FB8)', glyph: '🎮' },
