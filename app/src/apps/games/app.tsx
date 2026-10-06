@@ -194,5 +194,5 @@ export default {
   defaultSize: { w: 1020, h: 680 },
   minSize: { w: 640, h: 460 },
   category: 'Entertainment',
-  keywords: ['snake', 'chess', 'bubble tank', '泡泡坦克', 'ra2', '红警', '红色警戒', '联机对战', '葫芦娃', 'hlw', 'bloxd', 'minecraft', '我的世界', '方块', '沙盒', 'mcjs', '网页版mc', '老游戏', '怀旧', '模拟器', 'fc', '红白机', '炎龙传说', '炎龙', 'ylcs3', 'flash', 'ruffle', '双燕', '小黑屋', 'a dark room', 'adarkroom', '放置', '文字游戏', 'threej', '浏览器游戏', '小游戏', '开源游戏', '星团大作战', '球球大作战', 'ball arena', '大逃杀', '迷你游戏合集', '单文件游戏', 'mini games', '2048', 'play2048', '数字', '合并', 'arcade', 'play'],
+  keywords: ['snake', 'chess', 'tetris', '2048', 'minesweeper', '扫雷', '华容道', 'puzzle', 'gomoku', '五子棋', '数独', 'sudoku', '黑白棋', 'reversi', '打砖块', 'breakout', '24点', 'bubble tank', '泡泡坦克', 'ra2', '红警', '红色警戒', '联机对战', '葫芦娃', 'hlw', 'bloxd', 'minecraft', '我的世界', '方块', '沙盒', 'mcjs', '网页版mc', '老游戏', '怀旧', '模拟器', 'fc', '红白机', '炎龙传说', '炎龙', 'ylcs3', 'flash', 'ruffle', '双燕', '小黑屋', 'a dark room', 'adarkroom', '放置', '文字游戏', 'threej', '浏览器游戏', '小游戏', '开源游戏', '星团大作战', '球球大作战', 'ball arena', '大逃杀', '迷你游戏合集', '单文件游戏', 'mini games', 'play2048', '数字', '合并', 'arcade', 'play'],
 } satisfies AppDefinition
