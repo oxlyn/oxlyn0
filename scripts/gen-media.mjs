@@ -1,6 +1,6 @@
 // Generates the gradient SVG media set (wallpapers / album covers / photo
 // samples) that replaced the original JPGs — ~1KB each instead of ~2.7MB total.
-// Output goes to images/ at the repo root (referenced as /macos27/images/…).
+// Output goes to app/public/images/ (Vite static dir; referenced via BASE_URL).
 import { mkdirSync, writeFileSync } from 'node:fs'
 
 const svg = (w, h, stops, glows = []) => {
@@ -65,8 +65,8 @@ const photos = Object.fromEntries(
   photoPalettes.map((p, i) => [`photo-${i + 1}`, svg(1600, 1200, p, [{ cx: 0.72, cy: 0.22, r: 0.6, c: '#ffffff', o: 0.22 }])]),
 )
 
-mkdirSync('images', { recursive: true })
+mkdirSync("app/public/images", { recursive: true })
 for (const [name, content] of Object.entries({ ...wallpapers, ...covers, ...photos })) {
-  writeFileSync(`images/${name}.svg`, content)
+  writeFileSync(`app/public/images/${name}.svg`, content)
 }
-console.log('generated', Object.keys({ ...wallpapers, ...covers, ...photos }).length, 'svg files into images/')
+console.log('generated', Object.keys({ ...wallpapers, ...covers, ...photos }).length, 'svg files into app/public/images/')

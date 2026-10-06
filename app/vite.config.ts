@@ -6,9 +6,11 @@ import { resolve } from 'node:path'
 import type { Plugin } from 'rolldown-vite'
 import { webtvDevProxy } from './dev-proxy'
 
-// Vite root is this app/ directory; the repo root above it holds the image
-// media (images/) and the bundled app sites. In dev, serve repo-root paths
-// under the /macos27/ base path.
+// Vite root is this app/ directory: app/public holds the site-root runtime
+// assets (images/, sw.js) — vite serves them under the base in dev and copies
+// them into dist on build, no custom code needed. In dev, raw-serve the
+// bundled app sites (app/src/apps/<id>/site/) so their HTML/CSS/JS reach the
+// iframe untouched by the dev HTML transform.
 const REPO_ROOT = resolve(import.meta.dirname, '..')
 const MEDIA_RE = /\.(jpg|jpeg|png|gif|webp|svg|mp3|mp4|zip|pdf|woff2?)$/
 // Cloudflare Pages build CI serves the site at the domain root (CF_PAGES=1);
@@ -44,19 +46,17 @@ function rootStatic(): Plugin {
   }
 }
 
-// The Pages build only publishes dist/, so mirror the runtime assets into it
-// after every build: dist/sw.js (registered at the site root), dist/images/
-// (wallpaper/photo/cover refs) and the bundled app sites + music audio at
-// their repo-relative paths. All runtime URLs are BASE_URL-relative — one
-// style across dev and builds, no hardcoded deployment prefix anywhere.
+// The Pages build only publishes dist/, so mirror the runtime assets that
+// live inside app modules (vite's public/ handling covers everything at
+// app/public). Music audio and the bundled app sites are copied at their
+// repo-relative paths so BASE_URL-relative URLs resolve; all runtime URLs
+// are BASE_URL-relative — one style across dev and builds.
 function copyRootStatic(): Plugin {
   return {
     name: 'copy-root-static',
     closeBundle() {
       const dist = resolve(REPO_ROOT, 'dist')
       const at = (...p: string[]) => resolve(dist, ...p)
-      cpSync(resolve(REPO_ROOT, 'sw.js'), at('sw.js'))
-      cpSync(resolve(REPO_ROOT, 'images'), at('images'), { recursive: true })
       cpSync(resolve(REPO_ROOT, 'app/src/apps/music/audio'), at('app/src/apps/music/audio'), { recursive: true })
       // Bundled app sites: mirror each into dist at its repo-relative path so
       // BASE_URL-relative iframe URLs resolve in the Pages build.

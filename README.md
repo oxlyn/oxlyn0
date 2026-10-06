@@ -77,12 +77,12 @@ app sites (`app/src/apps/*/site`) into `dist` so every runtime path resolves;
 `functions/api/proxy/[[route]].ts` serves the WebTV same-origin proxy in
 production.
 
-Media lives in dedicated subdirectories — images (wallpapers/photos/covers/
-avatar) in the repo-root `images/`, the mp3 tracks inside the music app module
-at `app/src/apps/music/audio/`; `vite.config.ts` sets the matching `base` and a
-dev middleware serves it locally. A service worker (`sw.js`) caches hashed
-bundles and refreshes un-hashed files in the background, so repeat visits and
-offline boots work.
+Media lives in Vite's static dir — images (wallpapers/photos/covers/avatar) in
+`app/public/images/`, the mp3 tracks inside the music app module at
+`app/src/apps/music/audio/` — `vite.config.ts` sets the matching `base` and a
+dev middleware raw-serves the bundled sites locally. A service worker (`sw.js`,
+in `app/public/`) caches hashed bundles and refreshes un-hashed files in the
+background, so repeat visits and offline boots work.
 
 ---
 

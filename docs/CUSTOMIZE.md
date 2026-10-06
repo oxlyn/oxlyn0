@@ -9,19 +9,19 @@ Every media file currently in the repo is a **generated gradient placeholder**
 (see `scripts/gen-media.mjs`) — that's why they're `.svg` and ~545 bytes each,
 not the original JPGs.
 
-Drop in your own files under the **same filenames** in `images/` at the repo root
+Drop in your own files under the **same filenames** in `app/public/images/`
 (and the music tracks in `app/src/apps/music/audio/`):
 
-- **Wallpapers** — `images/wallpaper-graphite.svg` (default),
-  `images/wallpaper-glass-dark.svg`, `images/wallpaper-glass-light.svg`,
-  `images/wallpaper-aurora.svg`, `images/wallpaper-sunset.svg`,
-  `images/wallpaper-mint.svg` (2560×1600-ish). The list lives in
+- **Wallpapers** — `app/public/images/wallpaper-graphite.svg` (default),
+  `app/public/images/wallpaper-glass-dark.svg`, `app/public/images/wallpaper-glass-light.svg`,
+  `app/public/images/wallpaper-aurora.svg`, `app/public/images/wallpaper-sunset.svg`,
+  `app/public/images/wallpaper-mint.svg` (2560×1600-ish). The list lives in
   `src/system/stores/system.ts` (`WALLPAPERS`).
-- **Photos app** — `images/photo-1.svg` … `images/photo-8.svg`
-- **Music/Podcasts** — `images/cover-1.svg` … `images/cover-4.svg`,
-  `images/podcast-cover.svg`, `app/src/apps/music/audio/track-1.mp3` …
+- **Photos app** — `app/public/images/photo-1.svg` … `app/public/images/photo-8.svg`
+- **Music/Podcasts** — `app/public/images/cover-1.svg` … `app/public/images/cover-4.svg`,
+  `app/public/images/podcast-cover.svg`, `app/src/apps/music/audio/track-1.mp3` …
   `app/src/apps/music/audio/track-4.mp3`
-- **Login avatar / favicon** — `images/avatar.jpg`
+- **Login avatar / favicon** — `app/public/images/avatar.jpg`
 
 ⚠️ **Watch the extension.** The paths are hardcoded, so `photo-1.svg` is
 referenced as `photo-1.svg` in `src/apps/photos/data.ts`. If you supply
