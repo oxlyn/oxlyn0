@@ -3,12 +3,15 @@
  * macos27 bundle. Plain source file now — edit it directly; re-running sync-extracted.mjs overwrites it.
  * Source: photos.json
  */
+// Media URLs are BASE_URL-relative so dev (/macos27/), CF (/) and any base resolve.
+const B = (f: string) => import.meta.env.BASE_URL + f
+
 export const photosSeed = [
   {
     "id": "p1",
     "fsId": "seed-photo-1",
     "name": "photo-1.svg",
-    "url": "/macos27/images/photo-1.svg",
+    "url": B("images/photo-1.svg"),
     "takenAt": "2026-07-14T17:42:00",
     "favorite": false,
     "deleted": false,
@@ -20,7 +23,7 @@ export const photosSeed = [
     "id": "p2",
     "fsId": "seed-photo-2",
     "name": "photo-2.svg",
-    "url": "/macos27/images/photo-2.svg",
+    "url": B("images/photo-2.svg"),
     "takenAt": "2026-07-09T09:15:00",
     "favorite": true,
     "deleted": false,
@@ -32,7 +35,7 @@ export const photosSeed = [
     "id": "p3",
     "fsId": "seed-photo-3",
     "name": "photo-3.svg",
-    "url": "/macos27/images/photo-3.svg",
+    "url": B("images/photo-3.svg"),
     "takenAt": "2026-06-21T08:03:00",
     "favorite": false,
     "deleted": false,
@@ -44,7 +47,7 @@ export const photosSeed = [
     "id": "p4",
     "fsId": "seed-photo-4",
     "name": "photo-4.svg",
-    "url": "/macos27/images/photo-4.svg",
+    "url": B("images/photo-4.svg"),
     "takenAt": "2026-06-08T19:26:00",
     "favorite": false,
     "deleted": false,
@@ -56,7 +59,7 @@ export const photosSeed = [
     "id": "p5",
     "fsId": "seed-photo-5",
     "name": "photo-5.svg",
-    "url": "/macos27/images/photo-5.svg",
+    "url": B("images/photo-5.svg"),
     "takenAt": "2026-06-02T20:11:00",
     "favorite": false,
     "deleted": false,
@@ -68,7 +71,7 @@ export const photosSeed = [
     "id": "p6",
     "fsId": "seed-photo-6",
     "name": "photo-6.svg",
-    "url": "/macos27/images/photo-6.svg",
+    "url": B("images/photo-6.svg"),
     "takenAt": "2026-05-24T12:37:00",
     "favorite": false,
     "deleted": false,
@@ -80,7 +83,7 @@ export const photosSeed = [
     "id": "p7",
     "fsId": "seed-photo-7",
     "name": "photo-7.svg",
-    "url": "/macos27/images/photo-7.svg",
+    "url": B("images/photo-7.svg"),
     "takenAt": "2026-05-11T21:58:00",
     "favorite": false,
     "deleted": false,
@@ -92,7 +95,7 @@ export const photosSeed = [
     "id": "p8",
     "fsId": "seed-photo-8",
     "name": "photo-8.svg",
-    "url": "/macos27/images/photo-8.svg",
+    "url": B("images/photo-8.svg"),
     "takenAt": "2026-05-02T18:44:00",
     "favorite": true,
     "deleted": false,

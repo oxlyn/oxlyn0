@@ -3,6 +3,9 @@
  * macos27 bundle. Plain source file now — edit it directly; re-running sync-extracted.mjs overwrites it.
  * Source: podcasts.json
  */
+// Media URLs are BASE_URL-relative so dev (/macos27/), CF (/) and any base resolve.
+const B = (f: string) => import.meta.env.BASE_URL + f
+
 export const podcastsSeed = {
   "shows": [
     {
@@ -10,7 +13,7 @@ export const podcastsSeed = {
       "title": "The Gradient Hour",
       "host": "Mira Chen & Dev Okafor",
       "desc": "A weekly conversation about interface design, motion, and the craft of building software that feels alive. Recorded in a sunlit studio in the Mission.",
-      "artwork": "/macos27/images/podcast-cover.svg",
+      "artwork": B("images/podcast-cover.svg"),
       "genre": "Design"
     },
     {
@@ -18,7 +21,7 @@ export const podcastsSeed = {
       "title": "Night Circuit",
       "host": "DJ Nocturne",
       "desc": "One hour of synthwave, ambient and late-night electronic selections, mixed live. Best experienced after midnight with good headphones.",
-      "artwork": "/macos27/images/cover-1.svg",
+      "artwork": B("images/cover-1.svg"),
       "genre": "Music"
     }
   ],
@@ -28,7 +31,7 @@ export const podcastsSeed = {
       "showId": "gradient-hour",
       "title": "Liquid Glass, one year later",
       "desc": "Refraction, readability, and what we learned shipping a glass-first design system.",
-      "src": "/macos27/app/src/apps/music/audio/track-2.mp3",
+      "src": B("app/src/apps/music/audio/track-2.mp3"),
       "date": "2026-07-15T08:00:00",
       "duration": 0
     },
@@ -37,7 +40,7 @@ export const podcastsSeed = {
       "showId": "gradient-hour",
       "title": "The anatomy of a perfect sidebar",
       "desc": "Why every great Mac app starts with 220 points of frosted hierarchy.",
-      "src": "/macos27/app/src/apps/music/audio/track-3.mp3",
+      "src": B("app/src/apps/music/audio/track-3.mp3"),
       "date": "2026-07-08T08:00:00",
       "duration": 0
     },
@@ -46,7 +49,7 @@ export const podcastsSeed = {
       "showId": "gradient-hour",
       "title": "Color, contrast, and the 60fps rule",
       "desc": "Motion budgets, transform-only animation, and shipping the upper end of every wash range.",
-      "src": "/macos27/app/src/apps/music/audio/track-4.mp3",
+      "src": B("app/src/apps/music/audio/track-4.mp3"),
       "date": "2026-07-01T08:00:00",
       "duration": 0
     },
@@ -55,7 +58,7 @@ export const podcastsSeed = {
       "showId": "night-circuit",
       "title": "Night Circuit 042: Neon Skyline",
       "desc": "Chrome horizons and magenta grids — a synthwave set featuring Vector Fields.",
-      "src": "/macos27/app/src/apps/music/audio/track-1.mp3",
+      "src": B("app/src/apps/music/audio/track-1.mp3"),
       "date": "2026-07-12T23:00:00",
       "duration": 0
     },
@@ -64,7 +67,7 @@ export const podcastsSeed = {
       "showId": "night-circuit",
       "title": "Night Circuit 041: Midnight Drift",
       "desc": "Ambient textures for the drive home, with Isla Wave in the mix.",
-      "src": "/macos27/app/src/apps/music/audio/track-4.mp3",
+      "src": B("app/src/apps/music/audio/track-4.mp3"),
       "date": "2026-07-05T23:00:00",
       "duration": 0
     },
@@ -73,7 +76,7 @@ export const podcastsSeed = {
       "showId": "night-circuit",
       "title": "Night Circuit 040: Golden Hour Mix",
       "desc": "Lo-fi warmth to close out the season, courtesy of Café Mono.",
-      "src": "/macos27/app/src/apps/music/audio/track-2.mp3",
+      "src": B("app/src/apps/music/audio/track-2.mp3"),
       "date": "2026-06-28T23:00:00",
       "duration": 0
     }

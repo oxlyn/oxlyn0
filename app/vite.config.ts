@@ -1,7 +1,7 @@
 import { defineConfig } from 'rolldown-vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, readFileSync, statSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Plugin } from 'rolldown-vite'
 import { webtvDevProxy } from './dev-proxy'
@@ -44,34 +44,20 @@ function rootStatic(): Plugin {
   }
 }
 
-// The Pages build only publishes dist/, so mirror the static media into it
-// after every build. Two destinations are needed: the dist root for
-// BASE_URL-relative refs (images/, apps sites, finder/preview) and
-// dist/macos27/ for the /macos27/… paths hardcoded in the music/podcast/photo
-// data files.
+// The Pages build only publishes dist/, so mirror the runtime assets into it
+// after every build: dist/sw.js (registered at the site root), dist/images/
+// (wallpaper/photo/cover refs) and the bundled app sites + music audio at
+// their repo-relative paths. All runtime URLs are BASE_URL-relative — one
+// style across dev and builds, no hardcoded deployment prefix anywhere.
 function copyRootStatic(): Plugin {
   return {
     name: 'copy-root-static',
     closeBundle() {
       const dist = resolve(REPO_ROOT, 'dist')
       const at = (...p: string[]) => resolve(dist, ...p)
-      mkdirSync(at('macos27'), { recursive: true })
-      for (const name of readdirSync(REPO_ROOT)) {
-        const file = resolve(REPO_ROOT, name)
-        if (!statSync(file).isFile() || !(MEDIA_RE.test(name) || name === 'sw.js')) continue
-        cpSync(file, at(name))
-        cpSync(file, at('macos27', name))
-      }
-      for (const dir of ['images']) {
-        cpSync(resolve(REPO_ROOT, dir), at(dir), { recursive: true })
-        cpSync(resolve(REPO_ROOT, dir), at('macos27', dir), { recursive: true })
-      }
-      // Music audio lives inside the music app module. The music/podcast data
-      // files hardcode /macos27/… URLs, so mirror it both at its repo path
-      // (BASE_URL-relative refs) and under dist/macos27/ (hardcoded refs).
-      mkdirSync(at('macos27/app/src/apps/music'), { recursive: true })
+      cpSync(resolve(REPO_ROOT, 'sw.js'), at('sw.js'))
+      cpSync(resolve(REPO_ROOT, 'images'), at('images'), { recursive: true })
       cpSync(resolve(REPO_ROOT, 'app/src/apps/music/audio'), at('app/src/apps/music/audio'), { recursive: true })
-      cpSync(resolve(REPO_ROOT, 'app/src/apps/music/audio'), at('macos27/app/src/apps/music/audio'), { recursive: true })
       // Bundled app sites: mirror each into dist at its repo-relative path so
       // BASE_URL-relative iframe URLs resolve in the Pages build.
       const appSites: [string, string][] = [

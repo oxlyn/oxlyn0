@@ -3,6 +3,9 @@
  * macos27 bundle. Plain source file now — edit it directly; re-running sync-extracted.mjs overwrites it.
  * Source: music.json
  */
+// Media URLs are BASE_URL-relative so dev (/macos27/), CF (/) and any base resolve.
+const B = (f: string) => import.meta.env.BASE_URL + f
+
 export const tracksSeed = [
   {
     "id": "t1",
@@ -10,8 +13,8 @@ export const tracksSeed = [
     "artist": "Vector Fields",
     "album": "Neon Skyline — Single",
     "genre": "Synthwave",
-    "src": "/macos27/app/src/apps/music/audio/track-1.mp3",
-    "artwork": "/macos27/images/cover-1.svg",
+    "src": B("app/src/apps/music/audio/track-1.mp3"),
+    "artwork": B("images/cover-1.svg"),
     "duration": 0,
     "addedAt": "2026-07-02T10:00:00"
   },
@@ -21,8 +24,8 @@ export const tracksSeed = [
     "artist": "Café Mono",
     "album": "Golden Hour",
     "genre": "Lo-Fi",
-    "src": "/macos27/app/src/apps/music/audio/track-2.mp3",
-    "artwork": "/macos27/images/cover-2.svg",
+    "src": B("app/src/apps/music/audio/track-2.mp3"),
+    "artwork": B("images/cover-2.svg"),
     "duration": 0,
     "addedAt": "2026-07-06T10:00:00"
   },
@@ -32,8 +35,8 @@ export const tracksSeed = [
     "artist": "The Meridian Trio",
     "album": "Blue Note Sessions",
     "genre": "Jazz",
-    "src": "/macos27/app/src/apps/music/audio/track-3.mp3",
-    "artwork": "/macos27/images/cover-3.svg",
+    "src": B("app/src/apps/music/audio/track-3.mp3"),
+    "artwork": B("images/cover-3.svg"),
     "duration": 0,
     "addedAt": "2026-07-10T10:00:00"
   },
@@ -43,8 +46,8 @@ export const tracksSeed = [
     "artist": "Isla Wave",
     "album": "Drift",
     "genre": "Ambient",
-    "src": "/macos27/app/src/apps/music/audio/track-4.mp3",
-    "artwork": "/macos27/images/cover-4.svg",
+    "src": B("app/src/apps/music/audio/track-4.mp3"),
+    "artwork": B("images/cover-4.svg"),
     "duration": 0,
     "addedAt": "2026-07-14T10:00:00"
   }
