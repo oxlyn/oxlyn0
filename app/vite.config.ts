@@ -6,8 +6,8 @@ import { resolve } from 'node:path'
 import type { Plugin } from 'rolldown-vite'
 import { webtvDevProxy } from './dev-proxy'
 
-// Vite root is this app/ directory; the repo root above it holds static media
-// (images/, audio/) and the bundled study app, so GitHub Pages keeps
+// Vite root is this app/ directory; the repo root above it holds the image
+// media and the bundled study app, so GitHub Pages keeps
 // serving them at /macos27/*. In dev, serve those from root under the base path.
 const REPO_ROOT = resolve(import.meta.dirname, '..')
 const MEDIA_RE = /\.(jpg|jpeg|png|gif|webp|svg|mp3|mp4|zip|pdf|woff2?)$/
@@ -47,8 +47,8 @@ function rootStatic(): Plugin {
 
 // dist-only hosts (Cloudflare Pages) never see the repo root, so mirror the
 // static media into dist after every build. Two destinations are needed: the
-// dist root for BASE_URL-relative refs (images/, audio/, apps/ embeds,
-// finder/preview) and dist/macos27/ for the /macos27/… paths hardcoded in the
+// dist root for BASE_URL-relative refs (images/, apps sites, finder/preview)
+// and dist/macos27/ for the /macos27/… paths hardcoded in the
 // music/podcast/photo data files. GitHub Pages serves the repo root and never
 // deploys these copies (deploy-root.sh takes only index.html + hashed assets).
 function copyRootStatic(): Plugin {
@@ -64,10 +64,16 @@ function copyRootStatic(): Plugin {
         cpSync(file, at(name))
         cpSync(file, at('macos27', name))
       }
-      for (const dir of ['images', 'audio']) {
+      for (const dir of ['images']) {
         cpSync(resolve(REPO_ROOT, dir), at(dir), { recursive: true })
         cpSync(resolve(REPO_ROOT, dir), at('macos27', dir), { recursive: true })
       }
+      // Music audio lives inside the music app module. The music/podcast data
+      // files hardcode /macos27/… URLs, so mirror it both at its repo path
+      // (BASE_URL-relative refs) and under dist/macos27/ (hardcoded refs).
+      mkdirSync(at('macos27/app/src/apps/music'), { recursive: true })
+      cpSync(resolve(REPO_ROOT, 'app/src/apps/music/audio'), at('app/src/apps/music/audio'), { recursive: true })
+      cpSync(resolve(REPO_ROOT, 'app/src/apps/music/audio'), at('macos27/app/src/apps/music/audio'), { recursive: true })
       // Bundled app sites: mirror each into dist at its repo-relative path so
       // BASE_URL-relative iframe URLs resolve on dist-only hosts (Cloudflare
       // Pages). GitHub Pages serves the repo root directly and needs no copy.

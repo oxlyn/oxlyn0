@@ -113,7 +113,8 @@ export default {
   由 设置 → 外观 切换）
 - 窗口内容自己滚动（根节点加 `overflow-y-auto`）
 - 应用自己的状态、数据、资源**全部收在应用目录内**，只有上述系统 store 例外
-- 引用仓库根的静态媒体（图片/音频等）时 URL 必须带
+- 引用仓库根的静态媒体（`images/` 图片等；音频在音乐应用模块
+  `app/src/apps/music/audio/`）时 URL 必须带
   `` `${import.meta.env.BASE_URL}` `` 前缀（如 `BASE_URL + 'photo-1.jpg'`），
   否则部署到 `/macos27/` 子路径时会 404
 

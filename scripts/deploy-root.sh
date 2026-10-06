@@ -1,7 +1,7 @@
 #!/bin/bash
 # Build and sync the new desktop into the repo root so the existing
 # GitHub Pages (deploy-from-root) flow keeps working unchanged.
-# Media (images/, audio/) already lives at root and is not touched.
+# Media (images/ and the music app audio/) is not touched.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
