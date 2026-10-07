@@ -50,9 +50,9 @@ function RubyView({ body }: { body: string }) {
                     const py = pys[i]
                     if (!py || !/\p{Script=Han}/u.test(ch)) return <span key={i}>{ch}</span>
                     return (
-                      <ruby key={i}>
+                      <ruby key={i} style={{ rubyAlign: 'center', rubyPosition: 'over' }}>
                         {ch}
-                        <rt className="select-none font-sans leading-none text-slate-400 dark:text-slate-200" style={{ fontSize: '0.45em' }}>{py}</rt>
+                        <rt className="select-none font-sans leading-none text-slate-400 dark:text-slate-200" style={{ fontSize: '0.5em' }}>{py}</rt>
                       </ruby>
                     )
                   })
