@@ -36,14 +36,14 @@ function RubyView({ body }: { body: string }) {
       className="h-full overflow-y-auto px-8 py-6"
       style={{ fontFamily: "'Kaiti SC', 'STKaiti', 'KaiTi', 'serif'" }}
     >
-      <div className="[background-attachment:local] [background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_46px,rgba(0,0,0,0.08)_46px,rgba(0,0,0,0.08)_47px)] dark:[background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_46px,rgba(255,255,255,0.12)_46px,rgba(255,255,255,0.12)_47px)]">
+      <div className="[background-attachment:local] [background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_54px,rgba(0,0,0,0.08)_54px,rgba(0,0,0,0.08)_56px)] dark:[background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_54px,rgba(255,255,255,0.12)_54px,rgba(255,255,255,0.12)_56px)]">
         {body.split('\n').map((line, li) => {
           const chars = Array.from(line)
           const pys = annotate(line)
           return (
             <p
               key={li}
-              className="min-h-[47px] whitespace-pre-wrap break-words text-[24px] leading-[47px] [text-indent:2em] text-black/85 dark:text-white/88"
+              className="min-h-[56px] whitespace-pre-wrap break-words text-[24px] leading-[56px] [text-indent:2em] text-black/85 dark:text-white/88"
             >
               {pys
                 ? chars.map((ch, i) => {
@@ -168,7 +168,7 @@ function PinyinNotes() {
               value={active.body}
               onChange={(e) => update(active.id, e.target.value)}
               placeholder="输入中文，切到「注音」即可在字上方看到带调拼音…"
-              className="flex-1 resize-none bg-transparent px-6 py-4 text-[17px] text-black/85 outline-none placeholder:text-black/30 dark:text-white/85 dark:placeholder:text-white/25 [background-attachment:local] [background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_31px,rgba(0,0,0,0.08)_31px,rgba(0,0,0,0.08)_32px)] dark:[background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_31px,rgba(255,255,255,0.12)_31px,rgba(255,255,255,0.12)_32px)]"
+              className="flex-1 resize-none bg-transparent px-6 py-4 text-[17px] leading-[32px] text-black/85 outline-none placeholder:text-black/30 dark:text-white/85 dark:placeholder:text-white/25 [background-attachment:local] [background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_30px,rgba(0,0,0,0.08)_30px,rgba(0,0,0,0.08)_32px)] [background-position:0_16px] dark:[background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_30px,rgba(255,255,255,0.12)_30px,rgba(255,255,255,0.12)_32px)]"
             />
           ) : dictReady ? (
             <RubyView body={active.body} />
