@@ -29,35 +29,38 @@ function annotate(line: string): string[] | null {
 }
 
 function RubyView({ body }: { body: string }) {
-  // 课本排版：楷体大字、拼音置于字上方、段首缩进两格、每行下方一条分隔线
+  // 课本排版：楷体大字、拼音在字上方、段首缩进两格；分割线铺在容器背景上
+  // （随内容滚动的重复渐变），段落内自动换行产生的每个可视行下都有线。
   return (
     <div
       className="h-full overflow-y-auto px-8 py-6"
       style={{ fontFamily: "'Kaiti SC', 'STKaiti', 'KaiTi', 'serif'" }}
     >
-      {body.split('\n').map((line, li) => {
-        const chars = Array.from(line)
-        const pys = annotate(line)
-        return (
-          <p
-            key={li}
-            className="min-h-[3.1em] whitespace-pre-wrap break-words border-b border-black/12 pb-3 pt-1.5 text-[24px] leading-[1.95] [text-indent:2em] text-black/85 dark:border-white/15 dark:text-white/88"
-          >
-            {pys
-              ? chars.map((ch, i) => {
-                  const py = pys[i]
-                  if (!py || !/\p{Script=Han}/u.test(ch)) return <span key={i}>{ch}</span>
-                  return (
-                    <ruby key={i}>
-                      {ch}
-                      <rt className="select-none font-sans text-slate-400 dark:text-slate-200" style={{ fontSize: '0.45em' }}>{py}</rt>
-                    </ruby>
-                  )
-                })
-              : line || '　'}
-          </p>
-        )
-      })}
+      <div className="[background-attachment:local] [background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_46px,rgba(0,0,0,0.08)_46px,rgba(0,0,0,0.08)_47px)] dark:[background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_46px,rgba(255,255,255,0.12)_46px,rgba(255,255,255,0.12)_47px)]">
+        {body.split('\n').map((line, li) => {
+          const chars = Array.from(line)
+          const pys = annotate(line)
+          return (
+            <p
+              key={li}
+              className="min-h-[47px] whitespace-pre-wrap break-words text-[24px] leading-[47px] [text-indent:2em] text-black/85 dark:text-white/88"
+            >
+              {pys
+                ? chars.map((ch, i) => {
+                    const py = pys[i]
+                    if (!py || !/\p{Script=Han}/u.test(ch)) return <span key={i}>{ch}</span>
+                    return (
+                      <ruby key={i}>
+                        {ch}
+                        <rt className="select-none font-sans leading-none text-slate-400 dark:text-slate-200" style={{ fontSize: '0.45em' }}>{py}</rt>
+                      </ruby>
+                    )
+                  })
+                : line || '　'}
+            </p>
+          )
+        })}
+      </div>
     </div>
   )
 }
