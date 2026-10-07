@@ -29,13 +29,20 @@ function annotate(line: string): string[] | null {
 }
 
 function RubyView({ body }: { body: string }) {
+  // 课本排版：楷体大字、拼音置于字上方、段首缩进两格、每行下方一条分隔线
   return (
-    <div className="h-full overflow-y-auto px-6 py-4 leading-[2.1] tracking-wide">
+    <div
+      className="h-full overflow-y-auto px-8 py-6"
+      style={{ fontFamily: "'Kaiti SC', 'STKaiti', 'KaiTi', 'serif'" }}
+    >
       {body.split('\n').map((line, li) => {
         const chars = Array.from(line)
         const pys = annotate(line)
         return (
-          <p key={li} className={`min-h-[2.1em] whitespace-pre-wrap break-words text-[17px] ${li ? 'mt-1' : ''}`}>
+          <p
+            key={li}
+            className="min-h-[3.1em] whitespace-pre-wrap break-words border-b border-black/12 pb-3 pt-1.5 text-[24px] leading-[1.95] [text-indent:2em] text-black/85 dark:border-white/15 dark:text-white/88"
+          >
             {pys
               ? chars.map((ch, i) => {
                   const py = pys[i]
@@ -43,7 +50,7 @@ function RubyView({ body }: { body: string }) {
                   return (
                     <ruby key={i}>
                       {ch}
-                      <rt className="select-none font-normal text-slate-400 dark:text-slate-500" style={{ fontSize: '0.45em' }}>{py}</rt>
+                      <rt className="select-none font-sans text-slate-400 dark:text-slate-500" style={{ fontSize: '0.45em' }}>{py}</rt>
                     </ruby>
                   )
                 })
