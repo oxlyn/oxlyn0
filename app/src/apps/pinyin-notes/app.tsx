@@ -45,18 +45,21 @@ function RubyView({ body }: { body: string }) {
               key={li}
               className="min-h-[56px] whitespace-pre-wrap break-words text-[24px] leading-[56px] [text-indent:2em] text-black/85 dark:text-white/88"
             >
-              {pys
-                ? chars.map((ch, i) => {
-                    const py = pys[i]
-                    if (!py || !/\p{Script=Han}/u.test(ch)) return <span key={i}>{ch}</span>
-                    return (
-                      <ruby key={i} style={{ rubyAlign: 'center', rubyPosition: 'over' }}>
-                        {ch}
-                        <rt className="select-none font-sans leading-none text-slate-400 dark:text-slate-200" style={{ fontSize: '0.5em' }}>{py}</rt>
-                      </ruby>
-                    )
-                  })
-                : line || '　'}
+              {/* 整体下移 6px：拼音+汉字作为一组在上下分割线之间垂直居中 */}
+              <span className="relative top-[6px]">
+                {pys
+                  ? chars.map((ch, i) => {
+                      const py = pys[i]
+                      if (!py || !/\p{Script=Han}/u.test(ch)) return <span key={i}>{ch}</span>
+                      return (
+                        <ruby key={i} style={{ rubyAlign: 'center', rubyPosition: 'over' }}>
+                          {ch}
+                          <rt className="select-none font-sans leading-none text-slate-400 dark:text-slate-200" style={{ fontSize: '0.5em' }}>{py}</rt>
+                        </ruby>
+                      )
+                    })
+                  : line || '　'}
+              </span>
             </p>
           )
         })}
