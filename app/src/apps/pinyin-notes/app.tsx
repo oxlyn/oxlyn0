@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Languages, PencilLine, Plus, Trash2 } from 'lucide-react'
+import { Languages, PencilLine, Plus, Settings2, Trash2 } from 'lucide-react'
 import type { AppDefinition } from '@/system/types'
 
 /**
@@ -10,6 +10,26 @@ import type { AppDefinition } from '@/system/types'
  */
 interface Note { id: string; body: string; created: number; modified: number }
 const STORE_KEY = 'oxlyn-pinyin-notes'
+const SETTINGS_KEY = 'oxlyn-pinyin-notes-settings'
+
+// 排版设置：汉字与拼音的字体、字号分开配置；行格高度随两者动态计算，
+// 分割线周期始终与行格对齐。注音组下移量 = 拼音字号的一半（上下留白均分）。
+interface PnSettings { hanFont: string; hanSize: number; pyFont: string; pySize: number }
+const HAN_FONTS = [
+  { label: '楷体', value: "'Kaiti SC','STKaiti','KaiTi',serif" },
+  { label: '宋体', value: "'Songti SC','STSong','SimSun',serif" },
+  { label: '黑体', value: "-apple-system,'PingFang SC','Helvetica Neue',sans-serif" },
+]
+const PY_FONTS = [
+  { label: '无衬线', value: "-apple-system,'PingFang SC',system-ui,sans-serif" },
+  { label: '衬线', value: "Georgia,'Times New Roman',serif" },
+  { label: '等宽', value: "'SF Mono',Menlo,Consolas,monospace" },
+]
+const PN_DEFAULTS: PnSettings = { hanFont: HAN_FONTS[0].value, hanSize: 24, pyFont: PY_FONTS[0].value, pySize: 12 }
+const loadSettings = (): PnSettings => {
+  try { return { ...PN_DEFAULTS, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '{}') as Partial<PnSettings>) } } catch { return PN_DEFAULTS }
+}
+const lineHeightOf = (s: PnSettings): number => s.hanSize + s.pySize + 20
 
 type PinyinModule = typeof import('pinyin-pro')
 let pinyinMod: PinyinModule | null = null
@@ -28,25 +48,24 @@ function annotate(line: string): string[] | null {
   } catch { return null }
 }
 
-function RubyView({ body }: { body: string }) {
-  // 课本排版：楷体大字、拼音在字上方、段首缩进两格；分割线铺在容器背景上
-  // （随内容滚动的重复渐变），段落内自动换行产生的每个可视行下都有线。
+function RubyView({ body, settings }: { body: string; settings: PnSettings }) {
+  // 课本排版：拼音在字上方、段首缩进两格；分割线铺在容器背景上（随内容
+  // 滚动的重复渐变），周期 = 动态行格高度；注音组下移 pySize/2 使上下留白均分。
+  const lh = lineHeightOf(settings)
   return (
-    <div
-      className="h-full overflow-y-auto px-8 py-6"
-      style={{ fontFamily: "'Kaiti SC', 'STKaiti', 'KaiTi', 'serif'" }}
-    >
-      <div className="[background-attachment:local] [background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_54px,rgba(0,0,0,0.08)_54px,rgba(0,0,0,0.08)_56px)] dark:[background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_54px,rgba(255,255,255,0.12)_54px,rgba(255,255,255,0.12)_56px)]">
+    <div className="h-full overflow-y-auto px-8 py-6" style={{ fontFamily: settings.hanFont }}>
+      <div className="pn-lines" style={{ '--pn-lh': `${lh}px` } as React.CSSProperties}>
         {body.split('\n').map((line, li) => {
           const chars = Array.from(line)
           const pys = annotate(line)
           return (
             <p
               key={li}
-              className="min-h-[56px] whitespace-pre-wrap break-words text-[24px] leading-[56px] [text-indent:2em] text-black/85 dark:text-white/88"
+              className="whitespace-pre-wrap break-words [text-indent:2em] text-black/85 dark:text-white/88"
+              style={{ minHeight: lh, fontSize: settings.hanSize, lineHeight: `${lh}px` }}
             >
-              {/* 整体下移 6px：拼音+汉字作为一组在上下分割线之间垂直居中 */}
-              <span className="relative top-[6px]">
+              {/* 拼音+汉字作为一组，整体下移使上下分割线留白一致 */}
+              <span className="relative" style={{ top: settings.pySize / 2 }}>
                 {pys
                   ? chars.map((ch, i) => {
                       const py = pys[i]
@@ -54,7 +73,7 @@ function RubyView({ body }: { body: string }) {
                       return (
                         <ruby key={i} style={{ rubyAlign: 'center', rubyPosition: 'over' }}>
                           {ch}
-                          <rt className="select-none font-sans leading-none text-slate-400 dark:text-slate-200" style={{ fontSize: '0.5em' }}>{py}</rt>
+                          <rt className="select-none font-normal leading-none text-slate-400 dark:text-slate-200" style={{ fontFamily: settings.pyFont, fontSize: settings.pySize }}>{py}</rt>
                         </ruby>
                       )
                     })
@@ -73,6 +92,13 @@ function PinyinNotes() {
   const [activeId, setActiveId] = useState<string | null>(() => load().sort((a, b) => b.modified - a.modified)[0]?.id ?? null)
   const [mode, setMode] = useState<'edit' | 'ruby'>('ruby')
   const [dictReady, setDictReady] = useState(!!pinyinMod)
+  const [settings, setSettings] = useState<PnSettings>(loadSettings)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const lh = lineHeightOf(settings)
+
+  useEffect(() => {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings))
+  }, [settings])
 
   useEffect(() => {
     localStorage.setItem(STORE_KEY, JSON.stringify(notes))
@@ -151,7 +177,8 @@ function PinyinNotes() {
         </div>
       </div>
       {/* 编辑/注音区 */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="relative flex min-w-0 flex-1 flex-col">
+        <style>{`.pn-lines{background-image:repeating-linear-gradient(to bottom,transparent 0px,transparent calc(var(--pn-lh) - 2px),var(--pn-line-color) calc(var(--pn-lh) - 2px),var(--pn-line-color) var(--pn-lh));background-attachment:local;--pn-line-color:rgba(0,0,0,0.08)}.dark .pn-lines{--pn-line-color:rgba(255,255,255,0.12)}`}</style>
         <div className="flex items-center justify-between border-b border-black/8 px-4 py-2 dark:border-white/10">
           <div className="flex items-center gap-1">
             <button onClick={() => setMode('edit')} className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-[12px] font-medium ${mode === 'edit' ? 'bg-emerald-600 text-white' : 'text-black/55 hover:bg-black/8 dark:text-white/55 dark:hover:bg-white/10'}`}>
@@ -171,17 +198,63 @@ function PinyinNotes() {
               value={active.body}
               onChange={(e) => update(active.id, e.target.value)}
               placeholder="输入中文，切到「注音」即可在字上方看到带调拼音…"
-              className="flex-1 resize-none bg-transparent px-6 py-4 text-[24px] leading-[56px] text-black/85 outline-none placeholder:text-black/30 dark:text-white/85 dark:placeholder:text-white/25 [background-attachment:local] [background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_54px,rgba(0,0,0,0.08)_54px,rgba(0,0,0,0.08)_56px)] [background-position:0_16px] dark:[background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_54px,rgba(255,255,255,0.12)_54px,rgba(255,255,255,0.12)_56px)]"
-              style={{ fontFamily: "'Kaiti SC', 'STKaiti', 'KaiTi', 'serif'" }}
+              className="pn-lines flex-1 resize-none bg-transparent px-6 py-4 text-black/85 outline-none placeholder:text-black/30 dark:text-white/85 dark:placeholder:text-white/25"
+              style={{ fontFamily: settings.hanFont, fontSize: settings.hanSize, lineHeight: `${lh}px`, backgroundPosition: `0 16px` }}
             />
           ) : dictReady ? (
-            <RubyView body={active.body} />
+            <RubyView body={active.body} settings={settings} />
           ) : (
             <div className="flex flex-1 items-center justify-center text-[12.5px] text-black/40 dark:text-white/40">拼音词典加载中…</div>
           )
         ) : (
           <div className="flex flex-1 items-center justify-center text-[12.5px] text-black/40 dark:text-white/40">新建或选择一篇笔记</div>
         )}
+        {/* 左下角浮动排版设置（参照 Study 应用左下角主题切换器的交互） */}
+        <div className="absolute bottom-3 left-3 z-10 text-[12px]">
+          {settingsOpen ? (
+            <div className="w-64 overflow-hidden rounded-xl bg-white/97 shadow-xl ring-1 ring-black/10 backdrop-blur dark:bg-[#26282e]/97 dark:ring-white/10">
+              <div className="flex items-center justify-between px-3 py-1.5 text-black/40 dark:text-white/40">
+                <span className="font-semibold">排版设置</span>
+                <button onClick={() => setSettingsOpen(false)} className="hover:text-black/70 dark:hover:text-white/70">完成</button>
+              </div>
+              <div className="space-y-3 px-3 pb-3">
+                {([
+                  { title: '汉字', fontKey: 'hanFont' as const, sizeKey: 'hanSize' as const, fonts: HAN_FONTS, min: 16, max: 40 },
+                  { title: '拼音', fontKey: 'pyFont' as const, sizeKey: 'pySize' as const, fonts: PY_FONTS, min: 8, max: 20 },
+                ]).map((g) => (
+                  <div key={g.title} className="space-y-1.5">
+                    <div className="text-black/45 dark:text-white/45">{g.title}</div>
+                    <select
+                      value={settings[g.fontKey]}
+                      onChange={(e) => setSettings((s) => ({ ...s, [g.fontKey]: e.target.value }))}
+                      className="w-full rounded-md bg-black/5 px-2 py-1 text-[12.5px] outline-none dark:bg-white/10"
+                    >
+                      {g.fonts.map((f) => <option key={f.label} value={f.value}>{f.label}</option>)}
+                    </select>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="range" min={g.min} max={g.max} value={settings[g.sizeKey]}
+                        onChange={(e) => setSettings((s) => ({ ...s, [g.sizeKey]: Number(e.target.value) }))}
+                        className="w-full accent-emerald-600"
+                      />
+                      <b className="w-11 text-right tabular-nums text-black/60 dark:text-white/60">{settings[g.sizeKey]}px</b>
+                    </div>
+                  </div>
+                ))}
+                <button onClick={() => setSettings(PN_DEFAULTS)} className="text-black/40 underline-offset-2 hover:text-black/70 hover:underline dark:text-white/40 dark:hover:text-white/70">
+                  恢复默认
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setSettingsOpen(true)}
+              className="flex items-center gap-1.5 rounded-full bg-white/92 px-3 py-1.5 font-medium text-black/60 shadow-lg ring-1 ring-black/10 backdrop-blur transition-transform hover:scale-105 dark:bg-[#2c2e33]/92 dark:text-white/60 dark:ring-white/10"
+            >
+              <Settings2 size={13} /> 排版
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
