@@ -188,10 +188,56 @@ function PinyinNotes() {
               <Languages size={12.5} /> 注音
             </button>
           </div>
-          {mode === 'ruby' && (
-            <span className="text-[11px] text-black/40 dark:text-white/40">{dictReady ? '拼音由 pinyin-pro · 多音字按词识别' : '拼音词典加载中…'}</span>
-          )}
+          <div className="flex items-center gap-2">
+            {mode === 'ruby' && (
+              <span className="text-[11px] text-black/40 dark:text-white/40">拼音由 pinyin-pro · 多音字按词识别</span>
+            )}
+            <button
+              onClick={() => setSettingsOpen((o) => !o)}
+              title="排版设置"
+              className={`rounded-md p-1.5 ${settingsOpen ? 'bg-emerald-600 text-white' : 'text-black/50 hover:bg-black/8 dark:text-white/50 dark:hover:bg-white/10'}`}
+            >
+              <Settings2 size={14} />
+            </button>
+          </div>
         </div>
+        {settingsOpen && (
+          <div className="absolute right-3 top-12 z-10 w-64 overflow-hidden rounded-xl bg-white/97 shadow-xl ring-1 ring-black/10 backdrop-blur dark:bg-[#26282e]/97 dark:ring-white/10">
+            <div className="space-y-3 px-3 py-3">
+              {([
+                { title: '汉字', fontKey: 'hanFont' as const, sizeKey: 'hanSize' as const, fonts: HAN_FONTS, min: 16, max: 40 },
+                { title: '拼音', fontKey: 'pyFont' as const, sizeKey: 'pySize' as const, fonts: PY_FONTS, min: 8, max: 20 },
+              ]).map((g) => (
+                <div key={g.title} className="space-y-1.5">
+                  <div className="text-black/45 dark:text-white/45">{g.title}</div>
+                  <select
+                    value={settings[g.fontKey]}
+                    onChange={(e) => setSettings((s) => ({ ...s, [g.fontKey]: e.target.value }))}
+                    className="w-full rounded-md bg-black/5 px-2 py-1 text-[12.5px] outline-none dark:bg-white/10"
+                  >
+                    {g.fonts.map((f) => <option key={f.label} value={f.value}>{f.label}</option>)}
+                  </select>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="range" min={g.min} max={g.max} value={settings[g.sizeKey]}
+                      onChange={(e) => setSettings((s) => ({ ...s, [g.sizeKey]: Number(e.target.value) }))}
+                      className="w-full accent-emerald-600"
+                    />
+                    <b className="w-11 text-right tabular-nums text-black/60 dark:text-white/60">{settings[g.sizeKey]}px</b>
+                  </div>
+                </div>
+              ))}
+              <div className="flex items-center justify-between">
+                <button onClick={() => setSettings(PN_DEFAULTS)} className="text-black/40 underline-offset-2 hover:text-black/70 hover:underline dark:text-white/40 dark:hover:text-white/70">
+                  恢复默认
+                </button>
+                <button onClick={() => setSettingsOpen(false)} className="rounded-md bg-emerald-600 px-3 py-1 text-[12px] font-medium text-white hover:bg-emerald-500">
+                  完成
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {active ? (
           mode === 'edit' ? (
             <textarea
@@ -209,52 +255,6 @@ function PinyinNotes() {
         ) : (
           <div className="flex flex-1 items-center justify-center text-[12.5px] text-black/40 dark:text-white/40">新建或选择一篇笔记</div>
         )}
-        {/* 左下角浮动排版设置（参照 Study 应用左下角主题切换器的交互） */}
-        <div className="absolute bottom-3 left-3 z-10 text-[12px]">
-          {settingsOpen ? (
-            <div className="w-64 overflow-hidden rounded-xl bg-white/97 shadow-xl ring-1 ring-black/10 backdrop-blur dark:bg-[#26282e]/97 dark:ring-white/10">
-              <div className="flex items-center justify-between px-3 py-1.5 text-black/40 dark:text-white/40">
-                <span className="font-semibold">排版设置</span>
-                <button onClick={() => setSettingsOpen(false)} className="hover:text-black/70 dark:hover:text-white/70">完成</button>
-              </div>
-              <div className="space-y-3 px-3 pb-3">
-                {([
-                  { title: '汉字', fontKey: 'hanFont' as const, sizeKey: 'hanSize' as const, fonts: HAN_FONTS, min: 16, max: 40 },
-                  { title: '拼音', fontKey: 'pyFont' as const, sizeKey: 'pySize' as const, fonts: PY_FONTS, min: 8, max: 20 },
-                ]).map((g) => (
-                  <div key={g.title} className="space-y-1.5">
-                    <div className="text-black/45 dark:text-white/45">{g.title}</div>
-                    <select
-                      value={settings[g.fontKey]}
-                      onChange={(e) => setSettings((s) => ({ ...s, [g.fontKey]: e.target.value }))}
-                      className="w-full rounded-md bg-black/5 px-2 py-1 text-[12.5px] outline-none dark:bg-white/10"
-                    >
-                      {g.fonts.map((f) => <option key={f.label} value={f.value}>{f.label}</option>)}
-                    </select>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="range" min={g.min} max={g.max} value={settings[g.sizeKey]}
-                        onChange={(e) => setSettings((s) => ({ ...s, [g.sizeKey]: Number(e.target.value) }))}
-                        className="w-full accent-emerald-600"
-                      />
-                      <b className="w-11 text-right tabular-nums text-black/60 dark:text-white/60">{settings[g.sizeKey]}px</b>
-                    </div>
-                  </div>
-                ))}
-                <button onClick={() => setSettings(PN_DEFAULTS)} className="text-black/40 underline-offset-2 hover:text-black/70 hover:underline dark:text-white/40 dark:hover:text-white/70">
-                  恢复默认
-                </button>
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={() => setSettingsOpen(true)}
-              className="flex items-center gap-1.5 rounded-full bg-white/92 px-3 py-1.5 font-medium text-black/60 shadow-lg ring-1 ring-black/10 backdrop-blur transition-transform hover:scale-105 dark:bg-[#2c2e33]/92 dark:text-white/60 dark:ring-white/10"
-            >
-              <Settings2 size={13} /> 排版
-            </button>
-          )}
-        </div>
       </div>
     </div>
   )
