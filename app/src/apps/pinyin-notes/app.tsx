@@ -171,7 +171,8 @@ function PinyinNotes() {
               value={active.body}
               onChange={(e) => update(active.id, e.target.value)}
               placeholder="输入中文，切到「注音」即可在字上方看到带调拼音…"
-              className="flex-1 resize-none bg-transparent px-6 py-4 text-[17px] leading-[32px] text-black/85 outline-none placeholder:text-black/30 dark:text-white/85 dark:placeholder:text-white/25 [background-attachment:local] [background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_30px,rgba(0,0,0,0.08)_30px,rgba(0,0,0,0.08)_32px)] [background-position:0_16px] dark:[background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_30px,rgba(255,255,255,0.12)_30px,rgba(255,255,255,0.12)_32px)]"
+              className="flex-1 resize-none bg-transparent px-6 py-4 text-[24px] leading-[56px] text-black/85 outline-none placeholder:text-black/30 dark:text-white/85 dark:placeholder:text-white/25 [background-attachment:local] [background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_54px,rgba(0,0,0,0.08)_54px,rgba(0,0,0,0.08)_56px)] [background-position:0_16px] dark:[background-image:repeating-linear-gradient(to_bottom,transparent_0px,transparent_54px,rgba(255,255,255,0.12)_54px,rgba(255,255,255,0.12)_56px)]"
+              style={{ fontFamily: "'Kaiti SC', 'STKaiti', 'KaiTi', 'serif'" }}
             />
           ) : dictReady ? (
             <RubyView body={active.body} />
