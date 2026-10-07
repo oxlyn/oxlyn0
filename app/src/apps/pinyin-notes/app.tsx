@@ -50,7 +50,7 @@ function RubyView({ body }: { body: string }) {
                   return (
                     <ruby key={i}>
                       {ch}
-                      <rt className="select-none font-sans text-slate-400 dark:text-slate-500" style={{ fontSize: '0.45em' }}>{py}</rt>
+                      <rt className="select-none font-sans text-slate-400 dark:text-slate-200" style={{ fontSize: '0.45em' }}>{py}</rt>
                     </ruby>
                   )
                 })
