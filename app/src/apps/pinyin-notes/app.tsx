@@ -54,7 +54,7 @@ function RubyView({ body, settings }: { body: string; settings: PnSettings }) {
   const lh = lineHeightOf(settings)
   return (
     <div className="h-full overflow-y-auto px-8 py-6" style={{ fontFamily: settings.hanFont }}>
-      <div className="pn-lines" style={{ '--pn-lh': `${lh}px` } as React.CSSProperties}>
+      <div className="pn-lines">
         {body.split('\n').map((line, li) => {
           const chars = Array.from(line)
           const pys = annotate(line)
@@ -176,8 +176,8 @@ function PinyinNotes() {
           {!sorted.length && <p className="px-2 py-6 text-center text-[12px] text-black/35 dark:text-white/35">还没有笔记<br />点右上角 + 新建</p>}
         </div>
       </div>
-      {/* 编辑/注音区 */}
-      <div className="relative flex min-w-0 flex-1 flex-col">
+      {/* 编辑/注音区（--pn-lh 定义在公共父级，编辑与注音两个视图共用） */}
+      <div className="relative flex min-w-0 flex-1 flex-col" style={{ '--pn-lh': `${lh}px` } as React.CSSProperties}>
         <style>{`.pn-lines{background-image:repeating-linear-gradient(to bottom,transparent 0px,transparent calc(var(--pn-lh) - 2px),var(--pn-line-color) calc(var(--pn-lh) - 2px),var(--pn-line-color) var(--pn-lh));background-attachment:local;--pn-line-color:rgba(0,0,0,0.08)}.dark .pn-lines{--pn-line-color:rgba(255,255,255,0.12)}`}</style>
         <div className="flex items-center justify-between border-b border-black/8 px-4 py-2 dark:border-white/10">
           <div className="flex items-center gap-1">
