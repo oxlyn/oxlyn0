@@ -188,5 +188,6 @@ export default {
   defaultSize: { w: 920, h: 640 },
   minSize: { w: 680, h: 480 },
   category: 'Productivity',
+  onDesktop: true,
   keywords: ['pinyin', '拼音', '注音', '拼音笔记', '笔记', 'notes', 'ruby'],
 } satisfies AppDefinition
